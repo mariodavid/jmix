@@ -30,7 +30,7 @@ import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory
 import io.jmix.core.security.LoginPasswordCredentials
 import io.jmix.core.security.UserSession
 import io.jmix.core.security.UserSessionSource
-import io.jmix.security.entity.User
+import com.haulmont.cuba.core.model.common.User
 import io.jmix.security.impl.StandardUserSession
 import io.jmix.ui.*
 import io.jmix.ui.model.DataComponents
