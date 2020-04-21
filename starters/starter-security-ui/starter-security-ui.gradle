@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+group = 'io.jmix.starter.securityui'
+
+dependencies {
+    api project(':modules:security')
+    api project(':modules:security-ui')
+
+    api 'org.springframework.boot:spring-boot-autoconfigure'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+publishing {
+    publications {
+        javaMaven(MavenPublication) {
+            groupId = 'io.jmix.starter.securityui'
+            artifactId = 'jmix-starter-security-ui'
+
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}

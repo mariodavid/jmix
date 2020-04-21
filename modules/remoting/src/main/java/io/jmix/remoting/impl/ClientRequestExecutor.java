@@ -49,7 +49,7 @@ public class ClientRequestExecutor extends SimpleHttpInvokerRequestExecutor {
                 if (userSession instanceof SystemUserSession) {
                     authValue = AuthHeader.encode(clientToken, null);
                 } else {
-                    authValue = AuthHeader.encode(clientToken, userSession.getUser().getLoginLowerCase());
+                    authValue = AuthHeader.encode(clientToken, userSession.getUser().getUsername());
                 }
             } else {
                 authValue = AuthHeader.encode(userSession.getId());

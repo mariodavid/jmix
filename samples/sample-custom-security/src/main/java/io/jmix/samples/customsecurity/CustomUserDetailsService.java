@@ -16,8 +16,6 @@
 
 package io.jmix.samples.customsecurity;
 
-import io.jmix.core.entity.User;
-import io.jmix.core.security.impl.CoreUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +25,7 @@ import java.util.List;
 
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private List<User> users = Arrays.asList(
+    private List<CustomUser> users = Arrays.asList(
             new CustomUser("system", "{noop}", "System"),
             new CustomUser("admin", "{noop}admin123", "Administrator")
     );
@@ -35,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return users.stream()
-                .filter(user -> user.getLoginLowerCase().equals(username))
+                .filter(user -> user.getUsername().equals(username))
                 .findAny()
                 .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
     }

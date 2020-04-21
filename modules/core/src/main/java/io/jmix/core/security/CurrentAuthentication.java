@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-package io.jmix.core.entity;
+package io.jmix.core.security;
 
-import io.jmix.core.Entity;
-import org.springframework.security.core.userdetails.UserDetails;
+import io.jmix.core.entity.BaseUser;
+import org.springframework.security.core.Authentication;
 
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.Locale;
+import java.util.TimeZone;
 
-public interface User extends UserDetails, Entity<UUID> {
+/**
+ * Class that is used to get the information about the authenticated user.
+ */
+public interface CurrentAuthentication {
 
-    UUID getId();
+    String NAME = "jmix_CurrentAuthentication";
 
-    String getLogin();
+    @Nullable
+    Authentication getAuthentication();
 
-    String getLoginLowerCase();
+    BaseUser getUser();
 
-    String getName();
+    Locale getLocale();
+
+    TimeZone getTimeZone();
+
+    boolean isAuthenticated();
 }

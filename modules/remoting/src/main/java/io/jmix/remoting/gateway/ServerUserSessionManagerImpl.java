@@ -49,19 +49,21 @@ public class ServerUserSessionManagerImpl implements ServerUserSessionManager {
 
     @Override
     public UserSession createSession(Authentication authToken) {
-        if (authToken instanceof SystemAuthenticationToken) {
-            Object clientToken = authToken.getCredentials();
-            if (!"todo clientToken".equals(clientToken)) {
-                throw new BadCredentialsException("Invalid client token");
-            }
-
-            UserSession session = authenticator.begin(authToken.getName());
-            authenticator.end();
-
-            log.info("Created system session: {}", session);
-            return session;
-        }
-
-        return userSessionManager.createSession(authToken);
+//        if (authToken instanceof SystemAuthenticationToken) {
+//            Object clientToken = authToken.getCredentials();
+//            if (!"todo clientToken".equals(clientToken)) {
+//                throw new BadCredentialsException("Invalid client token");
+//            }
+//
+//            UserSession session = authenticator.begin(authToken.getName());
+//            authenticator.end();
+//
+//            log.info("Created system session: {}", session);
+//            return session;
+//        }
+//
+//        return userSessionManager.createSession(authToken);
+        //todo MG
+        return null;
     }
 }

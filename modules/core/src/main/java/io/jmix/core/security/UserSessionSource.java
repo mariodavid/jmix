@@ -21,7 +21,10 @@ import java.util.UUID;
 
 /**
  * Central infrastructure interface to provide access to a current user session.
+ *
+ * @deprecated Use {@link CurrentAuthentication} to get current user, locale and time zone
  */
+@Deprecated
 public interface UserSessionSource {
 
     String NAME = "jmix_UserSessionSource";

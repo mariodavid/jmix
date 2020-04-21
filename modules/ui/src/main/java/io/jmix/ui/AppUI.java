@@ -27,10 +27,7 @@ import io.jmix.core.AppBeans;
 import io.jmix.core.BeanLocator;
 import io.jmix.core.Events;
 import io.jmix.core.Messages;
-import io.jmix.core.security.LoginException;
-import io.jmix.core.security.NoUserSessionException;
-import io.jmix.core.security.UserSession;
-import io.jmix.core.security.UserSessionSource;
+import io.jmix.core.security.*;
 import io.jmix.ui.components.RootWindow;
 import io.jmix.ui.events.AppInitializedEvent;
 import io.jmix.ui.events.SessionHeartbeatEvent;
@@ -86,6 +83,9 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected CurrentAuthentication currentAuthentication;
 //    @Inject
 //    protected UserSessionService userSessionService; todo ping session ?
 
@@ -367,7 +367,7 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
     }
 
     public boolean hasAuthenticatedSession() {
-        return userSession.isAuthenticated();
+        return currentAuthentication.isAuthenticated();
     }
 
     protected void publishAppInitializedEvent(App app) {

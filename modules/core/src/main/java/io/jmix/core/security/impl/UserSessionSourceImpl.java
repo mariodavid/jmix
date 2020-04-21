@@ -16,7 +16,10 @@
 
 package io.jmix.core.security.impl;
 
+import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.*;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -26,43 +29,60 @@ import java.util.UUID;
 @Component(UserSessionSource.NAME)
 public class UserSessionSourceImpl implements UserSessionSource {
 
+//    @Inject
+//    protected UserSessions userSessions;
+
     @Inject
-    protected UserSessions userSessions;
+    protected ServiceUserRepository serviceUserRepository;
 
     @Override
     public boolean checkCurrentUserSession() {
-        UserSession userSession = CurrentUserSession.get();
-        if (userSession == null) {
-            return false;
-        }
-        if (userSession.getAuthentication() instanceof SystemAuthenticationToken) {
-            return true;
-        }
-        UserSession session = userSessions.getAndRefresh(userSession.getId());
-        return session != null;
+//        UserSession userSession = CurrentUserSession.get();
+//        if (userSession == null) {
+//            return false;
+//        }
+//        if (userSession.getAuthentication() instanceof SystemAuthenticationToken) {
+//            return true;
+//        }
+//        UserSession session = userSessions.getAndRefresh(userSession.getId());
+//        return session != null;
+        //todo MG
+        return true;
     }
 
     @Override
     public UserSession getUserSession() throws NoUserSessionException {
-        UserSession userSession = CurrentUserSession.get();
-        if (userSession == null) {
-            throw new NoUserSessionException();
-        }
-        if (userSession.getAuthentication() instanceof SystemAuthenticationToken) {
-            return userSession;
-        }
+        Authentication authentication = CurrentAuthenticationHelper.get();
 
-        UserSession cachedSession = userSessions.getAndRefresh(userSession.getId());
-        if (cachedSession == null) {
-            throw new NoUserSessionException(userSession.getId());
+        UserSession session = new UserSession();
+        if (authentication instanceof UserAuthentication) {
+            session.setUser(((UserAuthentication) authentication).getUser());
+            session.setLocale(((UserAuthentication) authentication).getLocale());
+        } else if (authentication instanceof AnonymousAuthenticationToken ||
+                authentication instanceof SystemAuthenticationToken) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof BaseUser) {
+                session.setUser((BaseUser) authentication.getPrincipal());
+                session.setLocale(Locale.getDefault());
+            } else {
+                session.setUser(serviceUserRepository.getSystemUser());
+                session.setLocale(Locale.getDefault());
+            }
+        } else if (authentication == null) {
+            //todo MG should null authentication be possible?
+            //todo MG what user to return?
+            session.setUser(serviceUserRepository.getSystemUser());
+            session.setLocale(Locale.getDefault());
+        } else {
+            throw new RuntimeException("Authentication type is not supported: " + authentication.getClass().getCanonicalName());
         }
-        return cachedSession;
+        return session;
     }
 
     @Override
     public UUID currentOrSubstitutedUserId() {
         // todo user substitution
-        return getUserSession().getUser().getId();
+        return UUID.fromString(getUserSession().getUser().getKey());
     }
 
     @Override

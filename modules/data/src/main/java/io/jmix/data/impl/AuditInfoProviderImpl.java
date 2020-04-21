@@ -32,12 +32,12 @@ public class AuditInfoProviderImpl implements AuditInfoProvider {
     @Override
     public String getCurrentUserLogin() {
         return userSessionSource.checkCurrentUserSession() ?
-                userSessionSource.getUserSession().getUser().getLogin() : null;
+                userSessionSource.getUserSession().getUser().getUsername() : null;
     }
 
     @Override
-    public UUID getCurrentUserId() {
+    public String getCurrentUserKey() {
         return userSessionSource.checkCurrentUserSession() ?
-                userSessionSource.getUserSession().getUser().getId() : null;
+                userSessionSource.getUserSession().getUser().getKey() : null;
     }
 }

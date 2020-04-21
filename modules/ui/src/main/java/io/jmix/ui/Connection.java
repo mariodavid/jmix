@@ -15,7 +15,7 @@
  */
 package io.jmix.ui;
 
-import io.jmix.core.entity.User;
+import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.Credentials;
 import io.jmix.core.security.LoginException;
 import io.jmix.core.security.UserSession;
@@ -71,11 +71,11 @@ public interface Connection {
      * Substitute a user in the current session with another user. This method creates a new UserSession instance,
      * but with the same session ID.
      * <p>New user is usually obtained from the current user's substitution list:
-     * see {@link User#getSubstitutions()}</p>
+     * see {@link BaseUser#getSubstitutions()}</p>
      *
      * @param substitutedUser new user
      */
-    void substituteUser(User substitutedUser);
+    void substituteUser(BaseUser substitutedUser);
 
     /**
      * Check if the client is connected to the middleware.

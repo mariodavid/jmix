@@ -16,19 +16,18 @@
 
 package io.jmix.core.impl.method;
 
-import io.jmix.core.entity.User;
+import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.UserSessionSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Locale;
 
 /**
- * Allows resolving the current authorized {@link User} as method argument.
+ * Allows resolving the current authorized {@link BaseUser} as method argument.
  */
 @Component(UserArgumentResolver.NAME)
-public class UserArgumentResolver extends TypedArgumentResolver<User> {
+public class UserArgumentResolver extends TypedArgumentResolver<BaseUser> {
 
     public static final String NAME = "jmix_UserArgumentResolver";
 
@@ -36,11 +35,11 @@ public class UserArgumentResolver extends TypedArgumentResolver<User> {
     protected UserSessionSource userSessionSource;
 
     public UserArgumentResolver() {
-        super(User.class);
+        super(BaseUser.class);
     }
 
     @Override
-    public User resolveArgument(MethodParameter parameter) {
+    public BaseUser resolveArgument(MethodParameter parameter) {
         if (userSessionSource.checkCurrentUserSession()) {
             return userSessionSource.getUserSession().getUser();
         } else {

@@ -171,7 +171,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // copy security context
             UserSession userSession = userSessionSource.getUserSession();
             this.securityContext = (SecurityContext) SecurityContextHolder.getContext().getAuthentication();
-            this.userLogin = userSession.getUser().getLogin();
+            this.userLogin = userSession.getUser().getUsername();
 
             this.future = new FutureTask<V>(this) {
                 @Override

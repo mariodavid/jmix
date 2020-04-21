@@ -32,5 +32,5 @@ public interface AuditInfoProvider {
     String getCurrentUserLogin();
 
     @Nullable
-    UUID getCurrentUserId();
+    String getCurrentUserKey();
 }

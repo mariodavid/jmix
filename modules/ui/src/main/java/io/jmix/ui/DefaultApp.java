@@ -41,7 +41,7 @@ import java.util.Objects;
  * Default {@link App} implementation that shows {@link AppLoginWindow} on start. Single instance of App is bound to
  * single HTTP session.
  */
-@Component(App.NAME)
+//@Component(App.NAME)
 @VaadinSessionScope
 public class DefaultApp extends App {
 

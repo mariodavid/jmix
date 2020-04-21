@@ -73,19 +73,21 @@ public class StandardSecurity implements Security {
 
     protected ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
-    private StandardUserSession getUserSession() {
-        return (StandardUserSession) userSessionSource.getUserSession();
-    }
+//    private StandardUserSession getUserSession() {
+//        return (StandardUserSession) userSessionSource.getUserSession();
+//    }
 
     @Override
     public boolean isScreenPermitted(String windowAlias) {
-        return getUserSession().isPermitted(PermissionType.SCREEN, windowAlias, 1);
+//        return getUserSession().isPermitted(PermissionType.SCREEN, windowAlias, 1);
+        return true;
     }
 
     @Override
     public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        return getUserSession().isPermitted(PermissionType.ENTITY_OP,
-                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId(), 1);
+//        return getUserSession().isPermitted(PermissionType.ENTITY_OP,
+//                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId(), 1);
+        return true;
     }
 
     @Override
@@ -95,8 +97,9 @@ public class StandardSecurity implements Security {
 
     @Override
     public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
-        return getUserSession().isPermitted(PermissionType.ENTITY_ATTR,
-                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property, access.getId());
+//        return getUserSession().isPermitted(PermissionType.ENTITY_ATTR,
+//                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property, access.getId());
+        return true;
     }
 
     @Override
@@ -139,7 +142,8 @@ public class StandardSecurity implements Security {
 
     @Override
     public boolean isSpecificPermitted(String name) {
-        return getUserSession().isPermitted(PermissionType.SPECIFIC, name, 1);
+//        return getUserSession().isPermitted(PermissionType.SPECIFIC, name, 1);
+        return true;
     }
 
     @Override
@@ -170,7 +174,8 @@ public class StandardSecurity implements Security {
 
     @Override
     public boolean hasConstraints() {
-        return getUserSession().hasConstraints();
+//        return getUserSession().hasConstraints();
+        return false;
     }
 
     @Override
@@ -253,14 +258,15 @@ public class StandardSecurity implements Security {
     }
 
     public List<ConstraintData> getConstraints(MetaClass metaClass) {
-        StandardUserSession userSession = getUserSession();
-        MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
-
-        List<ConstraintData> constraints = new ArrayList<>(userSession.getConstraints(mainMetaClass.getName()));
-        for (MetaClass parent : mainMetaClass.getAncestors()) {
-            constraints.addAll(userSession.getConstraints(parent.getName()));
-        }
-        return constraints;
+//        StandardUserSession userSession = getUserSession();
+//        MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
+//
+//        List<ConstraintData> constraints = new ArrayList<>(userSession.getConstraints(mainMetaClass.getName()));
+//        for (MetaClass parent : mainMetaClass.getAncestors()) {
+//            constraints.addAll(userSession.getConstraints(parent.getName()));
+//        }
+//        return constraints;
+        return new ArrayList<>();
     }
 
     /**

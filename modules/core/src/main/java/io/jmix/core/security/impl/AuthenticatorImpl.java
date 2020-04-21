@@ -65,41 +65,63 @@ public class AuthenticatorImpl extends AuthenticatorSupport implements Authentic
     }
 
     @Override
-    public UserSession begin(@Nullable String login) {
-        UserSession userSession;
+    public Authentication begin(@Nullable String login) {
+//        UserSession userSession;
+//
+//        if (!Strings.isNullOrEmpty(login)) {
+//            log.trace("Authenticating as {}", login);
+//
+//            userSession = getFromCacheOrCreate(login, () -> {
+//                Authentication authToken = new SystemAuthenticationToken(login);
+//                Authentication authentication = authenticationManager.authenticate(authToken);
+//                UserSession session = userSessionFactory.create(authentication);
+//                session.setClientDetails(ClientDetails.builder().info("System authentication").build());
+//                userSessions.add(session);
+//                return session;
+//            });
+//        } else {
+//            log.trace("Authenticating as system");
+//            userSession = userSessionFactory.getSystemSession();
+//        }
+//
+//        pushAuthentication(SecurityContextHolder.getContext().getAuthentication());
+//
+//        CurrentUserSession.set(userSession);
+//
+//        return userSession;
+
+        Authentication authentication;
 
         if (!Strings.isNullOrEmpty(login)) {
             log.trace("Authenticating as {}", login);
 
-            userSession = getFromCacheOrCreate(login, () -> {
+            authentication = getFromCacheOrCreate(login, () -> {
                 Authentication authToken = new SystemAuthenticationToken(login);
-                Authentication authentication = authenticationManager.authenticate(authToken);
-                UserSession session = userSessionFactory.create(authentication);
-                session.setClientDetails(ClientDetails.builder().info("System authentication").build());
-                userSessions.add(session);
-                return session;
+                return authenticationManager.authenticate(authToken);
             });
         } else {
             log.trace("Authenticating as system");
-            userSession = userSessionFactory.getSystemSession();
+            Authentication authToken = new SystemAuthenticationToken(null);
+            authentication = authenticationManager.authenticate(authToken);
         }
 
-        pushAuthentication(SecurityContextHolder.getContext().getAuthentication());
+        pushAuthentication(authentication);
+        CurrentAuthenticationHelper.set(authentication);
 
-        CurrentUserSession.set(userSession);
-
-        return userSession;
+        return authentication;
     }
 
     @Override
-    public UserSession begin() {
+    public Authentication begin() {
         return begin(null);
     }
 
     @Override
     public void end() {
         log.trace("Set previous Authentication");
-        Authentication previous = popAuthentication();
+        //remove current authentication from stack
+        pollAuthentication();
+        Authentication previous = peekAuthentication();
         SecurityContextHolder.getContext().setAuthentication(previous);
         LogMdc.setup(previous);
     }

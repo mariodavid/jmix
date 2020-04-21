@@ -16,7 +16,7 @@
 
 package io.jmix.core.security;
 
-import io.jmix.core.entity.User;
+import io.jmix.core.entity.BaseUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -31,7 +31,7 @@ public class UserSession implements Authentication {
 
     protected UUID id = UUID.randomUUID();
 
-    protected User user;
+    protected BaseUser user;
 
     protected Authentication authentication;
 
@@ -47,15 +47,15 @@ public class UserSession implements Authentication {
 
     public UserSession(Authentication authentication) {
         this.authentication = authentication;
-        if (authentication.getPrincipal() instanceof User) {
-            user = (User) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof BaseUser) {
+            user = (BaseUser) authentication.getPrincipal();
         } else {
             throw new UnsupportedOperationException("UserSession does not support principal of type "
                     + authentication.getPrincipal().getClass().getName());
         }
     }
 
-    protected UserSession() {
+    public UserSession() {
     }
 
     public Authentication getAuthentication() {
@@ -66,8 +66,12 @@ public class UserSession implements Authentication {
         return id;
     }
 
-    public User getUser() {
+    public BaseUser getUser() {
         return user;
+    }
+
+    public void setUser(BaseUser user) {
+        this.user = user;
     }
 
     public ClientDetails getClientDetails() {

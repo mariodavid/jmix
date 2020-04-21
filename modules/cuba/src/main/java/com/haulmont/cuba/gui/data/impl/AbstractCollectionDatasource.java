@@ -411,8 +411,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         String sessionPrefix = ParameterInfo.Type.SESSION.getPrefix() + "$";
-        templateParams.put(sessionPrefix + "userId", userSession.getUser().getId());
-        templateParams.put(sessionPrefix + "userLogin", userSession.getUser().getLoginLowerCase());
+        templateParams.put(sessionPrefix + "userId", UUID.fromString(userSession.getUser().getKey()));
+        templateParams.put(sessionPrefix + "userLogin", userSession.getUser().getUsername());
         for (String name : userSession.getAttributeNames()) {
             templateParams.put(sessionPrefix + name, userSession.getAttribute(name));
         }

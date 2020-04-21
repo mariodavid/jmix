@@ -26,7 +26,7 @@ import io.jmix.core.CoreProperties;
 import io.jmix.core.Events;
 import io.jmix.core.Messages;
 import io.jmix.core.commons.events.EventHub;
-import io.jmix.core.entity.User;
+import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.*;
 import io.jmix.ui.Connection;
 import io.jmix.ui.events.*;
@@ -304,7 +304,7 @@ public class ConnectionImpl implements Connection {
     }
 
     @Override
-    public void substituteUser(User substitutedUser) {
+    public void substituteUser(BaseUser substitutedUser) {
         // todo substituteUser
         /*UserSession previousSession = getSession();
 

@@ -25,7 +25,7 @@ import io.jmix.core.AppBeans;
 import io.jmix.core.Messages;
 import io.jmix.core.commons.util.Dom4j;
 import io.jmix.core.entity.Presentation;
-import io.jmix.core.entity.User;
+import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.UserSessionSource;
 import io.jmix.ui.App;
 import io.jmix.ui.components.HasPresentations;
@@ -184,7 +184,7 @@ public class PresentationEditor extends CubaWindow {
         presentation.setDefault(defaultField.getValue());
 
         // todo user substitution
-        User user = sessionSource.getUserSession().getUser();
+        BaseUser user = sessionSource.getUserSession().getUser();
 
         boolean userOnly = !allowGlobalPresentations || !BooleanUtils.isTrue(globalField.getValue());
         presentation.setUser(userOnly ? user : null);

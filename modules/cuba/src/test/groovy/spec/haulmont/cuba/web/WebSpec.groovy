@@ -103,7 +103,7 @@ class WebSpec extends Specification {
             }
         }
 
-        def session = new StandardUserSession(credentials)
+        def session = new UserSession()
         session.setAuthenticated(false)
 
         def injectFactory = applicationContext.getAutowireCapableBeanFactory()

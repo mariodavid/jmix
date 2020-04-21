@@ -16,6 +16,7 @@
 
 package io.jmix.samples.customsecurity;
 
+import io.jmix.core.security.UserRepository;
 import io.jmix.core.security.impl.SystemAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,15 +26,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.inject.Inject;
+
 @Configuration
 @EnableWebSecurity
 public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Inject
+    protected UserRepository userRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         UserDetailsService userDetailsService = new CustomUserDetailsService();
         auth.userDetailsService(userDetailsService);
-        auth.authenticationProvider(new SystemAuthenticationProvider(userDetailsService));
+        auth.authenticationProvider(new SystemAuthenticationProvider(userRepository));
 
     }
 
@@ -45,9 +51,9 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
 
-    @Bean(name = "jmix_userDetailsService")
-    @Override
-    public UserDetailsService userDetailsServiceBean() throws Exception {
-        return super.userDetailsServiceBean();
-    }
+//    @Bean(name = "jmix_userDetailsService")
+//    @Override
+//    public UserDetailsService userDetailsServiceBean() throws Exception {
+//        return super.userDetailsServiceBean();
+//    }
 }

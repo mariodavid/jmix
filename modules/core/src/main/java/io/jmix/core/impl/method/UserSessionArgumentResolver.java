@@ -16,7 +16,6 @@
 
 package io.jmix.core.impl.method;
 
-import io.jmix.core.entity.User;
 import io.jmix.core.security.UserSession;
 import io.jmix.core.security.UserSessionSource;
 import org.springframework.core.MethodParameter;

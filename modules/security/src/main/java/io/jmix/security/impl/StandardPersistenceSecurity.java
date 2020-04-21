@@ -119,7 +119,7 @@ public class StandardPersistenceSecurity implements PersistenceSecurity {
             if (CONSTRAINT_PARAM_USER_LOGIN.equals(attrName)) {
                 String userLogin = /*userSession.getSubstitutedUser() != null ?
                         userSession.getSubstitutedUser().getLogin() :*/
-                        userSession.getUser().getLogin();
+                        userSession.getUser().getUsername();
                 query.setParameter(paramName, userLogin);
 
             } else if (CONSTRAINT_PARAM_USER_ID.equals(attrName)) {
@@ -129,10 +129,11 @@ public class StandardPersistenceSecurity implements PersistenceSecurity {
                 query.setParameter(paramName, userId);
 
             } else if (CONSTRAINT_PARAM_USER_GROUP_ID.equals(attrName)) {
-                Object groupId = /*userSession.getSubstitutedUser() != null ?
-                        userSession.getSubstitutedUser().getGroup().getId() :*/
-                        userSession.getUser().getGroup().getId();
-                query.setParameter(paramName, groupId);
+                //todo MG
+//                Object groupId = /*userSession.getSubstitutedUser() != null ?
+//                        userSession.getSubstitutedUser().getGroup().getId() :*/
+//                        userSession.getUser().getGroup().getId();
+//                query.setParameter(paramName, groupId);
 
             } else {
                 Serializable value = userSession.getAttribute(attrName);

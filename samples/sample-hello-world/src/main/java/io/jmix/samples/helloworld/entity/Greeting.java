@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.samples.helloworld;
+package io.jmix.samples.helloworld.entity;
 
 import io.jmix.data.entity.StandardEntity;
 

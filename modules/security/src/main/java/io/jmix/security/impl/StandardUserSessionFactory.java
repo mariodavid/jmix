@@ -69,8 +69,8 @@ public class StandardUserSessionFactory implements UserSessionFactory {
 
     public StandardUserSessionFactory() {
         User user = new User();
-        user.setLogin("system");
-        user.setLoginLowerCase("system");
+        user.setUsername("system");
+        user.setName("system");
         user.setPassword("");
         user.setName("System");
         SystemAuthenticationToken authentication = new SystemAuthenticationToken(user, Collections.emptyList());
@@ -100,38 +100,38 @@ public class StandardUserSessionFactory implements UserSessionFactory {
     }
 
     protected void compilePermissions(StandardUserSession session) {
-        List<Role> roles = session.getUser().getUserRoles().stream()
-                .map(UserRole::getRole)
-                .collect(Collectors.toList());
-
-        boolean superRole = false;
-        for (Role role : roles) {
-            session.addRole(role);
-            if (role.getType() == RoleType.SUPER) {
-                superRole = true;
-            }
-        }
-
-        if (!superRole) { // Don't waste memory, as the user with SUPER role has all permissions.
-            roles.stream()
-                    .flatMap(role -> role.getPermissions().stream())
-                    .forEach(permission -> {
-                        PermissionType type = permission.getType();
-                        if (type != null && permission.getValue() != null) {
-                            try {
-                                session.addPermission(type,
-                                        permission.getTarget(), convertToExtendedEntityTarget(permission), permission.getValue());
-                            } catch (Exception ignored) {}
-                        }
-                    });
-
-            defaultPermissionValuesConfig.getDefaultPermissionValues().forEach((target, permission) -> {
-                if (session.getPermissionValue(permission.getType(), permission.getTarget()) == null) {
-                    session.addPermission(permission.getType(), permission.getTarget(),
-                            convertToExtendedEntityTarget(permission), permission.getValue());
-                }
-            });
-        }
+//        List<Role> roles = session.getUser().getUserRoles().stream()
+//                .map(UserRole::getRole)
+//                .collect(Collectors.toList());
+//
+//        boolean superRole = false;
+//        for (Role role : roles) {
+//            session.addRole(role);
+//            if (role.getType() == RoleType.SUPER) {
+//                superRole = true;
+//            }
+//        }
+//
+//        if (!superRole) { // Don't waste memory, as the user with SUPER role has all permissions.
+//            roles.stream()
+//                    .flatMap(role -> role.getPermissions().stream())
+//                    .forEach(permission -> {
+//                        PermissionType type = permission.getType();
+//                        if (type != null && permission.getValue() != null) {
+//                            try {
+//                                session.addPermission(type,
+//                                        permission.getTarget(), convertToExtendedEntityTarget(permission), permission.getValue());
+//                            } catch (Exception ignored) {}
+//                        }
+//                    });
+//
+//            defaultPermissionValuesConfig.getDefaultPermissionValues().forEach((target, permission) -> {
+//                if (session.getPermissionValue(permission.getType(), permission.getTarget()) == null) {
+//                    session.addPermission(permission.getType(), permission.getTarget(),
+//                            convertToExtendedEntityTarget(permission), permission.getValue());
+//                }
+//            });
+//        }
     }
 
     @Nullable
@@ -152,51 +152,51 @@ public class StandardUserSessionFactory implements UserSessionFactory {
     }
 
     protected void compileConstraints(StandardUserSession session) {
-        Group group = session.getUser().getGroup();
-        if (group == null)
-            return;
-
-        TypedQuery<Constraint> q = entityManager.createQuery("select c from sec_GroupHierarchy h join h.parent.constraints c " +
-                "where h.group.id = ?1", Constraint.class);
-        q.setParameter(1, group.getId());
-        List<Constraint> constraints = q.getResultList();
-        List<Constraint> list = new ArrayList<>(constraints);
-        list.addAll(group.getConstraints());
-        for (Constraint constraint : list) {
-            if (Boolean.TRUE.equals(constraint.getIsActive())) {
-                session.addConstraint(constraint);
-            }
-        }
+//        Group group = session.getUser().getGroup();
+//        if (group == null)
+//            return;
+//
+//        TypedQuery<Constraint> q = entityManager.createQuery("select c from sec_GroupHierarchy h join h.parent.constraints c " +
+//                "where h.group.id = ?1", Constraint.class);
+//        q.setParameter(1, group.getId());
+//        List<Constraint> constraints = q.getResultList();
+//        List<Constraint> list = new ArrayList<>(constraints);
+//        list.addAll(group.getConstraints());
+//        for (Constraint constraint : list) {
+//            if (Boolean.TRUE.equals(constraint.getIsActive())) {
+//                session.addConstraint(constraint);
+//            }
+//        }
     }
 
     protected void compileSessionAttributes(StandardUserSession session) {
-        Group group = session.getUser().getGroup();
-        if (group == null)
-            return;
-
-        List<SessionAttribute> list = new ArrayList<>(group.getSessionAttributes());
-
-        TypedQuery<SessionAttribute> q = entityManager.createQuery("select a from sec_GroupHierarchy h join h.parent.sessionAttributes a " +
-                "where h.group.id = ?1 order by h.level desc", SessionAttribute.class);
-        q.setParameter(1, group.getId());
-        List<SessionAttribute> attributes = q.getResultList();
-        list.addAll(attributes);
-
-        for (SessionAttribute attribute : list) {
-            Datatype datatype = datatypeRegistry.get(attribute.getDatatype());
-            try {
-                if (session.getAttributeNames().contains(attribute.getName())) {
-                    log.warn("Duplicate definition of '{}' session attribute in the group hierarchy", attribute.getName());
-                }
-                Serializable value = (Serializable) datatype.parse(attribute.getStringValue());
-                if (value != null)
-                    session.setAttribute(attribute.getName(), value);
-                else
-                    session.removeAttribute(attribute.getName());
-            } catch (ParseException e) {
-                throw new RuntimeException("Unable to set session attribute " + attribute.getName(), e);
-            }
-        }
+//        Group group = session.getUser().getGroup();
+//        if (group == null)
+//            return;
+//
+//        List<SessionAttribute> list = new ArrayList<>(group.getSessionAttributes());
+//
+//        TypedQuery<SessionAttribute> q = entityManager.createQuery("select a from sec_GroupHierarchy h join h.parent.sessionAttributes a " +
+//                "where h.group.id = ?1 order by h.level desc", SessionAttribute.class);
+//        q.setParameter(1, group.getId());
+//        List<SessionAttribute> attributes = q.getResultList();
+//        list.addAll(attributes);
+//
+//        for (SessionAttribute attribute : list) {
+//            Datatype datatype = datatypeRegistry.get(attribute.getDatatype());
+//            try {
+//                if (session.getAttributeNames().contains(attribute.getName())) {
+//                    log.warn("Duplicate definition of '{}' session attribute in the group hierarchy", attribute.getName());
+//                }
+//                Serializable value = (Serializable) datatype.parse(attribute.getStringValue());
+//                if (value != null)
+//                    session.setAttribute(attribute.getName(), value);
+//                else
+//                    session.removeAttribute(attribute.getName());
+//            } catch (ParseException e) {
+//                throw new RuntimeException("Unable to set session attribute " + attribute.getName(), e);
+//            }
+//        }
     }
 
     private static class BuiltInSystemUserSession extends StandardUserSession implements SystemUserSession {

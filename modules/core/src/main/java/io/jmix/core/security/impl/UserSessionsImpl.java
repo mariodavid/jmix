@@ -321,8 +321,8 @@ public class UserSessionsImpl implements UserSessions {
     protected UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
         UserSessionEntity use = metadata.create(UserSessionEntity.class);
         use.setId(session.getId());
-        use.setLogin(session.getUser().getLoginLowerCase());
-        use.setUserName(session.getUser().getName());
+        use.setLogin(session.getUser().getUsername());
+        use.setUserName(session.getUser().getUsername());
         use.setAddress(session.getClientDetails().getAddress());
         use.setClientInfo(session.getClientDetails().getInfo());
         use.setSince(new Date(since));

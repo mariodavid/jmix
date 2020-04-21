@@ -504,8 +504,8 @@ public class EntityLogImpl implements EntityLog, OrmLifecycleListener {
 
 
     protected String findUserLogin() {
-        UUID currentUserId = auditInfoProvider.getCurrentUserId();
-        if (currentUserId != null)
+        String currentUserKey = auditInfoProvider.getCurrentUserKey();
+        if (currentUserKey != null)
             return auditInfoProvider.getCurrentUserLogin();
         else {
             String login = properties.getSystemUserLogin();

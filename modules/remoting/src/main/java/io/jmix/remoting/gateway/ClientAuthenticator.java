@@ -16,7 +16,6 @@
 
 package io.jmix.remoting.gateway;
 
-import com.google.common.base.Strings;
 import io.jmix.core.impl.logging.LogMdc;
 import io.jmix.core.security.*;
 import io.jmix.core.security.impl.SystemSessions;
@@ -49,30 +48,32 @@ public class ClientAuthenticator extends AuthenticatorSupport implements Authent
 
     @Override
     public UserSession begin(@Nullable String login) {
-        UserSession userSession;
-
-        if (!Strings.isNullOrEmpty(login)) {
-            log.trace("Authenticating as {}", login);
-
-            userSession = getFromCacheOrCreate(login, () -> {
-                String clientToken = clientTokenSupport.current();
-                if (clientToken != null) {
-                    return serverAuthenticator.authenticateByClientToken(login, clientToken);
-                } else {
-                    throw new IllegalStateException("Property jmix.remoting.clientToken is not set");
-                }
-            });
-
-        } else {
-            log.trace("Authenticating as system");
-            userSession = userSessionFactory.getSystemSession();
-        }
-
-        pushAuthentication(SecurityContextHolder.getContext().getAuthentication());
-
-        CurrentUserSession.set(userSession);
-
-        return userSession;
+//        UserSession userSession;
+//
+//        if (!Strings.isNullOrEmpty(login)) {
+//            log.trace("Authenticating as {}", login);
+//
+//            userSession = getFromCacheOrCreate(login, () -> {
+//                String clientToken = clientTokenSupport.current();
+//                if (clientToken != null) {
+//                    return serverAuthenticator.authenticateByClientToken(login, clientToken);
+//                } else {
+//                    throw new IllegalStateException("Property jmix.remoting.clientToken is not set");
+//                }
+//            });
+//
+//        } else {
+//            log.trace("Authenticating as system");
+//            userSession = userSessionFactory.getSystemSession();
+//        }
+//
+//        pushAuthentication(SecurityContextHolder.getContext().getAuthentication());
+//
+//        CurrentUserSession.set(userSession);
+//
+//        return userSession;
+        //todo MG
+        return null;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ClientAuthenticator extends AuthenticatorSupport implements Authent
     @Override
     public void end() {
         log.trace("Set previous Authentication");
-        Authentication previous = popAuthentication();
+        Authentication previous = pollAuthentication();
         SecurityContextHolder.getContext().setAuthentication(previous);
         LogMdc.setup(previous);
     }
