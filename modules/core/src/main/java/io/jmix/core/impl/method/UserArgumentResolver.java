@@ -17,7 +17,7 @@
 package io.jmix.core.impl.method;
 
 import io.jmix.core.entity.BaseUser;
-import io.jmix.core.security.UserSessionSource;
+import io.jmix.core.security.CurrentAuthentication;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ public class UserArgumentResolver extends TypedArgumentResolver<BaseUser> {
     public static final String NAME = "jmix_UserArgumentResolver";
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected CurrentAuthentication currentAuthentication;
 
     public UserArgumentResolver() {
         super(BaseUser.class);
@@ -40,10 +40,8 @@ public class UserArgumentResolver extends TypedArgumentResolver<BaseUser> {
 
     @Override
     public BaseUser resolveArgument(MethodParameter parameter) {
-        if (userSessionSource.checkCurrentUserSession()) {
-            return userSessionSource.getUserSession().getUser();
-        } else {
-            return null;
-        }
+        return currentAuthentication.isSet() ?
+                currentAuthentication.getUser() :
+                null;
     }
 }

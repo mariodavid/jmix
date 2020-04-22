@@ -44,7 +44,7 @@ import io.jmix.core.metamodel.datatypes.Datatypes;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.security.UserSession;
-import io.jmix.core.security.UserSessionSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import io.jmix.ui.UiComponents;
 import io.jmix.ui.components.*;
 import io.jmix.ui.components.data.ValueConversionException;

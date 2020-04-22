@@ -20,7 +20,8 @@ import com.haulmont.cuba.JmixCubaConfiguration;
 import com.haulmont.cuba.core.model.common.UserEntityListener;
 import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.core.Stores;
-import io.jmix.core.security.UserSessionSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.data.impl.JmixEntityManagerFactoryBean;
 import io.jmix.data.impl.JmixTransactionManager;
@@ -71,6 +72,11 @@ public class CoreTestConfiguration {
     @Bean(name = UserSessionSource.NAME)
     UserSessionSource userSessionSource() {
         return new TestUserSessionSource();
+    }
+
+    @Bean(name = CurrentAuthentication.NAME)
+    CurrentAuthentication currentAuthentication() {
+        return new TestCurrentAuthentication();
     }
 
     @Bean(name = JpqlSortExpressionProvider.NAME)

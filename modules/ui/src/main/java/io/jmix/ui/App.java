@@ -24,7 +24,6 @@ import com.vaadin.ui.Window;
 import io.jmix.core.*;
 import io.jmix.core.security.LoginException;
 import io.jmix.core.security.UserSession;
-import io.jmix.core.security.UserSessionSource;
 import io.jmix.ui.actions.Action;
 import io.jmix.ui.actions.BaseAction;
 import io.jmix.ui.actions.DialogAction;
@@ -93,8 +92,6 @@ public abstract class App {
     protected WindowConfig windowConfig;
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
-    @Inject
-    protected UserSessionSource userSessionSource;
     @Inject
     protected MessageTools messageTools;
     /*@Inject

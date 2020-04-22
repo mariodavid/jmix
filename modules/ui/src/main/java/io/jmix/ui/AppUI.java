@@ -27,7 +27,10 @@ import io.jmix.core.AppBeans;
 import io.jmix.core.BeanLocator;
 import io.jmix.core.Events;
 import io.jmix.core.Messages;
-import io.jmix.core.security.*;
+import io.jmix.core.security.CurrentAuthentication;
+import io.jmix.core.security.LoginException;
+import io.jmix.core.security.NoUserSessionException;
+import io.jmix.core.security.UserSession;
 import io.jmix.ui.components.RootWindow;
 import io.jmix.ui.events.AppInitializedEvent;
 import io.jmix.ui.events.SessionHeartbeatEvent;
@@ -80,9 +83,6 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
 //    protected UserSettingsTools userSettingsTools; todo settings
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
-
-    @Inject
-    protected UserSessionSource userSessionSource;
 
     @Inject
     protected CurrentAuthentication currentAuthentication;
@@ -367,7 +367,7 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
     }
 
     public boolean hasAuthenticatedSession() {
-        return currentAuthentication.isAuthenticated();
+        return currentAuthentication.isSet();
     }
 
     protected void publishAppInitializedEvent(App app) {
@@ -669,9 +669,9 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
     }
 
     protected void updateUiTheme() {
-        UserSession userSession = userSessionSource.getUserSession();
-
-        if (userSession.isAuthenticated()) {
+//        UserSession userSession = userSessionSource.getUserSession();
+//
+//        if (userSession.isAuthenticated()) {
             // load theme from user settings
             // todo settings
             /*String themeName = userSettingsTools.loadAppWindowTheme();
@@ -684,7 +684,7 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
                     setTheme(themeName);
                 }
             }*/
-        }
+//        }
     }
 
     public JmixFileDownloader getFileDownloader() {

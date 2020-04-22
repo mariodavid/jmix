@@ -47,8 +47,7 @@ public class CurrentAuthenticationImpl implements CurrentAuthentication {
                 throw new RuntimeException("Authentication principal must be a user");
             }
         }
-        //todo MG not null?
-        return null;
+        throw new IllegalStateException("Authentication is not set");
     }
 
     @Override
@@ -58,19 +57,23 @@ public class CurrentAuthenticationImpl implements CurrentAuthentication {
             if (authentication instanceof UserAuthentication) {
                 return ((UserAuthentication) authentication).getLocale();
             }
+            return Locale.getDefault();
         }
-        return Locale.getDefault();
+        throw new IllegalStateException("Authentication is not set");
     }
 
     @Override
     public TimeZone getTimeZone() {
-        //todo MG
-        return TimeZone.getDefault();
+        Authentication authentication = getAuthentication();
+        if (authentication != null) {
+            //todo MG
+            return TimeZone.getDefault();
+        }
+        throw new IllegalStateException("Authentication is not set");
     }
 
     @Override
-    public boolean isAuthenticated() {
-        Authentication authentication = getAuthentication();
-        return authentication != null && authentication.isAuthenticated();
+    public boolean isSet() {
+        return getAuthentication() != null;
     }
 }

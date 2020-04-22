@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package io.jmix.core.security.impl;
+package com.haulmont.cuba.core.global.impl;
 
+import com.haulmont.cuba.core.global.UserSessionSource;
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

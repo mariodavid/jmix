@@ -30,7 +30,6 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.security.*;
 import io.jmix.data.RowLevelSecurityException;
-import io.jmix.security.entity.Permission;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.runtime.MethodClosure;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public class StandardSecurity implements Security {
     private static final Logger log = LoggerFactory.getLogger(StandardSecurity.class);
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected CurrentAuthentication currentAuthentication;
 
     @Inject
     protected Metadata metadata;
@@ -198,7 +197,8 @@ public class StandardSecurity implements Security {
         Map<String, Object> context = new HashMap<>();
         context.put("__entity__", entity);
         context.put("parse", new MethodClosure(this, "parseValue"));
-        context.put("userSession", userSessionSource.getUserSession());
+        //todo MG
+//        context.put("userSession", currentAuthentication.getUserSession());
         fillGroovyConstraintsContext(context);
         ScriptEngine engine = scriptEngineManager.getEngineByName("groovy");
         for (Map.Entry<String, Object> entry : context.entrySet()) {

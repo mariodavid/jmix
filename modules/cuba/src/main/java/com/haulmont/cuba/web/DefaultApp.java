@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.jmix.ui;
+package com.haulmont.cuba.web;
 
 import com.google.common.base.Strings;
 import com.vaadin.server.*;
@@ -23,20 +23,26 @@ import io.jmix.core.Messages;
 import io.jmix.core.security.AnonymousUserCredentials;
 import io.jmix.core.security.LoginException;
 import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import io.jmix.ui.App;
+import io.jmix.ui.AppUI;
+import io.jmix.ui.Connection;
+import io.jmix.ui.Notifications;
 import io.jmix.ui.events.AppLoggedInEvent;
 import io.jmix.ui.events.AppLoggedOutEvent;
 import io.jmix.ui.events.AppStartedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Locale;
 import java.util.Objects;
 
+//todo remove class
 /**
  * Default {@link App} implementation that shows {@link AppLoginWindow} on start. Single instance of App is bound to
  * single HTTP session.
@@ -46,6 +52,9 @@ import java.util.Objects;
 public class DefaultApp extends App {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultApp.class);
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     public DefaultApp() {
     }

@@ -111,8 +111,6 @@ public abstract class AuthenticatorSupport {
                 } else {
                     return authentication;
                 }
-            } else {
-                log.warn("Stack is empty. Check correctness of begin/end invocations.");
             }
         } else {
             log.warn("Stack does not exist. Check correctness of begin/end invocations.");

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package io.jmix.core.security;
+package com.haulmont.cuba.core.global;
+
+import io.jmix.core.security.CurrentAuthentication;
+import io.jmix.core.security.NoUserSessionException;
+import io.jmix.core.security.UserSession;
 
 import java.util.Locale;
 import java.util.UUID;

@@ -33,11 +33,29 @@ public interface CurrentAuthentication {
     @Nullable
     Authentication getAuthentication();
 
+    /**
+     * @return currently authenticated user
+     * @throws RuntimeException if Authentication is not set to {@link org.springframework.security.core.context.SecurityContext}
+     *                          or user information cannot be extracted from current authentication
+     */
     BaseUser getUser();
 
+    /**
+     * @return locale of the current authentication or default locale if current authentication doesn't contain locale
+     * information
+     * @throws RuntimeException if Authentication is not set to {@link org.springframework.security.core.context.SecurityContext}
+     */
     Locale getLocale();
 
+    /**
+     * @return time zone of the current authentication or default time zone if current authentication doesn't contain
+     * time zone information
+     * @throws RuntimeException if Authentication is not set to {@link org.springframework.security.core.context.SecurityContext}
+     */
     TimeZone getTimeZone();
 
-    boolean isAuthenticated();
+    /**
+     * @return true if authentication is set to {@link org.springframework.security.core.context.SecurityContext}
+     */
+    boolean isSet();
 }

@@ -19,7 +19,7 @@ package io.jmix.core.security;
 import io.jmix.core.entity.BaseUser;
 
 /**
- * We cannot user {@link UserRepository} in {@link UserSessionSource} because of circular dependency. When
+ * We cannot use {@link UserRepository} in {@code UserSessionSource} because of circular dependency. When
  * UserSessionSource is moved to cuba module, the ServiceUserRepository must be removed
  */
 //todo MG remove when it is not required by UserSessionFactory

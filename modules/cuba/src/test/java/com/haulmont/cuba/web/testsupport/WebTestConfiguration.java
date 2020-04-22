@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.testsupport;
 
 import com.haulmont.cuba.JmixCubaConfiguration;
 import com.haulmont.cuba.core.model.common.UserEntityListener;
+import com.haulmont.cuba.core.testsupport.TestCurrentAuthentication;
 import com.haulmont.cuba.core.testsupport.TestEventsListener;
 import com.haulmont.cuba.core.testsupport.TestJpqlSortExpressionProvider;
 import com.haulmont.cuba.core.testsupport.TestUserSessionSource;
@@ -26,7 +27,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WebBrowser;
 import io.jmix.core.metamodel.datatypes.FormatStrings;
 import io.jmix.core.metamodel.datatypes.FormatStringsRegistry;
-import io.jmix.core.security.UserSessionSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.data.persistence.JpqlSortExpressionProvider;
 import io.jmix.security.JmixSecurityConfiguration;
 import io.jmix.ui.UiComponents;
@@ -98,6 +100,11 @@ public class WebTestConfiguration {
     @Bean
     TestEventsListener testEventsListener() {
         return new TestEventsListener();
+    }
+
+    @Bean(name = CurrentAuthentication.NAME)
+    CurrentAuthentication currentAuthentication() {
+        return new TestCurrentAuthentication();
     }
 
     protected VaadinSession createTestVaadinSession() {
