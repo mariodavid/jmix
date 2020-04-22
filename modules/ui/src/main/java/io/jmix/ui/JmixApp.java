@@ -17,15 +17,19 @@
 package io.jmix.ui;
 
 import com.vaadin.spring.annotation.VaadinSessionScope;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.security.CurrentAuthenticationHelper;
 import io.jmix.core.security.LoginException;
+import io.jmix.core.security.UserRepository;
 import io.jmix.ui.util.OperationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Collections;
 
 @Component(App.NAME)
@@ -33,6 +37,12 @@ import java.util.Collections;
 public class JmixApp extends App {
 
     private Logger log = LoggerFactory.getLogger(JmixApp.class);
+
+    @Inject
+    protected UserRepository userRepository;
+
+    @Inject
+    protected CoreProperties coreProperties;
 
     @Override
     public void loginOnStart() throws LoginException {
@@ -55,8 +65,12 @@ public class JmixApp extends App {
     @Override
     public OperationResult logout() {
         removeAllWindows(Collections.singletonList(AppUI.getCurrent()));
-        //todo MG authenticate anonymously instead of null?
-        CurrentAuthenticationHelper.set(null);
+        //todo MG authorities
+        AnonymousAuthenticationToken anonymousToken = new AnonymousAuthenticationToken(
+                coreProperties.getAnonymousAuthenticationTokenKey(),
+                userRepository.getAnonymousUser(),
+                AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+        CurrentAuthenticationHelper.set(anonymousToken);
         initializeUi();
         return OperationResult.success();
     }

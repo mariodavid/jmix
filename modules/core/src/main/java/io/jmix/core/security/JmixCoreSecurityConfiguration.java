@@ -16,6 +16,7 @@
 
 package io.jmix.core.security;
 
+import io.jmix.core.CoreProperties;
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.impl.SystemAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,9 @@ public class JmixCoreSecurityConfiguration extends WebSecurityConfigurerAdapter 
     @Inject
     protected UserRepository userRepository;
 
+    @Inject
+    private CoreProperties coreProperties;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(new SystemAuthenticationProvider(userRepository));
@@ -64,6 +68,7 @@ public class JmixCoreSecurityConfiguration extends WebSecurityConfigurerAdapter 
                 .anonymous(anonymousConfigurer -> {
                     BaseUser anonymousUser = userRepository.getAnonymousUser();
                     anonymousConfigurer.principal(anonymousUser);
+                    anonymousConfigurer.key(coreProperties.getAnonymousAuthenticationTokenKey());
                 })
                 .csrf().disable();
     }
