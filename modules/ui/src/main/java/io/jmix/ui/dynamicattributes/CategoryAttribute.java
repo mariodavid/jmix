@@ -19,4 +19,6 @@ package io.jmix.ui.dynamicattributes;
 // todo dummy component to observe the surface of dynamic attributes usage
 
 public interface CategoryAttribute {
+
+    Boolean getIsCollection();
 }

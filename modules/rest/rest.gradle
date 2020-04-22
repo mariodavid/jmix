@@ -1,0 +1,89 @@
+/*
+ * Copyright 2019 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'java-library'
+apply plugin: 'io.jmix'
+
+dependencies {
+    api platform(project(':jmix-platform'))
+
+    api project(':modules:core')
+    api project(':modules:data')
+
+    implementation 'commons-fileupload:commons-fileupload:1.4'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
+    implementation 'io.swagger:swagger-models:1.5.21'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.2.6.RELEASE'
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.springframework:spring-context-support'
+    implementation ('org.springframework.ldap:spring-ldap-core') {
+        // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        exclude(group: 'org.slf4j', module: 'jcl-over-slf4j')
+    }
+
+    testImplementation 'org.springframework:spring-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testImplementation 'org.spockframework:spock-core'
+    testImplementation 'org.spockframework:spock-spring'
+
+    testImplementation 'org.apache.commons:commons-dbcp2'
+
+    testRuntimeOnly 'org.slf4j:slf4j-simple'
+    testRuntimeOnly 'org.hsqldb:hsqldb'
+
+    testImplementation 'org.apache.httpcomponents:httpclient'
+
+    // New http client needed for running selenium tests
+    testImplementation('org.apache.httpcomponents:httpcore') {
+        exclude(group: 'org.codehaus.groovy', module: 'groovy-all')
+    }
+
+    testImplementation 'org.jmockit:jmockit:1.39'
+}
+
+jar {
+    archivesBaseName = 'jmix-rest'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+entitiesEnhancing {
+    enabled = true
+}
+
+publishing {
+    publications {
+        javaMaven(MavenPublication) {
+            groupId = 'io.jmix.rest'
+            artifactId = jar.archiveBaseName
+
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}

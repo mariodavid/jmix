@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<views xmlns="http://schemas.haulmont.com/jmix/views.xsd">
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          extends="_local"
+          name="carBrowse">
+        <property name="model"
+                  view="_local"/>
+        <property name="colour"
+                  view="_local"/>
+        <property name="seller"
+                  view="_minimal"/>
+        <property name="currency"
+                  view="_minimal"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          extends="_minimal"
+          name="car-with-colour">
+        <property name="colour"
+                  view="_local"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          name="car-without-vin">
+        <property name="colour"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Driver"
+          name="driverWithVersionAndCreateTs">
+        <property name="version"/>
+        <property name="createTs"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Driver"
+          name="driverWithStatusAndName">
+        <property name="status"/>
+        <property name="name"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.CarToken" name="carTokenEdit" extends="_local">
+        <property name="garageToken" view="_local"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Repair"
+          name="repairEdit"
+          extends="_local">
+        <property name="car" view="_minimal"/>
+        <property name="carTokens" view="carTokenEdit"/>
+        <!--<property name="db1Customer"/>-->
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          extends="_local"
+          name="carEdit">
+        <property name="model"
+                  view="_local"/>
+        <property name="colour"
+                  view="_minimal"/>
+        <property name="driverAllocations"
+                  view="carEdit"/>
+        <property name="repairs"
+                  view="repairEdit"/>
+        <property name="seller"
+                  view="_minimal"/>
+        <property name="currency"
+                  view="_minimal"/>
+        <property name="details"
+                  view="carDetailsEdit"/>
+        <property name="carDocumentation"
+                  view="_minimal"/>
+    </view>
+
+    <view entity="ref$CarDetails" name="carDetailsEdit" extends="_local">
+        <property name="car"/>
+        <property name="items"
+                  view="_local"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          extends="_local"
+          name="carWithInsuranceCases">
+        <property name="insuranceCases"
+                  view="_local"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          name="carWithTwoLevelComposition">
+        <property name="createTs"/>
+        <property name="repairs"
+                  view="_local"/>
+        <property name="version"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          name="carWithModel">
+        <property name="updateTs"/>
+        <property name="model"
+                  view="_local"/>
+        <property name="version"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Car"
+          name="carWithTransform">
+        <property name="version"/>
+        <property name="model"
+                  view="_local"/>
+        <property name="updateTs"/>
+        <property name="repairs"/>
+        <property name="createTs"/>
+        <property name="vin"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Plant"
+          extends="_local"
+          name="plantWithModels">
+        <property name="models" view="_local"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Address"
+          extends="_local"
+          name="addressEdit">
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.DriverAllocation"
+          name="carEdit">
+        <property name="driver"
+                  view="_minimal"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Doc"
+          extends="_local"
+          name="browse">
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Colour" name="testColour">
+        <property name="description"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Currency"
+          name="currencyWithName">
+        <property name="name"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Currency"
+          name="currencyWithCodeAndName">
+        <property name="name"/>
+        <property name="code"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.driver.Repair"
+          name="repairWithDescription">
+        <property name="description"/>
+        <property name="date"/>
+    </view>
+
+    <view class="io.jmix.samples.rest.entity.sec.User"
+          name="user-with-group"
+          extends="_local">
+        <property name="group" view="_local"/>
+    </view>
+</views>
