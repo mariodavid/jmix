@@ -18,7 +18,7 @@ package io.jmix.ui;
 
 import com.vaadin.spring.annotation.VaadinSessionScope;
 import io.jmix.core.CoreProperties;
-import io.jmix.core.security.CurrentAuthenticationHelper;
+import io.jmix.core.security.SecurityContextHelper;
 import io.jmix.core.security.LoginException;
 import io.jmix.core.security.UserRepository;
 import io.jmix.ui.util.OperationResult;
@@ -70,7 +70,7 @@ public class JmixApp extends App {
                 coreProperties.getAnonymousAuthenticationTokenKey(),
                 userRepository.getAnonymousUser(),
                 AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
-        CurrentAuthenticationHelper.set(anonymousToken);
+        SecurityContextHelper.setAuthentication(anonymousToken);
         initializeUi();
         return OperationResult.success();
     }
@@ -83,7 +83,7 @@ public class JmixApp extends App {
     }
 
     private boolean isAnonymousAuthentication() {
-        Authentication authentication = CurrentAuthenticationHelper.get();
+        Authentication authentication = SecurityContextHelper.getAuthentication();
         return authentication == null ||
                 authentication instanceof AnonymousAuthenticationToken;
     }

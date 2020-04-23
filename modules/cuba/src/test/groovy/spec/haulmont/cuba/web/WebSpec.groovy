@@ -18,6 +18,7 @@ package spec.haulmont.cuba.web
 
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.web.DefaultApp
+import com.haulmont.cuba.web.testsupport.TestSupport
 import com.haulmont.cuba.web.testsupport.WebTest
 
 import com.haulmont.cuba.web.testsupport.ui.TestConnectorTracker
@@ -28,7 +29,9 @@ import com.vaadin.server.WebBrowser
 import com.vaadin.ui.UI
 import io.jmix.core.*
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory
+import io.jmix.core.security.SecurityContextHelper
 import io.jmix.core.security.LoginPasswordCredentials
+import io.jmix.core.security.SystemAuthenticationToken
 import io.jmix.core.security.UserSession
 import com.haulmont.cuba.core.global.UserSessionSource
 import com.haulmont.cuba.core.model.common.User
@@ -105,6 +108,8 @@ class WebSpec extends Specification {
 
         def session = new UserSession()
         session.setAuthenticated(false)
+
+        TestSupport.setAuthenticationToSecurityContext()
 
         def injectFactory = applicationContext.getAutowireCapableBeanFactory()
 

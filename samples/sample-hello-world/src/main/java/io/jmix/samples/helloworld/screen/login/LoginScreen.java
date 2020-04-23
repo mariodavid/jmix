@@ -19,7 +19,7 @@ package io.jmix.samples.helloworld.screen.login;
 
 import io.jmix.core.Messages;
 import io.jmix.core.security.ClientDetails;
-import io.jmix.core.security.CurrentAuthenticationHelper;
+import io.jmix.core.security.SecurityContextHelper;
 import io.jmix.core.security.LoginException;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.ScreenBuilders;
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -111,7 +110,7 @@ public class LoginScreen extends Screen {
                     .build();
             authenticationToken.setDetails(clientDetails);
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            CurrentAuthenticationHelper.set(authentication);
+            SecurityContextHelper.setAuthentication(authentication);
 
             String mainScreenId = uiProperties.getMainScreenId();
             screenBuilders.screen(this)

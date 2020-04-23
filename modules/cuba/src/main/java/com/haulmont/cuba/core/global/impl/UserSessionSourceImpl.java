@@ -53,7 +53,7 @@ public class UserSessionSourceImpl implements UserSessionSource {
 
     @Override
     public UserSession getUserSession() throws NoUserSessionException {
-        Authentication authentication = CurrentAuthenticationHelper.get();
+        Authentication authentication = SecurityContextHelper.getAuthentication();
 
         UserSession session = new UserSession();
         if (authentication instanceof UserAuthentication) {

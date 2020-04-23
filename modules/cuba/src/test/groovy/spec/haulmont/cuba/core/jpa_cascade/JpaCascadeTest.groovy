@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.model.jpa_cascade.JpaCascadeItem
 import io.jmix.core.AppBeans
 import io.jmix.core.EntityStates
 import io.jmix.core.Metadata
-import io.jmix.core.security.CurrentAuthenticationHelper
+import io.jmix.core.security.SecurityContextHelper
 import io.jmix.core.security.SystemAuthenticationToken
 import io.jmix.data.impl.EntityListenerManager
 import org.springframework.jdbc.core.JdbcTemplate
@@ -52,7 +52,7 @@ class JpaCascadeTest extends CoreTestSpecification {
         TestJpaCascadeItemListener.messages.clear()
 
         Authentication authentication = authenticationManager.authenticate(new SystemAuthenticationToken(null))
-        CurrentAuthenticationHelper.set(authentication)
+        SecurityContextHelper.setAuthentication(authentication)
     }
 
     void cleanup() {

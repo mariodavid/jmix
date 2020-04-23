@@ -106,7 +106,7 @@ public class AuthenticatorImpl extends AuthenticatorSupport implements Authentic
         }
 
         pushAuthentication(authentication);
-        CurrentAuthenticationHelper.set(authentication);
+        SecurityContextHelper.setAuthentication(authentication);
 
         return authentication;
     }

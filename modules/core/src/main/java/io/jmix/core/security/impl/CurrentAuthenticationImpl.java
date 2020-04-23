@@ -18,7 +18,7 @@ package io.jmix.core.security.impl;
 
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.CurrentAuthentication;
-import io.jmix.core.security.CurrentAuthenticationHelper;
+import io.jmix.core.security.SecurityContextHelper;
 import io.jmix.core.security.UserAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class CurrentAuthenticationImpl implements CurrentAuthentication {
     @Nullable
     @Override
     public Authentication getAuthentication() {
-        return CurrentAuthenticationHelper.get();
+        return SecurityContextHelper.getAuthentication();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CurrentAuthenticationImpl implements CurrentAuthentication {
             if (principal instanceof BaseUser) {
                 return (BaseUser) principal;
             } else {
-                throw new RuntimeException("Authentication principal must be a user");
+                throw new RuntimeException("Authentication principal must be BaseUser");
             }
         }
         throw new IllegalStateException("Authentication is not set");

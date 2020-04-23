@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.messagespack.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.messagespack.nested.MpTestNestedObj;
 import com.haulmont.cuba.core.testsupport.CoreTest;
 import com.haulmont.cuba.core.testsupport.TestAppender;
+import com.haulmont.cuba.core.testsupport.TestSupport;
 import io.jmix.core.AppBeans;
 import io.jmix.core.CoreProperties;
 import io.jmix.core.LocaleResolver;
@@ -50,6 +51,8 @@ public class MessagesTest {
     public MessagesTest() {
         appender = new TestAppender();
         appender.start();
+
+        TestSupport.setAuthenticationToSecurityContext();
 
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = context.getLogger("com.haulmont.cuba.core.global.impl.CubaMessages");
