@@ -19,26 +19,26 @@ package io.jmix.core.app.importexport;
 import io.jmix.core.*;
 import io.jmix.core.app.serialization.EntitySerializationAPI;
 import io.jmix.core.app.serialization.EntitySerializationOption;
-import io.jmix.core.dynamicattributes.CategoryAttributeValue;
-import io.jmix.core.dynamicattributes.DynamicAttributesUtils;
-import io.jmix.core.entity.*;
+import io.jmix.core.entity.EntityValues;
+import io.jmix.core.entity.SecurityState;
+import io.jmix.core.entity.SoftDelete;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.Range;
-import io.jmix.core.validation.CustomValidationException;
+import io.jmix.core.validation.EntityValidationException;
 import io.jmix.core.validation.groups.RestApiChecks;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.Persistence;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.validation.groups.Default;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,8 +48,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
-
-import static java.lang.String.format;
 
 @Component(EntityImportExportAPI.NAME)
 public class EntityImportExport implements EntityImportExportAPI {
@@ -69,12 +67,15 @@ public class EntityImportExport implements EntityImportExportAPI {
     @Inject
     protected MetadataTools metadataTools;
 
-     // todo DynamicAttributesManagerAPI
+    // todo DynamicAttributesManagerAPI
 //    @Inject
 //    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
 //    @Inject
 //    protected PersistenceSecurity persistenceSecurity;
+
+    @Inject
+    protected BeanValidation beanValidation;
 
     @Inject
     protected Stores stores;
@@ -134,15 +135,15 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected Collection<? extends Entity> reloadEntities(Collection<? extends Entity> entities, FetchPlan view) {
         List<Object> ids = entities.stream()
-                .map(Entity::getId)
+                .map(EntityValues::getId)
                 .collect(Collectors.toList());
 
         MetaClass metaClass = metadata.getClass(view.getEntityClass());
-        LoadContext.Query query = LoadContext.createQuery("select e from " + metaClass.getName() + " e where e.id in :ids")
+        LoadContext.Query query = new LoadContext.Query("select e from " + metaClass.getName() + " e where e.id in :ids")
                 .setParameter("ids", ids);
-        LoadContext<? extends Entity> ctx = LoadContext.create(view.getEntityClass())
+        LoadContext<? extends Entity> ctx = new LoadContext(view.getEntityClass())
                 .setQuery(query)
-                .setView(view);
+                .setFetchPlan(view);
 
         return dataManager.loadList(ctx);
     }
@@ -208,8 +209,8 @@ public class EntityImportExport implements EntityImportExportAPI {
     @Override
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate, boolean optimisticLocking) {
         List<ReferenceInfo> referenceInfoList = new ArrayList<>();
-        CommitContext commitContext = new CommitContext();
-        commitContext.setSoftDeletion(false);
+        SaveContext saveContext = new SaveContext();
+        saveContext.setSoftDeletion(false);
 
         //import is performed in two steps. We have to do so, because imported entity may have a reference to
         //the reference that is imported in the same batch.
@@ -219,15 +220,15 @@ public class EntityImportExport implements EntityImportExportAPI {
         for (Entity srcEntity : entities) {
             FetchPlan regularView = buildViewFromImportView(importView);
             //set softDeletion to false because we can import deleted entity, so we'll restore it and update
-            LoadContext<? extends Entity> ctx = LoadContext.create(srcEntity.getClass())
+            LoadContext<? extends Entity> ctx = new LoadContext(srcEntity.getClass())
                     .setSoftDeletion(false)
-                    .setView(regularView)
+                    .setFetchPlan(regularView)
                     .setLoadDynamicAttributes(true)
-                    .setId(srcEntity.getId())
+                    .setId(EntityValues.getId(srcEntity))
                     .setAuthorizationRequired(true);
             Entity dstEntity = dataManager.load(ctx);
 
-            importEntity(srcEntity, dstEntity, importView, regularView, commitContext, referenceInfoList, optimisticLocking);
+            importEntity(srcEntity, dstEntity, importView, regularView, saveContext, referenceInfoList, optimisticLocking);
         }
 
         //2. references to existing entities are processed
@@ -236,10 +237,10 @@ public class EntityImportExport implements EntityImportExportAPI {
         //same instance
         Set<Entity> loadedEntities = new HashSet<>();
         for (ReferenceInfo referenceInfo : referenceInfoList) {
-            processReferenceInfo(referenceInfo, commitContext, loadedEntities);
+            processReferenceInfo(referenceInfo, saveContext, loadedEntities);
         }
 
-        for (Entity commitInstance : commitContext.getCommitInstances()) {
+        for (Entity commitInstance : saveContext.getEntitiesToSave()) {
             if (!entityStates.isNew(commitInstance)) {
                 if (commitInstance instanceof SoftDelete && ((SoftDelete) commitInstance).isDeleted()) {
                     ((SoftDelete) commitInstance).setDeleteTs(null);
@@ -252,20 +253,23 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         if (validate) {
-            commitContext.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE);
-            commitContext.setValidationGroups(Arrays.asList(Default.class, RestApiChecks.class));
-        } else {
-            commitContext.setValidationMode(CommitContext.ValidationMode.NEVER_VALIDATE);
+            Validator validator = beanValidation.getValidator();
+            for (Entity entity : saveContext.getEntitiesToSave()) {
+                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
+                if (!violations.isEmpty()) {
+                    throw new EntityValidationException("Entity validation failed", violations);
+                }
+            }
         }
 
         //we shouldn't remove entities with the softDeletion = false
-        if (!commitContext.getRemoveInstances().isEmpty()) {
-            commitContext.setSoftDeletion(true);
+        if (!saveContext.getEntitiesToRemove().isEmpty()) {
+            saveContext.setSoftDeletion(true);
         }
 
-        commitContext.setAuthorizationRequired(true);
+        saveContext.setAuthorizationRequired(true);
 
-        return dataManager.commit(commitContext);
+        return dataManager.save(saveContext);
     }
 
     /**
@@ -275,7 +279,7 @@ public class EntityImportExport implements EntityImportExportAPI {
      * @param dstEntity         reloaded srcEntity or null if entity doesn't exist in the database
      * @param importView        importView used for importing the entity
      * @param regularView       view that was used for loading dstEntity
-     * @param commitContext     entities that must be commited or deleted will be set to the commitContext
+     * @param saveContext       entities that must be commited or deleted will be set to the saveContext
      * @param referenceInfoList list of referenceInfos for further processing
      * @param optimisticLocking whether the passed entity version should be validated before entity is persisted
      * @return dstEntity that has fields values from the srcEntity
@@ -284,24 +288,25 @@ public class EntityImportExport implements EntityImportExportAPI {
                                   @Nullable Entity dstEntity,
                                   EntityImportView importView,
                                   FetchPlan regularView,
-                                  CommitContext commitContext,
+                                  SaveContext saveContext,
                                   Collection<ReferenceInfo> referenceInfoList,
                                   boolean optimisticLocking) {
         MetaClass metaClass = metadata.getClass(srcEntity);
         boolean createOp = false;
         if (dstEntity == null) {
             dstEntity = metadata.create(metaClass);
-            dstEntity.setValue("id", srcEntity.getId());
+            EntityValues.setValue(dstEntity, "id", EntityValues.getId(srcEntity));
+//            dstEntity.setValue("id", srcEntity.getId());
             createOp = true;
         }
 
         //we must specify a view here because otherwise we may get UnfetchedAttributeException during merge
-        commitContext.addInstanceToCommit(dstEntity, regularView);
+        saveContext.saving(dstEntity, regularView);
 
         SecurityState dstSecurityState = null;
         SecurityState srcSecurityState = null;
-        if (dstEntity instanceof BaseGenericIdEntity && !createOp) {
-            //todo persistenceSecurity
+        //todo persistenceSecurity
+//        if (dstEntity instanceof BaseGenericIdEntity && !createOp) {
 //            String storeName = metadataTools.getStoreName(metadata.getClass(dstEntity));
 //            DataStore dataStore = storeFactory.get(storeName);
 //            if (RdbmsStore.class.equals(AopUtils.getTargetClass(dataStore))) {
@@ -313,7 +318,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 //                persistenceSecurity.restoreSecurityState(dstEntity);
 //                dstSecurityState = BaseEntityInternalAccess.getSecurityState(dstEntity);
 //            }
-        }
+//        }
 
         for (EntityImportViewProperty importViewProperty : importView.getProperties()) {
             String propertyName = importViewProperty.getName();
@@ -327,74 +332,82 @@ public class EntityImportExport implements EntityImportExportAPI {
 //            }
             if (metaProperty.getRange().isDatatype()) {
                 if (!"version".equals(metaProperty.getName())) {
-                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
-                } else if (optimisticLocking){
-                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
+                    EntityValues.setValue(dstEntity, propertyName, EntityValues.getValue(srcEntity, propertyName));
+//                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
+                } else if (optimisticLocking) {
+                    EntityValues.setValue(dstEntity, propertyName, EntityValues.getValue(srcEntity, propertyName));
+//                    dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
                 }
             } else if (metaProperty.getRange().isEnum()) {
-                dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
+                EntityValues.setValue(dstEntity, propertyName, EntityValues.getValue(srcEntity, propertyName));
+//                dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
             } else if (metaProperty.getRange().isClass()) {
                 FetchPlan regularPropertyView = regularView.getProperty(propertyName) != null ? regularView.getProperty(propertyName).getFetchPlan() : null;
                 if (metadataTools.isEmbedded(metaProperty)) {
                     if (importViewProperty.getView() != null) {
                         Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, createOp, importViewProperty, regularPropertyView,
-                                commitContext, referenceInfoList, optimisticLocking);
-                        dstEntity.setValue(propertyName, embeddedEntity);
+                                saveContext, referenceInfoList, optimisticLocking);
+                        EntityValues.setValue(dstEntity, propertyName, embeddedEntity);
+//                        dstEntity.setValue(propertyName, embeddedEntity);
                     }
                 } else {
                     switch (metaProperty.getRange().getCardinality()) {
                         case MANY_TO_MANY:
                             importManyToManyCollectionAttribute(srcEntity, dstEntity, srcSecurityState,
-                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
+                                    importViewProperty, regularPropertyView, saveContext, referenceInfoList, optimisticLocking);
                             break;
                         case ONE_TO_MANY:
                             importOneToManyCollectionAttribute(srcEntity, dstEntity, srcSecurityState,
-                                    importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
+                                    importViewProperty, regularPropertyView, saveContext, referenceInfoList, optimisticLocking);
                             break;
                         default:
-                            importReference(srcEntity, dstEntity, importViewProperty, regularPropertyView, commitContext, referenceInfoList, optimisticLocking);
+                            importReference(srcEntity, dstEntity, importViewProperty, regularPropertyView, saveContext, referenceInfoList, optimisticLocking);
                     }
                 }
             }
         }
-
-        if (entityHasDynamicAttributes(srcEntity)) {
-            if (entityStates.isNew(dstEntity) && ((BaseGenericIdEntity) dstEntity).getDynamicAttributes() == null) {
-                ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(new HashMap<>());
-            }
-            Map<String, CategoryAttributeValue> srcDynamicAttributes = ((BaseGenericIdEntity) srcEntity).getDynamicAttributes();
-            for (Map.Entry<String, CategoryAttributeValue> entry : srcDynamicAttributes.entrySet()) {
-                String dynamicAttributeCode = entry.getKey();
-                CategoryAttributeValue srcDynamicAttribute = entry.getValue();
-                dstEntity.setValue(DynamicAttributesUtils.encodeAttributeCode(dynamicAttributeCode), srcDynamicAttribute.getValue());
-            }
-        }
+        //todo dynamic attribute
+//        if (entityHasDynamicAttributes(srcEntity)) {
+//            if (entityStates.isNew(dstEntity) && ((BaseGenericIdEntity) dstEntity).getDynamicAttributes() == null) {
+//                ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(new HashMap<>());
+//            }
+//            Map<String, CategoryAttributeValue> srcDynamicAttributes = ((BaseGenericIdEntity) srcEntity).getDynamicAttributes();
+//            for (Map.Entry<String, CategoryAttributeValue> entry : srcDynamicAttributes.entrySet()) {
+//                String dynamicAttributeCode = entry.getKey();
+//                CategoryAttributeValue srcDynamicAttribute = entry.getValue();
+//                EntityValues.setValue(dstEntity, DynamicAttributesUtils.encodeAttributeCode(dynamicAttributeCode), srcDynamicAttribute.getValue());
+////                dstEntity.setValue(DynamicAttributesUtils.encodeAttributeCode(dynamicAttributeCode), srcDynamicAttribute.getValue());
+//            }
+//        }
 
         return dstEntity;
     }
-
-    private boolean entityHasDynamicAttributes(Entity entity) {
-        return entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
-    }
+    //todo dynamic attribute
+//    private boolean entityHasDynamicAttributes(Entity entity) {
+//        return entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
+//    }
 
     protected void importReference(Entity srcEntity,
                                    Entity dstEntity,
                                    EntityImportViewProperty importViewProperty,
                                    FetchPlan regularView,
-                                   CommitContext commitContext,
+                                   SaveContext saveContext,
                                    Collection<ReferenceInfo> referenceInfoList,
                                    boolean optimisticLocking) {
-        Entity srcPropertyValue = srcEntity.getValue(importViewProperty.getName());
-        Entity dstPropertyValue = dstEntity.getValue(importViewProperty.getName());
+        Entity srcPropertyValue = EntityValues.getValue(srcEntity, importViewProperty.getName());
+//        Entity srcPropertyValue = srcEntity.getValue(importViewProperty.getName());
+        Entity dstPropertyValue = EntityValues.getValue(dstEntity, importViewProperty.getName());
+//        Entity dstPropertyValue = dstEntity.getValue(importViewProperty.getName());
         if (importViewProperty.getView() == null) {
             ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, null, importViewProperty, srcPropertyValue, dstPropertyValue);
             referenceInfoList.add(referenceInfo);
         } else {
             dstPropertyValue = srcPropertyValue != null ?
-                    importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList,
+                    importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, saveContext, referenceInfoList,
                             optimisticLocking) :
                     null;
-            dstEntity.setValue(importViewProperty.getName(), dstPropertyValue);
+            EntityValues.setValue(dstEntity, importViewProperty.getName(), dstPropertyValue);
+//            dstEntity.setValue(importViewProperty.getName(), dstPropertyValue);
         }
     }
 
@@ -403,11 +416,13 @@ public class EntityImportExport implements EntityImportExportAPI {
                                                       @Nullable SecurityState srcSecurityState,
                                                       EntityImportViewProperty viewProperty,
                                                       @Nullable FetchPlan regularView,
-                                                      CommitContext commitContext,
+                                                      SaveContext saveContext,
                                                       Collection<ReferenceInfo> referenceInfoList,
                                                       boolean optimisticLocking) {
-        Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
-        Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
+        Collection<Entity> collectionValue = EntityValues.getValue(srcEntity, viewProperty.getName());
+//        Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
+        Collection<Entity> prevCollectionValue = EntityValues.getValue(dstEntity, viewProperty.getName());
+//        Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
         MetaProperty metaProperty = metadata.getClass(srcEntity).getProperty(viewProperty.getName());
         MetaProperty inverseMetaProperty = metaProperty.getInverse();
         Collection dstFilteredIds = getFilteredIds(dstEntity, metaProperty.getName());
@@ -417,9 +432,10 @@ public class EntityImportExport implements EntityImportExportAPI {
                 .onCreate(e -> {
                     if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(e))) {
                         Entity result = importEntity(e, null, viewProperty.getView(), regularView,
-                                commitContext, referenceInfoList, optimisticLocking);
+                                saveContext, referenceInfoList, optimisticLocking);
                         if (inverseMetaProperty != null) {
-                            result.setValue(inverseMetaProperty.getName(), dstEntity);
+                            EntityValues.setValue(result, inverseMetaProperty.getName(), dstEntity);
+//                            result.setValue(inverseMetaProperty.getName(), dstEntity);
                         }
                         newCollectionValue.add(result);
                     }
@@ -427,9 +443,10 @@ public class EntityImportExport implements EntityImportExportAPI {
                 .onUpdate((src, dst) -> {
                     if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(src))) {
                         Entity result = importEntity(src, dst, viewProperty.getView(), regularView,
-                                commitContext, referenceInfoList, optimisticLocking);
+                                saveContext, referenceInfoList, optimisticLocking);
                         if (inverseMetaProperty != null) {
-                            result.setValue(inverseMetaProperty.getName(), dstEntity);
+                            EntityValues.setValue(result, inverseMetaProperty.getName(), dstEntity);
+//                            result.setValue(inverseMetaProperty.getName(), dstEntity);
                         }
                         newCollectionValue.add(result);
                     }
@@ -438,7 +455,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     Object refId = referenceToEntitySupport.getReferenceId(e);
                     if (viewProperty.getCollectionImportPolicy() == CollectionImportPolicy.REMOVE_ABSENT_ITEMS) {
                         if (!dstFilteredIds.contains(refId) && !srcFilteredIds.contains(refId)) {
-                            commitContext.addInstanceToRemove(e);
+                            saveContext.removing(e);
                         }
                     }
                     if (srcFilteredIds.contains(refId)) {
@@ -446,7 +463,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                     }
                 })
                 .compare(collectionValue, prevCollectionValue);
-        dstEntity.setValue(metaProperty.getName(), newCollectionValue);
+        EntityValues.setValue(dstEntity, metaProperty.getName(), newCollectionValue);
+        //dstEntity.setValue(metaProperty.getName(), newCollectionValue);
     }
 
     protected void importManyToManyCollectionAttribute(Entity srcEntity,
@@ -454,11 +472,13 @@ public class EntityImportExport implements EntityImportExportAPI {
                                                        SecurityState srcSecurityState,
                                                        EntityImportViewProperty viewProperty,
                                                        FetchPlan regularView,
-                                                       CommitContext commitContext,
+                                                       SaveContext saveContext,
                                                        Collection<ReferenceInfo> referenceInfoList,
                                                        boolean optimisticLocking) {
-        Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
-        Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
+        Collection<Entity> collectionValue = EntityValues.getValue(srcEntity, viewProperty.getName());
+//        Collection<Entity> collectionValue = srcEntity.getValue(viewProperty.getName());
+        Collection<Entity> prevCollectionValue = EntityValues.getValue(dstEntity, viewProperty.getName());
+//        Collection<Entity> prevCollectionValue = dstEntity.getValue(viewProperty.getName());
         MetaProperty metaProperty = metadata.getClass(srcEntity).getProperty(viewProperty.getName());
         Collection dstFilteredIds = getFilteredIds(dstEntity, metaProperty.getName());
         Collection srcFilteredIds = getFilteredIds(dstEntity, metaProperty.getName());
@@ -469,14 +489,14 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .onCreate(e -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(e))) {
                             Entity result = importEntity(e, null, viewProperty.getView(), regularView,
-                                    commitContext, referenceInfoList, optimisticLocking);
+                                    saveContext, referenceInfoList, optimisticLocking);
                             newCollectionValue.add(result);
                         }
                     })
                     .onUpdate((src, dst) -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(src))) {
                             Entity result = importEntity(src, dst, viewProperty.getView(), regularView,
-                                    commitContext, referenceInfoList, optimisticLocking);
+                                    saveContext, referenceInfoList, optimisticLocking);
                             newCollectionValue.add(result);
                         }
                     })
@@ -490,7 +510,8 @@ public class EntityImportExport implements EntityImportExportAPI {
                         }
                     })
                     .compare(collectionValue, prevCollectionValue);
-            dstEntity.setValue(metaProperty.getName(), newCollectionValue);
+            EntityValues.setValue(dstEntity, metaProperty.getName(), newCollectionValue);
+            //dstEntity.setValue(metaProperty.getName(), newCollectionValue);
         } else {
             //create ReferenceInfo objects - they will be parsed later
             ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, srcSecurityState, viewProperty, collectionValue, prevCollectionValue);
@@ -503,16 +524,16 @@ public class EntityImportExport implements EntityImportExportAPI {
                                              boolean createOp,
                                              EntityImportViewProperty importViewProperty,
                                              FetchPlan regularView,
-                                             CommitContext commitContext,
+                                             SaveContext saveContext,
                                              Collection<ReferenceInfo> referenceInfoList,
                                              boolean optimisticLock) {
         String propertyName = importViewProperty.getName();
         MetaProperty metaProperty = metadata.getClass(srcEntity).getProperty(propertyName);
-        Entity srcEmbeddedEntity = srcEntity.getValue(propertyName);
+        Entity srcEmbeddedEntity = EntityValues.getValue(srcEntity, propertyName);
         if (srcEmbeddedEntity == null) {
             return null;
         }
-        Entity dstEmbeddedEntity = dstEntity.getValue(propertyName);
+        Entity dstEmbeddedEntity = EntityValues.getValue(dstEntity, propertyName);
         MetaClass embeddedAttrMetaClass = metaProperty.getRange().asClass();
         if (dstEmbeddedEntity == null) {
             dstEmbeddedEntity = metadata.create(embeddedAttrMetaClass);
@@ -520,7 +541,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
         SecurityState dstSecurityState = null;
         SecurityState srcSecurityState = null;
-        if (dstEntity instanceof BaseGenericIdEntity && !createOp) {
+//        if (dstEntity instanceof BaseGenericIdEntity && !createOp) {
 //            String storeName = metadataTools.getStoreName(metadata.getClass(dstEntity));
 //            DataStore dataStore = storeFactory.get(storeName);
 //            //row-level security works only for entities from RdbmsStore
@@ -533,7 +554,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 //                persistenceSecurity.restoreSecurityState(dstEmbeddedEntity);
 //                dstSecurityState = BaseEntityInternalAccess.getSecurityState(dstEmbeddedEntity);
 //            }
-        }
+//        }
 
         for (EntityImportViewProperty vp : importViewProperty.getView().getProperties()) {
             MetaProperty mp = embeddedAttrMetaClass.getProperty(vp.getName());
@@ -545,17 +566,18 @@ public class EntityImportExport implements EntityImportExportAPI {
 //                throw new CustomValidationException(format("Attribute [%s] is required for entity %s", mp.getName(), srcEmbeddedEntity));
 //            }
             if ((mp.getRange().isDatatype() && !"version".equals(mp.getName())) || mp.getRange().isEnum()) {
-                dstEmbeddedEntity.setValue(vp.getName(), srcEmbeddedEntity.getValue(vp.getName()));
+                EntityValues.setValue(dstEmbeddedEntity, vp.getName(), EntityValues.getValue(srcEmbeddedEntity, vp.getName()));
+//                dstEmbeddedEntity.setValue(vp.getName(), srcEmbeddedEntity.getValue(vp.getName()));
             } else if (mp.getRange().isClass()) {
                 FetchPlan propertyRegularView = regularView.getProperty(propertyName) != null ? regularView.getProperty(propertyName).getFetchPlan() : null;
                 if (metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY) {
                     importOneToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, srcSecurityState,
-                            vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
+                            vp, propertyRegularView, saveContext, referenceInfoList, optimisticLock);
                 } else if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY) {
                     importManyToManyCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, srcSecurityState,
-                            vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
+                            vp, propertyRegularView, saveContext, referenceInfoList, optimisticLock);
                 } else {
-                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, commitContext, referenceInfoList, optimisticLock);
+                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, propertyRegularView, saveContext, referenceInfoList, optimisticLock);
                 }
             }
         }
@@ -567,7 +589,7 @@ public class EntityImportExport implements EntityImportExportAPI {
      * Method finds and set a reference value to the entity or throws EntityImportException if ERROR_ON_MISSING policy
      * is violated
      */
-    protected void processReferenceInfo(ReferenceInfo referenceInfo, CommitContext commitContext, Set<Entity> loadedEntities) {
+    protected void processReferenceInfo(ReferenceInfo referenceInfo, SaveContext saveContext, Set<Entity> loadedEntities) {
         Entity entity = referenceInfo.getEntity();
         EntityImportViewProperty viewProperty = referenceInfo.getViewProperty();
         MetaProperty metaProperty = metadata.getClass(entity).getProperty(viewProperty.getName());
@@ -580,14 +602,15 @@ public class EntityImportExport implements EntityImportExportAPI {
             @SuppressWarnings("unchecked")
             Collection<Entity> prevCollectionValue = (Collection<Entity>) referenceInfo.getPrevPropertyValue();
             if (collectionValue == null && srcFilteredIds.isEmpty()) {
-                entity.setValue(metaProperty.getName(), createNewCollection(metaProperty));
+                EntityValues.setValue(entity, metaProperty.getName(), createNewCollection(metaProperty));
+//                entity.setValue(metaProperty.getName(), createNewCollection(metaProperty));
                 return;
             }
             Collection<Entity> newCollectionValue = createNewCollection(metaProperty);
             CollectionCompare.with()
                     .onCreate(e -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(e))) {
-                            Entity result = findReferenceEntity(e, viewProperty, commitContext, loadedEntities);
+                            Entity result = findReferenceEntity(e, viewProperty, saveContext, loadedEntities);
                             if (result != null) {
                                 newCollectionValue.add(result);
                             }
@@ -595,7 +618,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     })
                     .onUpdate((src, dst) -> {
                         if (!dstFilteredIds.contains(referenceToEntitySupport.getReferenceId(dst))) {
-                            Entity result = findReferenceEntity(src, viewProperty, commitContext, loadedEntities);
+                            Entity result = findReferenceEntity(src, viewProperty, saveContext, loadedEntities);
                             if (result != null) {
                                 newCollectionValue.add(result);
                             }
@@ -611,27 +634,30 @@ public class EntityImportExport implements EntityImportExportAPI {
                         }
                     })
                     .compare(collectionValue, prevCollectionValue);
-            entity.setValue(metaProperty.getName(), newCollectionValue);
+            EntityValues.setValue(entity, metaProperty.getName(), newCollectionValue);
+//            entity.setValue(metaProperty.getName(), newCollectionValue);
             //end of many-to-many processing block
         } else {
             //all other reference types (except many-to-many)
             Entity entityValue = (Entity) referenceInfo.getPropertyValue();
             if (entityValue == null) {
                 if (dstFilteredIds.isEmpty()) {
-                    entity.setValue(metaProperty.getName(), null);
+                    EntityValues.setValue(entity, metaProperty.getName(), null);
+//                    entity.setValue(metaProperty.getName(), null);
                     //in case of NULL value we must delete COMPOSITION entities
                     if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
                         Entity prevEntityValue = (Entity) referenceInfo.getPrevPropertyValue();
                         if (prevEntityValue != null) {
-                            commitContext.addInstanceToRemove(prevEntityValue);
+                            saveContext.removing(prevEntityValue);
                         }
                     }
                 }
             } else {
                 if (dstFilteredIds.isEmpty()) {
-                    Entity result = findReferenceEntity(entityValue, viewProperty, commitContext, loadedEntities);
+                    Entity result = findReferenceEntity(entityValue, viewProperty, saveContext, loadedEntities);
                     if (result != null) {
-                        entity.setValue(metaProperty.getName(), result);
+                        EntityValues.setValue(entity, metaProperty.getName(), result);
+//                        entity.setValue(metaProperty.getName(), result);
                     }
                 }
             }
@@ -664,9 +690,9 @@ public class EntityImportExport implements EntityImportExportAPI {
     }
 
     protected Collection getFilteredIds(Entity entity, String propertyName) {
-        if (entity instanceof BaseGenericIdEntity) {
-            String storeName = metadataTools.getStoreName(metadata.getClass(entity));
-            //todo persistenceSecurity
+        //todo persistenceSecurity
+//        if (entity instanceof BaseGenericIdEntity) {
+//            String storeName = metadataTools.getStoreName(metadata.getClass(entity));
 //            DataStore dataStore = storeFactory.get(storeName);
 //            if (Rdbm.class.equals(AopUtils.getTargetClass(dataStore))) {
 //                persistenceSecurity.restoreSecurityState(entity);
@@ -674,13 +700,13 @@ public class EntityImportExport implements EntityImportExportAPI {
 //                        .map(v -> v.get(propertyName))
 //                        .orElse(Collections.emptyList());
 //            }
-        }
+//        }
         return Collections.emptyList();
     }
 
     protected Collection getFilteredIds(@Nullable SecurityState securityState, String propertyName) {
         if (securityState != null) {
-            return Optional.ofNullable(BaseEntityInternalAccess.getFilteredData(securityState))
+            return Optional.ofNullable(securityState.getFilteredData())
                     .map(v -> v.get(propertyName))
                     .orElse(Collections.emptyList());
         }
@@ -704,21 +730,21 @@ public class EntityImportExport implements EntityImportExportAPI {
 //        return globalConfig.getRestRequiresSecurityToken();
 //    }
 
-    protected Entity findReferenceEntity(Entity entity, EntityImportViewProperty viewProperty, CommitContext commitContext,
+    protected Entity findReferenceEntity(Entity entity, EntityImportViewProperty viewProperty, SaveContext saveContext,
                                          Set<Entity> loadedEntities) {
-        Entity result = Stream.concat(loadedEntities.stream(), commitContext.getCommitInstances().stream())
+        Entity result = Stream.concat(loadedEntities.stream(), saveContext.getEntitiesToSave().stream())
                 .filter(item -> item.equals(entity))
                 .findFirst().orElse(null);
         if (result == null) {
-            LoadContext<? extends Entity> ctx = LoadContext.create(entity.getClass())
+            LoadContext<? extends Entity> ctx = new LoadContext(entity.getClass())
                     .setSoftDeletion(false)
-                    .setView(new FetchPlan(metadata.getClass(entity).getJavaClass(), false))
-                    .setId(entity.getId());
+                    .setFetchPlan(new FetchPlan(metadata.getClass(entity).getJavaClass(), false))
+                    .setId(EntityValues.getId(entity));
             result = dataManager.load(ctx);
             if (result == null) {
                 if (viewProperty.getReferenceImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
                     throw new EntityImportException(String.format("Referenced entity for property '%s' with id = %s is missing",
-                            viewProperty.getName(), entity.getId()));
+                            viewProperty.getName(), EntityValues.getId(entity)));
                 }
             } else {
                 loadedEntities.add(result);

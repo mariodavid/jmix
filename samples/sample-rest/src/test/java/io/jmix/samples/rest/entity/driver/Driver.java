@@ -16,21 +16,21 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.EmbeddedParameters;
 import io.jmix.core.metamodel.annotations.Composition;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity(name = "ref$Driver")
 @Table(name = "REF_DRIVER")
-@NamePattern("%s|name")
 public class Driver extends StandardEntity {
 
     private static final long serialVersionUID = -3978805138573255022L;
 
+    @InstanceName
     @Column(name = "NAME")
     private String name;
 
@@ -53,7 +53,7 @@ public class Driver extends StandardEntity {
     @Composition
     private Set<DriverAllocation> allocations;
 
-//    @MetaProperty
+//    @ModelProperty
 //    public SamplePlatformEntity getPlatformEntityName() {
 //        if (!isLoaded(this, "platformEntity")
 //                || !isLoaded(this, "status")) {

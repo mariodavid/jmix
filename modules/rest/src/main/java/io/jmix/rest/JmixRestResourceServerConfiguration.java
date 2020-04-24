@@ -23,10 +23,10 @@ import io.jmix.rest.api.auth.JmixAnonymousAuthenticationFilter;
 import io.jmix.rest.api.auth.JmixRestLastSecurityFilter;
 import io.jmix.rest.api.common.RestParseUtils;
 import io.jmix.rest.api.common.RestTokenMasker;
-import io.jmix.rest.api.config.RestApiConfig;
 import io.jmix.rest.api.config.RestQueriesConfiguration;
 import io.jmix.rest.api.config.RestServicesConfiguration;
 import io.jmix.rest.api.sys.JmixRestExceptionLoggingFilter;
+import io.jmix.rest.property.RestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,7 +56,7 @@ public class JmixRestResourceServerConfiguration extends ResourceServerConfigure
     protected RestTokenMasker restTokenMasker;
 
     @Autowired
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
 
     @Autowired
     protected RestServicesConfiguration restServicesConfiguration;
@@ -79,7 +79,7 @@ public class JmixRestResourceServerConfiguration extends ResourceServerConfigure
         JmixRestLastSecurityFilter jmixRestLastSecurityFilter = new JmixRestLastSecurityFilter(events, restTokenMasker);
 
         JmixAnonymousAuthenticationFilter jmixAnonymousAuthenticationFilter = new JmixAnonymousAuthenticationFilter(
-                restApiConfig,
+                restProperties,
                 restServicesConfiguration,
                 restQueriesConfiguration,
                 authenticationManager,

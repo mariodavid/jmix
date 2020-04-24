@@ -5,13 +5,11 @@
 
 package io.jmix.samples.rest.service.app;
 
-import io.jmix.core.DataManager;
-import io.jmix.core.FetchPlan;
-import io.jmix.core.LoadContext;
-import io.jmix.core.Metadata;
+import io.jmix.core.*;
+import io.jmix.core.entity.EntityValues;
 import io.jmix.core.validation.CustomValidationException;
 import io.jmix.samples.rest.entity.driver.Car;
-import io.jmix.samples.rest.entity.driver.RefappNotPersistentStringIdEntity;
+import io.jmix.samples.rest.entity.driver.NotPersistentStringIdEntity;
 import io.jmix.samples.rest.exception.CustomHttpClientErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +34,9 @@ public class RestTestServiceBean implements RestTestService {
 
     @Inject
     protected DataManager dataManager;
+
+    @Inject
+    protected FetchPlanRepository fetchPlanRepository;
 
     @Override
     public void emptyMethod() {
@@ -196,9 +197,9 @@ public class RestTestServiceBean implements RestTestService {
 
     @Override
     public List<PojoWithNestedEntity> getPojosWithNestedEntity() {
-        LoadContext<Car> ctx = LoadContext.create(Car.class)
-                .setFetchPlan(FetchPlan.LOCAL)
-                .setQuery(LoadContext.createQuery("select c from ref_Car c order by c.vin"));
+        LoadContext<Car> ctx = new LoadContext(Car.class)
+                .setFetchPlan(fetchPlanRepository.getFetchPlan(Car.class, FetchPlan.LOCAL))
+                .setQuery(new LoadContext.Query("select c from ref_Car c order by c.vin"));
         List<Car> cars = dataManager.loadList(ctx);
         final int[] counter = {1};
         return cars.stream()
@@ -208,9 +209,9 @@ public class RestTestServiceBean implements RestTestService {
 
     @Override
     public List<PojoWithNestedEntity> getPojosWithNestedEntityWithView() {
-        LoadContext<Car> ctx = LoadContext.create(Car.class)
-                .setFetchPlan("car-with-colour")
-                .setQuery(LoadContext.createQuery("select c from ref_Car c order by c.vin"));
+        LoadContext<Car> ctx = new LoadContext(Car.class)
+                .setFetchPlan(fetchPlanRepository.getFetchPlan(Car.class, "car-with-colour"))
+                .setQuery(new LoadContext.Query("select c from ref_Car c order by c.vin"));
         List<Car> cars = dataManager.loadList(ctx);
         final int[] counter = {1};
         return cars.stream()
@@ -246,10 +247,10 @@ public class RestTestServiceBean implements RestTestService {
 //    }
 //
     @Override
-    public RefappNotPersistentStringIdEntity getRefappNotPersistentStringIdEntity() {
-        RefappNotPersistentStringIdEntity transientDriver = metadata.create(RefappNotPersistentStringIdEntity.class);
-        transientDriver.setId("1");
-        transientDriver.setName("Bob");
-        return transientDriver;
+    public NotPersistentStringIdEntity getNotPersistentStringIdEntity() {
+        NotPersistentStringIdEntity notPersistentStringIdEntity = metadata.create(NotPersistentStringIdEntity.class);
+        EntityValues.setId(notPersistentStringIdEntity, "1");
+        notPersistentStringIdEntity.setName("Bob");
+        return notPersistentStringIdEntity;
     }
 }

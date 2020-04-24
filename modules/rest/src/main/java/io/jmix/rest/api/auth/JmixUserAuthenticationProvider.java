@@ -19,7 +19,7 @@ package io.jmix.rest.api.auth;
 import com.google.common.base.Strings;
 import com.google.common.net.HttpHeaders;
 import io.jmix.core.ClientType;
-import io.jmix.core.GlobalConfig;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
 import io.jmix.core.security.LoginException;
@@ -27,8 +27,8 @@ import io.jmix.core.security.LoginPasswordCredentials;
 import io.jmix.core.security.SystemAuthenticationToken;
 import io.jmix.core.security.UserSession;
 import io.jmix.rest.api.common.RestAuthUtils;
-import io.jmix.rest.api.config.RestApiConfig;
 import io.jmix.rest.exception.RestApiAccessDeniedException;
+import io.jmix.rest.property.RestProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +66,10 @@ public class JmixUserAuthenticationProvider implements AuthenticationProvider {
     protected RestAuthUtils restAuthUtils;
 
     @Inject
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected CoreProperties coreProperties;
 
     private UserDetailsService userDetailsService;
 
@@ -89,7 +89,7 @@ public class JmixUserAuthenticationProvider implements AuthenticationProvider {
         String ipAddress = request.getRemoteAddr();
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            if (!restApiConfig.getStandardAuthenticationEnabled()) {
+            if (!restProperties.getStandardAuthenticationEnabled()) {
                 log.debug("Standard authentication is disabled. Property cuba.rest.standardAuthenticationEnabled is false");
 
                 throw new InvalidGrantException("Authentication disabled");
@@ -177,9 +177,9 @@ public class JmixUserAuthenticationProvider implements AuthenticationProvider {
     protected String makeClientInfo(String userAgent) {
         //noinspection UnnecessaryLocalVariable
         String serverInfo = String.format("REST API (%s:%s/%s) %s",
-                globalConfig.getWebHostName(),
-                globalConfig.getWebPort(),
-                globalConfig.getWebContextName(),
+                coreProperties.getWebHostName(),
+                coreProperties.getWebPort(),
+                coreProperties.getWebContextName(),
                 StringUtils.trimToEmpty(userAgent));
 
         return serverInfo;

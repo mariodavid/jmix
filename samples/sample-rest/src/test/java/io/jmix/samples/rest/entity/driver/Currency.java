@@ -18,11 +18,10 @@ package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.UuidProvider;
 import io.jmix.core.entity.*;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
 import io.jmix.core.validation.groups.RestApiChecks;
 import io.jmix.samples.rest.validation.TestCurrencyClassConstraint;
 
-import javax.persistence.Entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,13 +31,13 @@ import java.util.UUID;
 @TestCurrencyClassConstraint(groups = RestApiChecks.class)
 @Entity(name = "ref$Currency")
 @Table(name = "REF_CURRENCY")
-@NamePattern("%s|code")
-public class Currency extends BaseStringIdEntity implements Versioned, Creatable, Updatable, SoftDelete, HasUuid {
+public class Currency implements io.jmix.core.Entity<String>, Versioned, Creatable, Updatable, SoftDelete, HasUuid {
     private static final long serialVersionUID = 6912352294666689769L;
 
     @Id
     @Column(name = "CODE")
     @Size(min = 3)
+    @InstanceName
     @NotNull(message = "{msg://io.jmix.samples.rest.entity.driver/Currency.code.empty}")
     protected String code;
 
@@ -72,12 +71,10 @@ public class Currency extends BaseStringIdEntity implements Versioned, Creatable
     @NotNull
     protected String name;
 
-    @Override
     public String getId() {
         return code;
     }
 
-    @Override
     public void setId(String id) {
         code = id;
     }

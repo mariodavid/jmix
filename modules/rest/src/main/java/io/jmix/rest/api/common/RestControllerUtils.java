@@ -18,8 +18,7 @@ package io.jmix.rest.api.common;
 
 import com.google.common.base.Strings;
 import io.jmix.core.*;
-import io.jmix.core.entity.BaseEntityInternalAccess;
-import io.jmix.core.Entity;
+import io.jmix.core.entity.EntityValues;
 import io.jmix.core.entity.SecurityState;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
@@ -34,6 +33,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 
 /**
+ *
  */
 @Component("jmix_RestControllerUtils")
 public class RestControllerUtils {
@@ -83,6 +83,7 @@ public class RestControllerUtils {
     /**
      * By default entity is loaded from the middleware with the attributes that are not allowed for reading according
      * to roles permissions. This methods removes attributes not allowed for the user.
+     *
      * @param entity the entity. After the method is executed forbidden attributes will be cleaned.
      */
     public void applyAttributesSecurity(Entity entity) {
@@ -91,12 +92,12 @@ public class RestControllerUtils {
 
     public String transformEntityNameIfRequired(String entityName, String modelVersion, JsonTransformationDirection direction) {
         return Strings.isNullOrEmpty(modelVersion) ? entityName :
-            restJsonTransformations.getTransformer(entityName, modelVersion, direction).getTransformedEntityName();
+                restJsonTransformations.getTransformer(entityName, modelVersion, direction).getTransformedEntityName();
     }
 
     public String transformJsonIfRequired(String entityName, String modelVersion, JsonTransformationDirection direction, String json) {
         return Strings.isNullOrEmpty(modelVersion) ? json :
-            restJsonTransformations.getTransformer(entityName, modelVersion, direction).transformJson(json);
+                restJsonTransformations.getTransformer(entityName, modelVersion, direction).transformJson(json);
     }
 
     private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {
@@ -114,27 +115,17 @@ public class RestControllerUtils {
                 if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
                     // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
                     // which is the case when in-memory constraints exist
-                    BaseEntityInternalAccess.setValue(entity, property.getName(), null);
-                }
-            }
-            SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
-            // todo getHiddenAttributes
-//            if (securityState != null && securityState.getHiddenAttributes().contains(property.getName())) {
-            if (securityState != null) {
-                if (!metadataTools.isSystem(property)) {
-                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
-                    // which is the case when in-memory constraints exist
-                    BaseEntityInternalAccess.setValue(entity, property.getName(), null);
+                    EntityValues.setValue(entity, property.getName(), null);
                 }
             }
         }
     }
 
     private void addInaccessibleAttribute(Entity entity, String property) {
-        SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
-        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(securityState);
+        SecurityState securityState = entity.__getEntityEntry().getSecurityState();
+        String[] attributes = securityState.getInaccessibleAttributes();
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
-        BaseEntityInternalAccess.setInaccessibleAttributes(securityState, attributes);
+        securityState.setInaccessibleAttributes(attributes);
     }
 }

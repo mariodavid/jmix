@@ -16,7 +16,7 @@
 
 package io.jmix.rest.api.common;
 
-import io.jmix.rest.api.config.RestApiConfig;
+import io.jmix.rest.property.RestProperties;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -27,15 +27,16 @@ public class RestTokenMasker {
     protected static final String MASK_PREFIX = "***";
 
     @Inject
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
 
     /**
      * Masks token value, i.e. replaces the actual value <b>5a4587a0-e070-11e0-ae98-67f86f948320</b> with the <b>***-67f86f948320</b>
+     *
      * @param token initial token value
      * @return masked token value
      */
     public String maskToken(String token) {
-        if (!restApiConfig.getTokenMaskingEnabled()) return token;
+        if (!restProperties.getTokenMaskingEnabled()) return token;
         return token.length() > 23 ? MASK_PREFIX + token.substring(23) : MASK_PREFIX;
     }
 }

@@ -58,7 +58,7 @@ public class RestServicesConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(RestServicesConfiguration.class);
 
-    public static final String CUBA_REST_SERVICES_CONFIG_PROP_NAME = "jmix.rest.servicesConfig";
+    public static final String JMIX_REST_SERVICES_CONFIG_PROP_NAME = "jmix.rest.servicesConfig";
 
     protected Map<String, RestServiceInfo> serviceInfosMap = new ConcurrentHashMap<>();
 
@@ -141,7 +141,7 @@ public class RestServicesConfiguration {
     }
 
     protected void init() {
-        String configName = environment.getProperty(CUBA_REST_SERVICES_CONFIG_PROP_NAME);
+        String configName = environment.getProperty(JMIX_REST_SERVICES_CONFIG_PROP_NAME);
         StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);

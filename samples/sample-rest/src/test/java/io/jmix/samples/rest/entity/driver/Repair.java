@@ -17,11 +17,11 @@
 package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.OnDelete;
 import io.jmix.core.entity.annotation.SystemLevel;
 import io.jmix.core.metamodel.annotations.Composition;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -29,7 +29,6 @@ import java.util.Set;
 
 @Entity(name = "ref$Repair")
 @Table(name = "REF_REPAIR")
-@NamePattern("%s|description")
 public class Repair extends StandardEntity {
 
     private static final long serialVersionUID = 1785737195382529798L;
@@ -42,6 +41,7 @@ public class Repair extends StandardEntity {
     @JoinColumn(name = "INSURANCE_CASE_ID")
     private InsuranceCase insuranceCase;
 
+    @InstanceName
     @Column(name = "DESCRIPTION")
     private String description;
 
@@ -54,7 +54,7 @@ public class Repair extends StandardEntity {
     private Set<CarToken> carTokens;
 
 //    @Transient
-//    @MetaProperty(related = "db1CustomerId")
+//    @ModelProperty(related = "db1CustomerId")
 //    private Db1Customer db1Customer;
 
     @SystemLevel

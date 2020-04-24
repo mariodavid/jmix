@@ -16,27 +16,38 @@
 
 package io.jmix.samples.rest.entity.driver;
 
+
+import io.jmix.core.Entity;
 import io.jmix.core.metamodel.annotations.InstanceName;
-import io.jmix.data.entity.StandardEntity;
+import io.jmix.core.metamodel.annotations.ModelObject;
+import io.jmix.core.metamodel.annotations.ModelProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Id;
 
-@Entity(name = "ref$CarDocumentation")
-@Table(name = "REF_CAR_DOCUMENTATION")
-public class CarDocumentation extends StandardEntity {
+@ModelObject(name = "jmix$NotPersistentStringIdEntity")
+public class NotPersistentStringIdEntity implements Entity<String> {
+
+    @Id
+    @ModelProperty
+    protected String identifier;
 
     @InstanceName
-    @Column(name = "TITLE")
-    protected String title;
+    @ModelProperty
+    protected String name;
 
-    public String getTitle() {
-        return title;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setIdentifier(String code) {
+        this.identifier = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
-

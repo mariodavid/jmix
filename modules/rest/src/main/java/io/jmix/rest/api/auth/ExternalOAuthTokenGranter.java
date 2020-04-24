@@ -17,9 +17,8 @@
 package io.jmix.rest.api.auth;
 
 import com.google.common.base.Preconditions;
-import io.jmix.core.ConfigInterfaces;
-import io.jmix.core.GlobalConfig;
-import io.jmix.rest.api.config.RestApiConfig;
+import io.jmix.core.CoreProperties;
+import io.jmix.rest.property.RestProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +43,11 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
     protected OAuth2RequestFactory requestFactory;
 
     @Inject
-    protected ConfigInterfaces configuration;
+    protected CoreProperties coreProperties;
     //    @Inject
 //    protected AuthenticationService authenticationService;
     @Inject
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
 
     protected ExternalOAuthTokenGranter(AuthorizationServerTokenServices tokenServices,
                                         ClientDetailsService clientDetailsService,
@@ -153,13 +152,11 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
     }
 
     protected String makeClientInfo(String userAgent) {
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-
         //noinspection UnnecessaryLocalVariable
         String serverInfo = String.format("REST API (%s:%s/%s) %s",
-                globalConfig.getWebHostName(),
-                globalConfig.getWebPort(),
-                globalConfig.getWebContextName(),
+                coreProperties.getWebHostName(),
+                coreProperties.getWebPort(),
+                coreProperties.getWebContextName(),
                 StringUtils.trimToEmpty(userAgent));
 
         return serverInfo;

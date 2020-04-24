@@ -17,8 +17,7 @@
 package io.jmix.rest.api.common;
 
 import com.google.common.base.Strings;
-import io.jmix.core.ConfigInterfaces;
-import io.jmix.core.GlobalConfig;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.MessageTools;
 import io.jmix.core.security.UserSessionSource;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ import java.util.Map;
 public class RestAuthUtils {
 
     @Inject
-    protected ConfigInterfaces configuration;
+    protected CoreProperties coreProperties;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -59,8 +58,7 @@ public class RestAuthUtils {
         if (!Strings.isNullOrEmpty(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
             Locale requestLocale = request.getLocale();
 
-            GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-            Map<String, Locale> availableLocales = globalConfig.getAvailableLocales();
+            Map<String, Locale> availableLocales = coreProperties.getAvailableLocales();
             if (availableLocales.values().contains(requestLocale)) {
                 locale = requestLocale;
             } else {

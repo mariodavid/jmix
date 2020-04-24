@@ -23,13 +23,13 @@ import io.jmix.core.FetchPlan;
  */
 public interface FetchPlanSerializationAPI {
 
-    String NAME = "cuba_ViewSerialization";
+    String NAME = "jmix_ViewSerialization";
 
     /**
      * Deserializes a JSON object to view. The method automatically identifies whether the view was serialized with the
      * {@link FetchPlanSerializationOption#COMPACT_FORMAT} option.
      *
-     * @param json    JSON objects that represents the view
+     * @param json JSON objects that represents the view
      * @return a view
      */
     FetchPlan fromJson(String json);

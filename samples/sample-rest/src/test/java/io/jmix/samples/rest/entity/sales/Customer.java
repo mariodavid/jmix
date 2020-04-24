@@ -17,10 +17,10 @@
 package io.jmix.samples.rest.entity.sales;
 
 
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.PublishEntityChangedEvents;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
 import io.jmix.core.metamodel.datatypes.impl.EnumUtils;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,9 +28,10 @@ import javax.persistence.Table;
 
 @Entity(name = "sales$Customer")
 @Table(name = "SALES_CUSTOMER")
-@NamePattern("%s|name")
 @PublishEntityChangedEvents
 public class Customer extends StandardEntity {
+
+    @InstanceName
     @Column(name = "NAME")
     private String name;
 

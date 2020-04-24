@@ -17,11 +17,10 @@
 package io.jmix.core.app.importexport;
 
 import io.jmix.core.Logging;
-import io.jmix.core.compatibility.SupportedByClient;
 
 /**
+ *
  */
-@SupportedByClient
 @Logging(Logging.Type.BRIEF)
 public class EntityImportException extends RuntimeException {
 

@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 @Component("jmix_RestQueriesConfiguration")
 public class RestQueriesConfiguration {
 
-    protected static final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "jmix.rest.queriesConfig";
+    protected static final String JMIX_REST_QUERIES_CONFIG_PROP_NAME = "jmix.rest.queriesConfig";
 
     private final Logger log = LoggerFactory.getLogger(RestQueriesConfiguration.class);
 
@@ -134,7 +134,7 @@ public class RestQueriesConfiguration {
     }
 
     protected void init() {
-        String configName = environment.getProperty(CUBA_REST_QUERIES_CONFIG_PROP_NAME);
+        String configName = environment.getProperty(JMIX_REST_QUERIES_CONFIG_PROP_NAME);
         StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);

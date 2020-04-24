@@ -1,12 +1,10 @@
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
 
 import javax.persistence.*;
 
 @Entity(name = "ref$ExtDriver")
-@NamePattern("%s:%s|name,info")
-//@Extends(Driver.class)
 public class ExtDriver extends Driver {
 
     private static final long serialVersionUID = 5271478633053259678L;
@@ -19,6 +17,11 @@ public class ExtDriver extends Driver {
     @Column(name = "NOTES")
     @Lob
     protected String notes;
+
+    @InstanceName(relatedProperties = {"name", "info"})
+    public String getCaption() {
+        return String.format("%s:(%s)", getName(), getInfo());
+    }
 
     public String getInfo() {
         return info;

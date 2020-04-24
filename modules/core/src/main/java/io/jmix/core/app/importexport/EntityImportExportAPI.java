@@ -16,8 +16,8 @@
 
 package io.jmix.core.app.importexport;
 
-import io.jmix.core.FetchPlan;
 import io.jmix.core.Entity;
+import io.jmix.core.FetchPlan;
 
 import java.util.Collection;
 
@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 public interface EntityImportExportAPI {
 
-    String NAME = "cuba_EntityImportExport";
+    String NAME = "jmix_EntityImportExport";
 
     /**
      * See documentation for {@link EntityImportExportService#exportEntitiesToZIP(Collection)}

@@ -17,11 +17,11 @@
 package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.*;
 import io.jmix.core.metamodel.annotations.Composition;
-import io.jmix.core.metamodel.annotations.MetaProperty;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.core.metamodel.annotations.ModelProperty;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -32,10 +32,10 @@ import java.util.Set;
 @Table(name = "REF_CAR")
 @TrackEditScreenHistory
 @Listeners("jmix_CarDetachListener")
-@NamePattern("%s|vin")
 public class Car extends StandardEntity {
     private static final long serialVersionUID = -7377186515184761381L;
 
+    @InstanceName
     @Column(name = "VIN")
     private String vin;
 
@@ -84,7 +84,7 @@ public class Car extends StandardEntity {
 
     // Test meta property enhancing in persistent entity
 
-    @MetaProperty
+    @ModelProperty
     @Transient
     protected Integer repairCost;
 
@@ -106,7 +106,7 @@ public class Car extends StandardEntity {
 
     // This attribute is set by CarDetachListener
     @Transient
-    @MetaProperty
+    @ModelProperty
     protected String currencyCode;
 
     public String getVin() {
@@ -183,12 +183,12 @@ public class Car extends StandardEntity {
         this.repairPrice = repairPrice;
     }
 
-    @MetaProperty
+    @ModelProperty
     public Integer getRepairCount() {
         return repairCount;
     }
 
-    @MetaProperty
+    @ModelProperty
     public void setRepairCount(Integer repairCount) {
         this.repairCount = repairCount;
     }

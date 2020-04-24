@@ -25,7 +25,6 @@ import io.jmix.core.cluster.ClusterManager;
 import io.jmix.core.security.NoUserSessionException;
 import io.jmix.core.security.UserSession;
 import io.jmix.core.security.impl.UserSessionsImpl;
-import io.jmix.rest.config.RestConfig;
 import io.jmix.rest.entity.AccessToken;
 import io.jmix.rest.entity.RefreshToken;
 import io.jmix.rest.rest.RestUserSessionInfo;
@@ -66,8 +65,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Inject
     protected ClusterManager clusterManagerAPI;
 
-    @Inject
-    protected RestConfig restConfig;
+//    @Inject
+//    protected RestProperties restProperties;
 
 //    @Inject
 //    protected Persistence persistence;
@@ -368,7 +367,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         accessToken.setUserLogin(userLogin);
         accessToken.setLocale(locale != null ? locale.toString() : null);
         accessToken.setRefreshTokenValue(refreshTokenValue);
-        dataManager.commit(accessToken);
+        dataManager.save(accessToken);
     }
 
 
@@ -428,7 +427,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         refreshToken.setAuthenticationBytes(authenticationBytes);
         refreshToken.setExpiry(tokenExpiry);
         refreshToken.setUserLogin(userLogin);
-        dataManager.commit(refreshToken);
+        dataManager.save(refreshToken);
     }
 
     @Override

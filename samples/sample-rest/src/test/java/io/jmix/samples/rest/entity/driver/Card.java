@@ -17,10 +17,10 @@
 package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.OnDeleteInverse;
 import io.jmix.core.entity.annotation.SystemLevel;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 import io.jmix.samples.rest.entity.sec.User;
 
 import javax.persistence.*;
@@ -31,7 +31,6 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "CARD_TYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
-@NamePattern("%s|description")
 @SystemLevel
 public class Card extends StandardEntity {
 
@@ -40,6 +39,7 @@ public class Card extends StandardEntity {
     @Column(name = "STATE", length = 255)
     protected String state;
 
+    @InstanceName
     @Column(name = "DESCRIPTION", length = 1000)
     protected String description;
 

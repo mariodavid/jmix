@@ -16,11 +16,9 @@
 
 package io.jmix.samples.rest.exception;
 
-import io.jmix.core.compatibility.SupportedByClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-@SupportedByClient
 public class CustomHttpClientErrorException extends HttpClientErrorException {
 
     public CustomHttpClientErrorException(HttpStatus statusCode, String statusText) {

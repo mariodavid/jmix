@@ -16,8 +16,8 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.BaseUuidEntity;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.BaseUuidEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,11 +26,11 @@ import java.util.Date;
 
 @Entity(name = "ref$CarGarageToken")
 @Table(name = "REF_CAR_GARAGE_TOKEN")
-@NamePattern("%s|title")
 public class CarGarageToken extends BaseUuidEntity {
 
     private static final long serialVersionUID = -3020931348846190506L;
 
+    @InstanceName
     @Column(name = "TITLE", length = 50, nullable = false)
     protected String title;
 

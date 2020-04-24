@@ -6,7 +6,7 @@
 package io.jmix.samples.rest.service.app;
 
 import io.jmix.samples.rest.entity.driver.Car;
-import io.jmix.samples.rest.entity.driver.RefappNotPersistentStringIdEntity;
+import io.jmix.samples.rest.entity.driver.NotPersistentStringIdEntity;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
@@ -86,5 +86,5 @@ public interface RestTestService {
 
 //    TransientDriver getTransientDriver();
 
-    RefappNotPersistentStringIdEntity getRefappNotPersistentStringIdEntity();
+    NotPersistentStringIdEntity getNotPersistentStringIdEntity();
 }

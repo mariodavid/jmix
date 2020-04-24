@@ -16,8 +16,7 @@
 
 package io.jmix.rest.api.sys;
 
-import io.jmix.core.ConfigInterfaces;
-import io.jmix.rest.api.config.RestApiConfig;
+import io.jmix.rest.property.RestProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -41,7 +40,7 @@ public class RestRequestMatcher
     protected static final String MATCH_ALL_PATTERN = "/**";
 
     @Inject
-    protected ConfigInterfaces configuration;
+    protected RestProperties restProperties;
 
     protected RequestMatcher matcher;
 
@@ -88,9 +87,7 @@ public class RestRequestMatcher
     public void onApplicationEvent(@Nonnull ContextRefreshedEvent event) {
         matcher = new AntPathRequestMatcher(REST_BASE_PATTERN + MATCH_ALL_PATTERN);
 
-        RestApiConfig restApiConfig = configuration.getConfig(RestApiConfig.class);
-
-        bypassPatterns = restApiConfig.getExternalRestBypassPatterns()
+        bypassPatterns = restProperties.getExternalRestBypassPatterns()
                 .stream()
                 .map(pattern -> {
                     String formatted = pattern.startsWith("/")

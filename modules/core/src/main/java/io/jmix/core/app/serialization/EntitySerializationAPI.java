@@ -17,8 +17,8 @@
 
 package io.jmix.core.app.serialization;
 
-import io.jmix.core.FetchPlan;
 import io.jmix.core.Entity;
+import io.jmix.core.FetchPlan;
 import io.jmix.core.metamodel.model.MetaClass;
 
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public interface EntitySerializationAPI {
 
-    String NAME = "cuba_EntitySerialization";
+    String NAME = "jmix_EntitySerialization";
 
     String ENTITY_NAME_PROP = "_entityName";
     String INSTANCE_NAME_PROP = "_instanceName";
@@ -138,7 +138,6 @@ public interface EntitySerializationAPI {
      * @param options options specifying how a JSON object graph was serialized
      * @return deserialized object
      * @deprecated use {@link #objectFromJson(String, Type, EntitySerializationOption...)}
-     *
      */
     @Deprecated
     <T> T objectFromJson(String json, Class<T> clazz, EntitySerializationOption... options);
@@ -149,7 +148,7 @@ public interface EntitySerializationAPI {
      * deserialized like in the {@link #entityFromJson(String, MetaClass, EntitySerializationOption...)} method
      *
      * @param json    a string that represents an object
-     * @param type   type of the object
+     * @param type    type of the object
      * @param options options specifying how a JSON object graph was serialized
      * @return deserialized object
      */

@@ -17,7 +17,7 @@
 package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.metamodel.annotations.Composition;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -27,7 +27,6 @@ import java.util.List;
 @Table(name = "REF_DOC")
 @DiscriminatorValue("100")
 @PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
-@NamePattern("%s|description")
 public class Doc extends Card {
 
     private static final long serialVersionUID = -3158618141974583321L;
@@ -41,6 +40,11 @@ public class Doc extends Card {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "doc")
     @Composition
     protected List<Plant> plants;
+
+    @InstanceName
+    public String getCaption() {
+        return getDescription();
+    }
 
     public String getNumber() {
         return number;

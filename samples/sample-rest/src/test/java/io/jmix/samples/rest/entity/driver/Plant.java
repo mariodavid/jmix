@@ -16,17 +16,17 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.StandardEntity;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity(name = "ref$Plant")
 @Table(name = "REF_PLANT")
-@NamePattern("%s|name")
 public class Plant extends StandardEntity {
 
+    @InstanceName
     @Column(name = "NAME")
     protected String name;
 

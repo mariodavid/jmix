@@ -16,8 +16,8 @@
 
 package io.jmix.rest.entity;
 
-import io.jmix.core.entity.BaseUuidEntity;
 import io.jmix.core.entity.annotation.SystemLevel;
+import io.jmix.data.entity.BaseUuidEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

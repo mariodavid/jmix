@@ -16,8 +16,8 @@
 
 package io.jmix.core.app.importexport;
 
-import io.jmix.core.FetchPlan;
 import io.jmix.core.Entity;
+import io.jmix.core.FetchPlan;
 
 import java.util.Collection;
 
@@ -26,7 +26,7 @@ import java.util.Collection;
  */
 public interface EntityImportExportService {
 
-    String NAME = "cuba_EntityImportExportService";
+    String NAME = "jmix_EntityImportExportService";
 
     /**
      * <p>Serializes a collection of entities to JSON using {@link io.jmix.core.app.serialization.EntitySerializationAPI
@@ -128,10 +128,10 @@ public interface EntityImportExportService {
      * If the view contains a property for composition attribute then all composition collection members that are absent
      * in the passed entity will be removed.
      *
-     * @param importView {@code EntityImportView} with the rules that describes how entities should be persisted.
-     * @param validate   whether the passed entities should be validated by the {@link io.jmix.core.BeanValidation}
-     *                   mechanism before entities are persisted
-     * @param optimisticLocking    whether the passed entities versions should be validated before entities are persisted
+     * @param importView        {@code EntityImportView} with the rules that describes how entities should be persisted.
+     * @param validate          whether the passed entities should be validated by the {@link io.jmix.core.BeanValidation}
+     *                          mechanism before entities are persisted
+     * @param optimisticLocking whether the passed entities versions should be validated before entities are persisted
      * @return a collection of entities that have been imported
      */
     Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate,

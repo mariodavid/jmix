@@ -23,9 +23,7 @@ apply plugin: 'io.jmix'
 group = 'io.jmix.sample.rest'
 
 dependencies {
-    implementation project(':modules:core')
-    implementation project(':modules:data')
-    implementation project(':modules:security')
+    implementation project(':starters:starter-standard')
     implementation project(':modules:rest')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'

@@ -16,15 +16,14 @@
 package io.jmix.samples.rest.entity.sec;
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.OnDeleteInverse;
 import io.jmix.core.entity.annotation.SystemLevel;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 
 /**
  * Link between users and roles.
- *
  */
 @Entity(name = "sec$UserRole")
 @Table(name = "SEC_USER_ROLE")

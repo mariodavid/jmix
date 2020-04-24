@@ -19,10 +19,10 @@ package io.jmix.rest.api.auth;
 
 import io.jmix.core.security.AnonymousUserCredentials;
 import io.jmix.rest.api.common.RestParseUtils;
-import io.jmix.rest.api.config.RestApiConfig;
 import io.jmix.rest.api.config.RestQueriesConfiguration;
 import io.jmix.rest.api.config.RestServicesConfiguration;
 import io.jmix.rest.api.sys.CachingHttpServletRequestWrapper;
+import io.jmix.rest.property.RestProperties;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 
 /**
  * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and if
- * {@link RestApiConfig#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the {@link
+ * {@link RestProperties#getRestAnonymousEnabled()} is true, then the anonymous user session will be set to the {@link
  * SecurityContext} and the request will be authenticated. This filter must be invoked after the {@link
  * org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter}
  */
@@ -65,14 +65,14 @@ public class JmixAnonymousAuthenticationFilter extends OncePerRequestFilter {
     protected static final String QUERY_URL_REGEX = "/rest/v2/(queries)/([a-zA-Z_][a-zA-Z\\d_$]*)/([a-zA-Z_][a-zA-Z\\d_]*)(/count)?";
     protected static final Pattern REGEX_PATTERN = Pattern.compile("^" + SERVICE_URL_REGEX + "|" + QUERY_URL_REGEX + "$");
 
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
     protected RestServicesConfiguration restServicesConfiguration;
     protected RestQueriesConfiguration restQueriesConfiguration;
     protected AuthenticationManager authenticationManager;
     protected RestParseUtils restParseUtils;
 
-    public JmixAnonymousAuthenticationFilter(RestApiConfig restApiConfig, RestServicesConfiguration restServicesConfiguration, RestQueriesConfiguration restQueriesConfiguration, AuthenticationManager authenticationManager, RestParseUtils restParseUtils) {
-        this.restApiConfig = restApiConfig;
+    public JmixAnonymousAuthenticationFilter(RestProperties restProperties, RestServicesConfiguration restServicesConfiguration, RestQueriesConfiguration restQueriesConfiguration, AuthenticationManager authenticationManager, RestParseUtils restParseUtils) {
+        this.restProperties = restProperties;
         this.restServicesConfiguration = restServicesConfiguration;
         this.restQueriesConfiguration = restQueriesConfiguration;
         this.authenticationManager = authenticationManager;
@@ -83,7 +83,7 @@ public class JmixAnonymousAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         ServletRequest nextRequest = request;
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (restApiConfig.getRestAnonymousEnabled()) {
+            if (restProperties.getRestAnonymousEnabled()) {
                 populateSecurityContextWithAnonymousSession();
             } else {
                 //anonymous service method or query may be invoked

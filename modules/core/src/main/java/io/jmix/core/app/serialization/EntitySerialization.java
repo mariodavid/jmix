@@ -23,20 +23,17 @@ import com.google.common.collect.Table;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.jmix.core.*;
-import io.jmix.core.compatibility.EntityLoadInfo;
-import io.jmix.core.dynamicattributes.CategoryAttribute;
-import io.jmix.core.dynamicattributes.DynamicAttributesUtils;
-import io.jmix.core.entity.*;
+import io.jmix.core.entity.EntityValues;
+import io.jmix.core.entity.HasUuid;
+import io.jmix.core.entity.IdProxy;
+import io.jmix.core.entity.SecurityState;
 import io.jmix.core.metamodel.datatypes.Datatype;
 import io.jmix.core.metamodel.datatypes.Datatypes;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.Range;
-import io.jmix.core.dynamicattributes.DynamicAttributes;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,9 +47,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static io.jmix.core.entity.BaseEntityInternalAccess.*;
 
 @Component(EntitySerializationAPI.NAME)
 public class EntitySerialization implements EntitySerializationAPI {
@@ -69,7 +63,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 //    protected DynamicAttributes dynamicAttributes;
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected CoreRestProperties coreRestProperties;
 
     @Inject
     protected EntityStates entityStates;
@@ -234,8 +228,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeIdField(entity, jsonObject);
                 if (compactRepeatedEntities) {
                     Table<Object, MetaClass, Entity> processedObjects = context.get().getProcessedEntities();
-                    if (processedObjects.get(entity.getId(), metaClass) == null) {
-                        processedObjects.put(entity.getId(), metaClass, entity);
+                    if (processedObjects.get(EntityValues.getId(entity), metaClass) == null) {
+                        processedObjects.put(EntityValues.getId(entity), metaClass, entity);
                         writeFields(entity, jsonObject, view, cyclicReferences);
                     }
                 } else {
@@ -248,14 +242,12 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeFields(entity, jsonObject, view, cyclicReferences);
             }
 
-            if (globalConfig.getRestRequiresSecurityToken()) {
-                if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
-                    SecurityState securityState = getSecurityState(entity);
-                    if (securityState != null) {
-                        byte[] securityToken = getSecurityToken(securityState);
-                        if (securityToken != null) {
-                            jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
-                        }
+            if (coreRestProperties.isRequiresSecurityToken()) {
+                SecurityState securityState = entity.__getEntityEntry().getSecurityState();
+                if (securityState != null) {
+                    byte[] securityToken = securityState.getSecurityToken();
+                    if (securityToken != null) {
+                        jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
                     }
                 }
             }
@@ -272,21 +264,23 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + metaClass);
             if (metadataTools.hasCompositePrimaryKey(metaClass)) {
-                JsonObject serializedIdEntity = serializeEntity((Entity) entity.getId(), null, Collections.emptySet());
+                JsonObject serializedIdEntity = serializeEntity((Entity) EntityValues.getId(entity), null, Collections.emptySet());
                 jsonObject.add("id", serializedIdEntity);
             } else {
                 Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                jsonObject.addProperty("id", idDatatype.format(entity.getId()));
+                jsonObject.addProperty("id", idDatatype.format(EntityValues.getId(entity)));
             }
         }
 
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
             return !"id".equals(metaProperty.getName()) &&
-                    (DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
-                            (entity instanceof BaseGenericIdEntity) ||
+                    //todo dynamic attribute
+                    (
+//                    DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
+//                            (entity instanceof BaseGenericIdEntity) ||
                             (!metadataTools.isPersistent(metaProperty) &&
                                     (metaProperty.isReadOnly() && !doNotSerializeReadOnlyProperties || !metaProperty.isReadOnly())) ||
-                            (metadataTools.isPersistent(metaProperty) && entityStates.isLoaded(entity, metaProperty.getName())));
+                                    (metadataTools.isPersistent(metaProperty) && entityStates.isLoaded(entity, metaProperty.getName())));
         }
 
         protected void writeFields(Entity entity, JsonObject jsonObject, @Nullable FetchPlan view, Set<Entity> cyclicReferences) {
@@ -301,19 +295,20 @@ public class EntitySerialization implements EntitySerializationAPI {
             for (MetaProperty metaProperty : properties) {
                 if (propertyWritingAllowed(metaProperty, entity)) {
                     FetchPlanProperty viewProperty = null;
-                    if (!DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                        if (view != null) {
-                            viewProperty = view.getProperty(metaProperty.getName());
-                            if (viewProperty == null) continue;
-                        }
+                    //todo dynamic attribute
+//                    if (!DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+//                        if (view != null) {
+//                            viewProperty = view.getProperty(metaProperty.getName());
+//                            if (viewProperty == null) continue;
+//                        }
+//
+//                        if (!entityStates.isNew(entity)
+//                                && !entityStates.isLoaded(entity, metaProperty.getName())) {
+//                            continue;
+//                        }
+//                    }
 
-                        if (!entityStates.isNew(entity)
-                                && !entityStates.isLoaded(entity, metaProperty.getName())) {
-                            continue;
-                        }
-                    }
-
-                    Object fieldValue = entity.getValue(metaProperty.getName());
+                    Object fieldValue = EntityValues.getValue(entity, metaProperty.getName());
 
                     //always write nulls here. GSON will not serialize them to the result if
                     //EntitySerializationOptions.SERIALIZE_NULLS was not set.
@@ -324,12 +319,13 @@ public class EntitySerialization implements EntitySerializationAPI {
 
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
-                        if (isCollectionDynamicAttribute(metaProperty) && fieldValue instanceof Collection) {
-                            jsonObject.add(metaProperty.getName(),
-                                    serializeSimpleCollection((Collection) fieldValue, metaProperty));
-                        } else {
-                            writeSimpleProperty(jsonObject, fieldValue, metaProperty);
-                        }
+                        //todo dynamic attribute
+//                        if (isCollectionDynamicAttribute(metaProperty) && fieldValue instanceof Collection) {
+//                            jsonObject.add(metaProperty.getName(),
+//                                    serializeSimpleCollection((Collection) fieldValue, metaProperty));
+//                        } else {
+                        writeSimpleProperty(jsonObject, fieldValue, metaProperty);
+//                        }
                     } else if (propertyRange.isEnum()) {
                         jsonObject.addProperty(metaProperty.getName(), fieldValue.toString());
                     } else if (propertyRange.isClass()) {
@@ -404,7 +400,6 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected Entity readEntity(JsonObject jsonObject, @Nullable MetaClass metaClass) {
             Object pkValue = null;
-            EntityLoadInfo entityLoadInfo = null;
             MetaClass resultMetaClass = metaClass;
             JsonElement idJsonElement = jsonObject.get("id");
 
@@ -412,17 +407,8 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (entityNameJsonPrimitive != null) {
                 String entityName = entityNameJsonPrimitive.getAsString();
                 resultMetaClass = metadata.getClass(entityName);
-            } else {
-                //fallback to platform version 6.4 where entity id format might be like this: sec$User-c838be0a-96d0-4ef4-a7c0-dff348347f93
-                //could be used by EntityImportExport. In next major release this check can be removed
-                if (idJsonElement != null && idJsonElement.isJsonPrimitive()) {
-                    JsonPrimitive idPrimitive = jsonObject.getAsJsonPrimitive("id");
-                    entityLoadInfo = EntityLoadInfo.parse(idPrimitive.getAsString());
-                    if (entityLoadInfo != null) {
-                        resultMetaClass = entityLoadInfo.getMetaClass();
-                    }
-                }
             }
+
 
             if (resultMetaClass == null) {
                 throw new EntitySerializationException("Cannot deserialize an entity. MetaClass is not defined");
@@ -431,72 +417,68 @@ public class EntitySerialization implements EntitySerializationAPI {
             Entity entity = metadata.create(resultMetaClass);
             clearFields(entity);
 
-            if (entityLoadInfo != null) {
-                //fallback to platform version 6.4
-                pkValue = entityLoadInfo.getId();
-            } else {
-                MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
-                if (primaryKeyProperty != null) {
-                    if (idJsonElement != null) {
-                        if (metadataTools.hasCompositePrimaryKey(resultMetaClass)) {
-                            MetaClass pkMetaClass = primaryKeyProperty.getRange().asClass();
-                            pkValue = readEntity(idJsonElement.getAsJsonObject(), pkMetaClass);
-                        } else {
-                            String idString = idJsonElement.getAsJsonPrimitive().getAsString();
-                            try {
-                                Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                                pkValue = pkDatatype.parse(idString);
-                                if (entity instanceof BaseDbGeneratedIdEntity) {
-                                    pkValue = IdProxy.of((Number) pkValue);
-                                    JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
-                                    if (uuidPrimitive != null) {
-                                        UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
-                                        ((IdProxy) pkValue).setUuid(uuid);
-                                    }
+            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
+            if (primaryKeyProperty != null) {
+                if (idJsonElement != null) {
+                    if (metadataTools.hasCompositePrimaryKey(resultMetaClass)) {
+                        MetaClass pkMetaClass = primaryKeyProperty.getRange().asClass();
+                        pkValue = readEntity(idJsonElement.getAsJsonObject(), pkMetaClass);
+                    } else {
+                        String idString = idJsonElement.getAsJsonPrimitive().getAsString();
+                        try {
+                            Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                            pkValue = pkDatatype.parse(idString);
+                            if (metadataTools.hasDbGeneratedPrimaryKey(resultMetaClass)) {
+                                pkValue = IdProxy.of((Number) pkValue);
+                                JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
+                                if (uuidPrimitive != null) {
+                                    UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
+                                    ((IdProxy) pkValue).setUuid(uuid);
                                 }
-                            } catch (ParseException e) {
-                                throw new EntitySerializationException(e);
                             }
+                        } catch (ParseException e) {
+                            throw new EntitySerializationException(e);
                         }
-                    } else if (!"id".equals(primaryKeyProperty.getName())) {
-                        //pk may be in another field, not "id"
-                        JsonElement pkElement = jsonObject.get(primaryKeyProperty.getName());
-                        if (pkElement != null && pkElement.isJsonPrimitive()) {
-                            try {
-                                Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                                pkValue = pkDatatype.parse(pkElement.getAsJsonPrimitive().getAsString());
-                            } catch (ParseException e) {
-                                throw new EntitySerializationException(e);
-                            }
+                    }
+                } else if (!"id".equals(primaryKeyProperty.getName())) {
+                    //pk may be in another field, not "id"
+                    JsonElement pkElement = jsonObject.get(primaryKeyProperty.getName());
+                    if (pkElement != null && pkElement.isJsonPrimitive()) {
+                        try {
+                            Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                            pkValue = pkDatatype.parse(pkElement.getAsJsonPrimitive().getAsString());
+                        } catch (ParseException e) {
+                            throw new EntitySerializationException(e);
                         }
                     }
                 }
             }
 
+
             if (pkValue != null) {
-                if (pkValue instanceof IdProxy && entity instanceof BaseDbGeneratedIdEntity) {
+                if (pkValue instanceof IdProxy && metadataTools.hasDbGeneratedPrimaryKey(resultMetaClass)) {
                     //noinspection unchecked
-                    ((BaseDbGeneratedIdEntity) entity).setId((IdProxy) pkValue);
+                    EntityValues.setId(entity, pkValue);
                 } else {
-                    entity.setValue("id", pkValue);
+                    EntityValues.setValue(entity, "id", pkValue);
                 }
             }
 
-            if (globalConfig.getRestRequiresSecurityToken() && entity instanceof BaseGenericIdEntity) {
+            if (coreRestProperties.isRequiresSecurityToken()) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
-                    setSecurityToken(getOrCreateSecurityState(entity), securityToken);
+                    entity.__getEntityEntry().getSecurityState().setSecurityToken(securityToken);
                 }
             }
 
             Table<Object, MetaClass, Entity> processedEntities = context.get().getProcessedEntities();
-            Entity processedEntity = processedEntities.get(entity.getId(), resultMetaClass);
+            Entity processedEntity = processedEntities.get(EntityValues.getId(entity), resultMetaClass);
             if (processedEntity != null) {
                 entity = processedEntity;
             } else {
-                if (entity.getId() != null) {
-                    processedEntities.put(entity.getId(), resultMetaClass, entity);
+                if (EntityValues.getId(entity) != null) {
+                    processedEntities.put(EntityValues.getId(entity), resultMetaClass, entity);
                 }
                 readFields(jsonObject, entity);
             }
@@ -516,14 +498,16 @@ public class EntitySerialization implements EntitySerializationAPI {
                 MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, propertyName);
                 MetaProperty metaProperty = metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null;
                 if (metaProperty != null) {
-                    if (entity instanceof BaseGenericIdEntity
-                            && DynamicAttributesUtils.isDynamicAttribute(propertyName)
-                            && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
-                        fetchDynamicAttributes(entity);
-                    }
+                    //todo dynamic attribute
+//                    if (entity instanceof BaseGenericIdEntity
+//                            && DynamicAttributesUtils.isDynamicAttribute(propertyName)
+//                            && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
+//                        fetchDynamicAttributes(entity);
+//                    }
 
                     if (propertyValue.isJsonNull()) {
-                        entity.setValue(propertyName, null);
+                        EntityValues.setValue(entity, propertyName, null);
+//                        entity.setValue(propertyName, null);
                         continue;
                     }
 
@@ -534,49 +518,55 @@ public class EntitySerialization implements EntitySerializationAPI {
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
                         Object value;
-                        if (isCollectionDynamicAttribute(metaProperty)) {
+                        //todo dynamic attribute
+/*                        if (isCollectionDynamicAttribute(metaProperty)) {
                             if (propertyValue.isJsonArray()) {
                                 value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
                             } else {
                                 value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
                             }
+                        } else {*/
+                        //for property with List<String> type the propertyRange.isDatatype() will be true and the property type will be a
+                        //collection
+                        if (Collection.class.isAssignableFrom(propertyType)) {
+                            value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
                         } else {
-                            //for property with List<String> type the propertyRange.isDatatype() will be true and the property type will be a
-                            //collection
-                            if (Collection.class.isAssignableFrom(propertyType)) {
-                                value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
-                            } else {
-                                value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
-                            }
+                            value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
                         }
-                        entity.setValue(propertyName, value);
+//                        }
+                        EntityValues.setValue(entity, propertyName, value);
+//                        entity.setValue(propertyName, value);
                     } else if (propertyRange.isEnum()) {
                         String stringValue = propertyValue.getAsString();
                         try {
                             Enum enumValue = Enum.valueOf((Class<Enum>) propertyType, stringValue);
-                            entity.setValue(propertyName, enumValue);
+                            EntityValues.setValue(entity, propertyName, enumValue);
+//                            entity.setValue(propertyName, enumValue);
                         } catch (Exception e) {
                             throw new EntitySerializationException(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue));
                         }
                     } else if (propertyRange.isClass()) {
                         if (Entity.class.isAssignableFrom(propertyType)) {
                             if (metadataTools.isEmbedded(metaProperty)) {
-                                entity.setValue(propertyName, readEmbeddedEntity(propertyValue.getAsJsonObject(), metaProperty));
+                                EntityValues.setValue(entity, propertyName, readEmbeddedEntity(propertyValue.getAsJsonObject(), metaProperty));
                             } else {
-                                if (isCollectionDynamicAttribute(metaProperty)) {
-                                    Collection<Entity> entities = new ArrayList<>();
-                                    for (JsonElement jsonElement : propertyValue.getAsJsonArray()) {
-                                        Entity entityForList = readEntity(jsonElement.getAsJsonObject(), metaProperty.getRange().asClass());
-                                        entities.add(entityForList);
-                                    }
-                                    entity.setValue(propertyName, entities);
-                                } else {
-                                    entity.setValue(propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
-                                }
+                                //todo dynamic attribute
+//                                if (isCollectionDynamicAttribute(metaProperty)) {
+//                                    Collection<Entity> entities = new ArrayList<>();
+//                                    for (JsonElement jsonElement : propertyValue.getAsJsonArray()) {
+//                                        Entity entityForList = readEntity(jsonElement.getAsJsonObject(), metaProperty.getRange().asClass());
+//                                        entities.add(entityForList);
+//                                    }
+//                                    EntityValues.setValue(entity, propertyName, entities);
+//                                } else {
+//                                    EntityValues.setValue(entity, propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
+//                                }
+                                EntityValues.setValue(entity, propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
                             }
                         } else if (Collection.class.isAssignableFrom(propertyType)) {
                             Collection entities = readCollection(propertyValue.getAsJsonArray(), metaProperty);
-                            entity.setValue(propertyName, entities);
+                            EntityValues.setValue(entity, propertyName, entities);
+//                            entity.setValue(propertyName, entities);
                         }
                     }
                 } else {
@@ -612,11 +602,12 @@ public class EntitySerialization implements EntitySerializationAPI {
             Entity entity = metadata.create(metaClass);
             clearFields(entity);
             readFields(jsonObject, entity);
-            if (globalConfig.getRestRequiresSecurityToken() && entity instanceof EmbeddableEntity) {
+            boolean isEmbeddable = entity.__getEntityEntry().isEmbeddable();
+            if (coreRestProperties.isRequiresSecurityToken() && isEmbeddable) {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
-                    setSecurityToken(getOrCreateSecurityState(entity), securityToken);
+                    entity.__getEntityEntry().getSecurityState().setSecurityToken(securityToken);
                 }
             }
             return entity;
@@ -666,7 +657,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
         }
 
-        protected void fetchDynamicAttributes(Entity entity) {
+        /*protected void fetchDynamicAttributes(Entity entity) {
             if (entity instanceof BaseGenericIdEntity) {
                 LoadContext<BaseGenericIdEntity> loadContext = new LoadContext<>(metadata.getClass(entity));
                 loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
@@ -678,7 +669,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                     ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<>());
                 }
             }
-        }
+        }*/
     }
 
     protected static class DateSerializer implements JsonSerializer<Date> {
@@ -715,11 +706,11 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
     }
 
-    protected boolean isCollectionDynamicAttribute(MetaProperty metaProperty) {
-        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty.getName())) {
-            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-            return attribute != null && BooleanUtils.isTrue(attribute.getIsCollection());
-        }
-        return false;
-    }
+//    protected boolean isCollectionDynamicAttribute(MetaProperty metaProperty) {
+//        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty.getName())) {
+//            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+//            return attribute != null && BooleanUtils.isTrue(attribute.getIsCollection());
+//        }
+//        return false;
+//    }
 }

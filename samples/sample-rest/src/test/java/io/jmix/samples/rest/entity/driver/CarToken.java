@@ -16,7 +16,7 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.BaseUuidEntity;
+import io.jmix.data.entity.BaseUuidEntity;
 
 import javax.persistence.*;
 

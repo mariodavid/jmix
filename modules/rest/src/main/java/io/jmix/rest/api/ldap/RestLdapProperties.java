@@ -17,61 +17,79 @@
 package io.jmix.rest.api.ldap;
 
 
-import io.jmix.core.config.Config;
-import io.jmix.core.config.Property;
-import io.jmix.core.config.Source;
-import io.jmix.core.config.SourceType;
-import io.jmix.core.config.defaults.DefaultBoolean;
-import io.jmix.core.config.defaults.DefaultString;
-import io.jmix.core.config.type.CommaSeparatedStringListTypeFactory;
-import io.jmix.core.config.type.Factory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.List;
 
-/**
- * Configuration parameters interface used by LDAP auth controller.
- */
-@Source(type = SourceType.APP)
-public interface RestLdapConfig extends Config {
+@ConfigurationProperties(prefix = "jmix.rest.ldap")
+@ConstructorBinding
+public class RestLdapProperties {
+
+    boolean enabled;
+    List<String> urls;
+    String base;
+    String user;
+    String password;
+    String userLoginField;
+
+    public RestLdapProperties(@DefaultValue("false") boolean enabled,
+                              @DefaultValue("") List<String> urls,
+                              String base,
+                              String user,
+                              String password,
+                              @DefaultValue("sAMAccountName") String userLoginField) {
+        this.enabled = enabled;
+        this.urls = urls;
+        this.base = base;
+        this.user = user;
+        this.password = password;
+        this.userLoginField = userLoginField;
+    }
+
     /**
      * @return true if LDAP authentication for REST API is enabled
      */
-    @Property("cuba.rest.ldap.enabled")
-    @DefaultBoolean(false)
-    boolean getLdapEnabled();
+    public boolean isEnabled() {
+        return enabled;
+    }
 
     /**
      * @return the urls of the LDAP servers
      */
-    @Property("cuba.rest.ldap.urls")
-    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
-    List<String> getLdapUrls();
+    public List<String> getUrls() {
+        return urls;
+    }
 
     /**
      * @return the base LDAP suffix from which all operations should origin.
      * If a base suffix is set, you will not have to (and, indeed, must not) specify the full distinguished names in any
      * operations performed. For instance: dc=example,dc=com
      */
-    @Property("cuba.rest.ldap.base")
-    String getLdapBase();
+    public String getBase() {
+        return base;
+    }
 
     /**
      * @return user that is used to connect to LDAP server.
      * For instance: cn=System User,ou=Employees,dc=mycompany,dc=com
      */
-    @Property("cuba.rest.ldap.user")
-    String getLdapUser();
+    public String getUser() {
+        return user;
+    }
 
     /**
      * @return password that is used to connect to LDAP server
      */
-    @Property("cuba.rest.ldap.password")
-    String getLdapPassword();
+    public String getPassword() {
+        return password;
+    }
 
     /**
      * @return Field of LDAP object for user login matching.
      */
-    @Property("cuba.rest.ldap.userLoginField")
-    @DefaultString("sAMAccountName")
-    String getLdapUserLoginField();
+    public String getUserLoginField() {
+        return userLoginField;
+    }
 }

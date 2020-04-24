@@ -71,7 +71,7 @@ public class QueriesControllerFT extends AbstractRestControllerFT {
         );
 
         UUID modelId = dirtyData.createModelUuid();
-        executePrepared("insert into ref_model(id, name, version) values (?, ?, 1)",
+        executePrepared("insert into ref_model(id, name, version, dtype) values (?, ?, 1, 'ref$ExtModel')",
                 modelId,
                 "Audi TT");
 

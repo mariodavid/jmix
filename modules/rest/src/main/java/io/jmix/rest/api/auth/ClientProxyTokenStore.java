@@ -17,11 +17,13 @@
 package io.jmix.rest.api.auth;
 
 import com.google.common.base.Strings;
-import io.jmix.core.GlobalConfig;
-import io.jmix.core.security.*;
+import io.jmix.core.CoreProperties;
+import io.jmix.core.security.LoginException;
+import io.jmix.core.security.UserSession;
+import io.jmix.core.security.UserSessionManager;
+import io.jmix.core.security.UserSessions;
 import io.jmix.rest.api.common.RestAuthUtils;
 import io.jmix.rest.api.common.RestTokenMasker;
-import io.jmix.rest.api.config.RestApiConfig;
 import io.jmix.rest.rest.RestUserSessionInfo;
 import io.jmix.rest.rest.ServerTokenStore;
 import org.apache.commons.lang3.StringUtils;
@@ -53,10 +55,10 @@ public class ClientProxyTokenStore implements TokenStore {
     protected ServerTokenStore serverTokenStore;
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected CoreProperties coreProperties;
 
-    @Inject
-    protected RestApiConfig restApiConfig;
+//    @Inject
+//    protected RestApiProperties restApiProperties;
     // todo AuthenticationService
 //    @Inject
 //    protected AuthenticationService authenticationService;
@@ -252,9 +254,9 @@ public class ClientProxyTokenStore implements TokenStore {
     protected String makeClientInfo(String userAgent) {
         //noinspection UnnecessaryLocalVariable
         String serverInfo = String.format("REST API (%s:%s/%s) %s",
-                globalConfig.getWebHostName(),
-                globalConfig.getWebPort(),
-                globalConfig.getWebContextName(),
+                coreProperties.getWebHostName(),
+                coreProperties.getWebPort(),
+                coreProperties.getWebContextName(),
                 StringUtils.trimToEmpty(userAgent));
 
         return serverInfo;

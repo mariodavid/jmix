@@ -17,11 +17,9 @@
 package io.jmix.rest.api.ldap;
 
 import com.google.common.base.Strings;
-import io.jmix.core.ConfigInterfaces;
 import io.jmix.rest.api.auth.OAuthTokenIssuer;
-import io.jmix.rest.api.config.RestApiConfig;
+import io.jmix.rest.property.RestProperties;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.ldap.filter.AndFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,12 +28,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.ClientAuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -51,7 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.*;
 
-//@ConditionalOnAppProperty(property = "cuba.rest.ldap.enabled", value = "true")
+//@ConditionalOnAppProperty(property = "jmix.rest.ldap.enabled", value = "true")
 @RestController
 public class LdapAuthController implements InitializingBean {
 
@@ -65,12 +63,11 @@ public class LdapAuthController implements InitializingBean {
     protected String ldapUserLoginField;
 
     @Inject
-    protected ConfigInterfaces configuration;
-//    @Inject
+    protected RestLdapProperties restLdapProperties;
+    //    @Inject
 //    protected OAuthTokenIssuer oAuthTokenIssuer;
-
-    protected RestLdapConfig ldapConfig;
-    protected RestApiConfig restApiConfig;
+    @Inject
+    protected RestProperties restProperties;
 
     protected Set<HttpMethod> allowedRequestMethods = Collections.singleton(HttpMethod.POST);
 
@@ -94,7 +91,7 @@ public class LdapAuthController implements InitializingBean {
                                                              HttpServletRequest request)
             throws HttpRequestMethodNotSupportedException {
 
-        if (!ldapConfig.getLdapEnabled()) {
+        if (!restLdapProperties.isEnabled()) {
             log.debug("LDAP authentication is disabled. Property cuba.rest.ldap.enabled is false");
 
             throw new InvalidGrantException("LDAP is not supported");
@@ -112,7 +109,7 @@ public class LdapAuthController implements InitializingBean {
 
         String username = parameters.get("username");
 
-        if (restApiConfig.getStandardAuthenticationUsers().contains(username)) {
+        if (restProperties.getStandardAuthenticationUsers().contains(username)) {
             log.info("User {} is not allowed to use external login in REST API", username);
             throw new BadCredentialsException("Bad credentials");
         }
@@ -144,13 +141,10 @@ public class LdapAuthController implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.ldapConfig = configuration.getConfig(RestLdapConfig.class);
-        this.restApiConfig = configuration.getConfig(RestApiConfig.class);
+        if (restLdapProperties.isEnabled()) {
+            checkRequiredConfigProperties(restLdapProperties);
 
-        if (ldapConfig.getLdapEnabled()) {
-            checkRequiredConfigProperties(ldapConfig);
-
-            defaultLdapContextSource = createLdapContextSource(ldapConfig);
+            defaultLdapContextSource = createLdapContextSource(restLdapProperties);
             defaultLdapTemplate = createLdapTemplate(defaultLdapContextSource);
             if (ldapContextSource == null) {
                 ldapContextSource = defaultLdapContextSource;
@@ -159,7 +153,7 @@ public class LdapAuthController implements InitializingBean {
                 ldapTemplate = defaultLdapTemplate;
             }
             if (ldapUserLoginField == null) {
-                ldapUserLoginField = ldapConfig.getLdapUserLoginField();
+                ldapUserLoginField = restLdapProperties.getUserLoginField();
             }
         }
     }
@@ -201,33 +195,33 @@ public class LdapAuthController implements InitializingBean {
         return ldapTemplate;
     }
 
-    protected LdapContextSource createLdapContextSource(RestLdapConfig ldapConfig) {
+    protected LdapContextSource createLdapContextSource(RestLdapProperties restLdapProperties) {
         LdapContextSource ldapContextSource = new LdapContextSource();
 
-        ldapContextSource.setBase(ldapConfig.getLdapBase());
-        List<String> ldapUrls = ldapConfig.getLdapUrls();
+        ldapContextSource.setBase(restLdapProperties.getBase());
+        List<String> ldapUrls = restLdapProperties.getUrls();
         ldapContextSource.setUrls(ldapUrls.toArray(new String[ldapUrls.size()]));
-        ldapContextSource.setUserDn(ldapConfig.getLdapUser());
-        ldapContextSource.setPassword(ldapConfig.getLdapPassword());
+        ldapContextSource.setUserDn(restLdapProperties.getUser());
+        ldapContextSource.setPassword(restLdapProperties.getPassword());
 
         ldapContextSource.afterPropertiesSet();
 
         return ldapContextSource;
     }
 
-    protected void checkRequiredConfigProperties(RestLdapConfig ldapConfig) {
+    protected void checkRequiredConfigProperties(RestLdapProperties ldapConfig) {
         List<String> missingProperties = new ArrayList<>();
-        if (StringUtils.isBlank(ldapConfig.getLdapBase())) {
-            missingProperties.add("restapi.web.ldap.base");
+        if (StringUtils.isBlank(ldapConfig.getBase())) {
+            missingProperties.add("rest.web.ldap.base");
         }
-        if (ldapConfig.getLdapUrls().isEmpty()) {
-            missingProperties.add("restapi.web.ldap.urls");
+        if (ldapConfig.getUrls().isEmpty()) {
+            missingProperties.add("rest.web.ldap.urls");
         }
-        if (StringUtils.isBlank(ldapConfig.getLdapUser())) {
-            missingProperties.add("restapi.web.ldap.user");
+        if (StringUtils.isBlank(ldapConfig.getUser())) {
+            missingProperties.add("rest.web.ldap.user");
         }
-        if (StringUtils.isBlank(ldapConfig.getLdapPassword())) {
-            missingProperties.add("restapi.web.ldap.password");
+        if (StringUtils.isBlank(ldapConfig.getPassword())) {
+            missingProperties.add("rest.web.ldap.password");
         }
 
         if (!missingProperties.isEmpty()) {

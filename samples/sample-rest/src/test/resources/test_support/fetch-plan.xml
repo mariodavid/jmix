@@ -15,163 +15,163 @@
   ~ limitations under the License.
   -->
 
-<views xmlns="http://schemas.haulmont.com/jmix/views.xsd">
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+<fetchPlans xmlns="http://jmix.io/schema/core/fetch-plans">
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           extends="_local"
           name="carBrowse">
         <property name="model"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="colour"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="seller"
-                  view="_minimal"/>
+                  fetchPlan="_minimal"/>
         <property name="currency"
-                  view="_minimal"/>
-    </view>
+                  fetchPlan="_minimal"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           extends="_minimal"
           name="car-with-colour">
         <property name="colour"
-                  view="_local"/>
-    </view>
+                  fetchPlan="_local"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           name="car-without-vin">
         <property name="colour"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Driver"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Driver"
           name="driverWithVersionAndCreateTs">
         <property name="version"/>
         <property name="createTs"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Driver"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Driver"
           name="driverWithStatusAndName">
         <property name="status"/>
         <property name="name"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.CarToken" name="carTokenEdit" extends="_local">
-        <property name="garageToken" view="_local"/>
-    </view>
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.CarToken" name="carTokenEdit" extends="_local">
+        <property name="garageToken" fetchPlan="_local"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Repair"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Repair"
           name="repairEdit"
           extends="_local">
-        <property name="car" view="_minimal"/>
-        <property name="carTokens" view="carTokenEdit"/>
+        <property name="car" fetchPlan="_minimal"/>
+        <property name="carTokens" fetchPlan="carTokenEdit"/>
         <!--<property name="db1Customer"/>-->
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           extends="_local"
           name="carEdit">
         <property name="model"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="colour"
-                  view="_minimal"/>
+                  fetchPlan="_minimal"/>
         <property name="driverAllocations"
-                  view="carEdit"/>
+                  fetchPlan="carEdit"/>
         <property name="repairs"
-                  view="repairEdit"/>
+                  fetchPlan="repairEdit"/>
         <property name="seller"
-                  view="_minimal"/>
+                  fetchPlan="_minimal"/>
         <property name="currency"
-                  view="_minimal"/>
+                  fetchPlan="_minimal"/>
         <property name="details"
-                  view="carDetailsEdit"/>
+                  fetchPlan="carDetailsEdit"/>
         <property name="carDocumentation"
-                  view="_minimal"/>
-    </view>
+                  fetchPlan="_minimal"/>
+    </fetchPlan>
 
-    <view entity="ref$CarDetails" name="carDetailsEdit" extends="_local">
+    <fetchPlan entity="ref$CarDetails" name="carDetailsEdit" extends="_local">
         <property name="car"/>
         <property name="items"
-                  view="_local"/>
-    </view>
+                  fetchPlan="_local"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           extends="_local"
           name="carWithInsuranceCases">
         <property name="insuranceCases"
-                  view="_local"/>
-    </view>
+                  fetchPlan="_local"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           name="carWithTwoLevelComposition">
         <property name="createTs"/>
         <property name="repairs"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="version"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           name="carWithModel">
         <property name="updateTs"/>
         <property name="model"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="version"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Car"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Car"
           name="carWithTransform">
         <property name="version"/>
         <property name="model"
-                  view="_local"/>
+                  fetchPlan="_local"/>
         <property name="updateTs"/>
         <property name="repairs"/>
         <property name="createTs"/>
         <property name="vin"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Plant"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Plant"
           extends="_local"
           name="plantWithModels">
-        <property name="models" view="_local"/>
-    </view>
+        <property name="models" fetchPlan="_local"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Address"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Address"
           extends="_local"
           name="addressEdit">
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.DriverAllocation"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.DriverAllocation"
           name="carEdit">
         <property name="driver"
-                  view="_minimal"/>
-    </view>
+                  fetchPlan="_minimal"/>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Doc"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Doc"
           extends="_local"
           name="browse">
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Colour" name="testColour">
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Colour" name="testColour">
         <property name="description"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Currency"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Currency"
           name="currencyWithName">
         <property name="name"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Currency"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Currency"
           name="currencyWithCodeAndName">
         <property name="name"/>
         <property name="code"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.driver.Repair"
+    <fetchPlan class="io.jmix.samples.rest.entity.driver.Repair"
           name="repairWithDescription">
         <property name="description"/>
         <property name="date"/>
-    </view>
+    </fetchPlan>
 
-    <view class="io.jmix.samples.rest.entity.sec.User"
+    <fetchPlan class="io.jmix.samples.rest.entity.sec.User"
           name="user-with-group"
           extends="_local">
-        <property name="group" view="_local"/>
-    </view>
-</views>
+        <property name="group" fetchPlan="_local"/>
+    </fetchPlan>
+</fetchPlans>

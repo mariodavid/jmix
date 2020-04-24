@@ -21,14 +21,16 @@ import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.security.JmixCoreSecurityConfiguration;
 import io.jmix.data.JmixDataConfiguration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-@ComponentScan("io.jmix.rest")
 @Configuration
+@ComponentScan("io.jmix.rest")
+@ConfigurationPropertiesScan
 @JmixModule(dependsOn = {JmixCoreConfiguration.class, JmixDataConfiguration.class, JmixCoreSecurityConfiguration.class})
 @PropertySource("classpath:/io/jmix/rest/application.properties")
 public class JmixRestConfiguration {

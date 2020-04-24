@@ -16,8 +16,8 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.StandardEntity;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,11 +25,11 @@ import javax.persistence.Table;
 
 @Entity(name = "ref$Colour")
 @Table(name = "REF_COLOUR")
-@NamePattern("%s|name")
 public class Colour extends StandardEntity {
 
     private static final long serialVersionUID = -6966135766799019463L;
 
+    @InstanceName
     @Column(name = "NAME")
     private String name;
 

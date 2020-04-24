@@ -17,9 +17,9 @@
 package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.entity.annotation.OnDeleteInverse;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -30,7 +30,6 @@ import java.util.Set;
 
 @Entity(name = "ref$Model")
 @Table(name = "REF_MODEL")
-@NamePattern("%s: %s|manufacturer,name")
 public class Model extends StandardEntity {
 
     private static final long serialVersionUID = -645455241169768567L;
@@ -56,6 +55,11 @@ public class Model extends StandardEntity {
     @PostConstruct
     public void initName() {
         setName("Default Model name");
+    }
+
+    @InstanceName(relatedProperties = {"manufacturer", "name"})
+    public String getCaption() {
+        return String.format("%s: (%s)", getManufacturer(), getName());
     }
 
     public Integer getNumberOfSeats() {

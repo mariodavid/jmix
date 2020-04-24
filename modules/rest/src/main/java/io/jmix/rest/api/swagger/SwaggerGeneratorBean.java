@@ -16,20 +16,19 @@
 
 package io.jmix.rest.api.swagger;
 
-import io.jmix.core.GlobalConfig;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.Metadata;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.Resources;
 import io.jmix.core.commons.datastruct.Pair;
 import io.jmix.core.commons.util.ReflectionHelper;
-import io.jmix.core.metamodel.annotations.NamePattern;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetadataObject;
 import io.jmix.rest.api.config.RestQueriesConfiguration;
-import io.jmix.rest.api.config.RestServicesConfiguration;
 import io.jmix.rest.api.config.RestQueriesConfiguration.QueryInfo;
 import io.jmix.rest.api.config.RestQueriesConfiguration.QueryParamInfo;
+import io.jmix.rest.api.config.RestServicesConfiguration;
 import io.jmix.rest.api.config.RestServicesConfiguration.RestMethodInfo;
 import io.jmix.rest.api.config.RestServicesConfiguration.RestMethodParamInfo;
 import io.jmix.rest.api.config.RestServicesConfiguration.RestServiceInfo;
@@ -73,7 +72,7 @@ public class SwaggerGeneratorBean implements SwaggerGenerator {
     protected static final String ARRAY_SIGNATURE = "[]";
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected CoreProperties globalConfig;
 
     @Inject
     protected Resources resources;
@@ -480,10 +479,10 @@ public class SwaggerGeneratorBean implements SwaggerGenerator {
     protected Property getNamePatternProperty(MetaClass entityClass) {
         Property namePatternProperty = new StringProperty();
         Class<?> javaClass = entityClass.getJavaClass();
-        NamePattern namePatternAnnotation = javaClass.getAnnotation(NamePattern.class);
-        if (namePatternAnnotation != null) {
-            namePatternProperty.setDefault(namePatternAnnotation.value());
-        }
+//        NamePattern namePatternAnnotation = javaClass.getAnnotation(NamePattern.class);
+//        if (namePatternAnnotation != null) {
+//            namePatternProperty.setDefault(namePatternAnnotation.value());
+//        }
         return namePatternProperty;
     }
 

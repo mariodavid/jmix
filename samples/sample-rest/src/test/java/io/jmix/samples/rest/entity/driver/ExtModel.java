@@ -21,7 +21,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity(name = "ref$ExtModel")
-//@Extends(Model.class)
 public class ExtModel extends Model {
 
     @Column(name = "LAUNCH_YEAR")

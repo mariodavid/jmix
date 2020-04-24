@@ -18,11 +18,7 @@ package io.jmix.rest.api.service;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonElement;
+import com.google.gson.*;
 import io.jmix.core.*;
 import io.jmix.core.app.importexport.EntityImportException;
 import io.jmix.core.app.importexport.EntityImportExportService;
@@ -31,12 +27,14 @@ import io.jmix.core.app.importexport.EntityImportViewBuilderAPI;
 import io.jmix.core.app.serialization.EntitySerializationAPI;
 import io.jmix.core.app.serialization.EntitySerializationOption;
 import io.jmix.core.commons.util.Preconditions;
-import io.jmix.core.entity.*;
+import io.jmix.core.entity.EntityValues;
+import io.jmix.core.entity.IdProxy;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.security.EntityOp;
 import io.jmix.core.security.Security;
+import io.jmix.data.entity.BaseIdentityIdEntity;
+import io.jmix.data.entity.BaseIntIdentityIdEntity;
 import io.jmix.rest.api.common.RestControllerUtils;
-import io.jmix.rest.api.config.RestApiConfig;
 import io.jmix.rest.api.exception.RestAPIException;
 import io.jmix.rest.api.service.filter.RestFilterParseException;
 import io.jmix.rest.api.service.filter.RestFilterParseResult;
@@ -44,7 +42,7 @@ import io.jmix.rest.api.service.filter.RestFilterParser;
 import io.jmix.rest.api.service.filter.data.EntitiesSearchResult;
 import io.jmix.rest.api.service.filter.data.ResponseInfo;
 import io.jmix.rest.api.transform.JsonTransformationDirection;
-//import io.jmix.ui.sys.PersistenceManagerClient;
+import io.jmix.rest.property.RestProperties;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -57,6 +55,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.*;
+
+//import io.jmix.ui.sys.PersistenceManagerClient;
 
 /**
  * Class that executes business logic required by the {@link io.jmix.rest.api.controllers.EntitiesController}. It
@@ -96,13 +96,16 @@ public class EntitiesControllerManager {
     protected RestFilterParser restFilterParser;
 
     @Inject
-    protected RestApiConfig restApiConfig;
+    protected RestProperties restProperties;
 
     @Inject
     protected EntityStates entityStates;
 
     @Inject
     protected FetchPlanRepository fetchPlanRepository;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -121,7 +124,7 @@ public class EntitiesControllerManager {
 
         if (!Strings.isNullOrEmpty(viewName)) {
             FetchPlan view = restControllerUtils.getView(metaClass, viewName);
-            ctx.setView(view);
+            ctx.setFetchPlan(view);
         }
 
         ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
@@ -135,7 +138,7 @@ public class EntitiesControllerManager {
 
         restControllerUtils.applyAttributesSecurity(entity);
 
-        String json = entitySerializationAPI.toJson(entity, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
+        String json = entitySerializationAPI.toJson(entity, ctx.getFetchPlan(), serializationOptions.toArray(new EntitySerializationOption[0]));
         json = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.TO_VERSION, json);
         return json;
     }
@@ -161,8 +164,8 @@ public class EntitiesControllerManager {
 
         Long count = null;
         if (BooleanUtils.isTrue(returnCount)) {
-            LoadContext ctx = LoadContext.create(metaClass.getJavaClass())
-                    .setQuery(LoadContext.createQuery(queryString));
+            LoadContext ctx = new LoadContext(metaClass.getJavaClass())
+                    .setQuery(new LoadContext.Query(queryString));
             count = dataManager.getCount(ctx);
         }
         return new EntitiesSearchResult(json, count);
@@ -207,8 +210,8 @@ public class EntitiesControllerManager {
                 dynamicAttributes, modelVersion, metaClass, queryParameters);
         Long count = null;
         if (BooleanUtils.isTrue(returnCount)) {
-            LoadContext ctx = LoadContext.create(metaClass.getJavaClass())
-                    .setQuery(LoadContext.createQuery(queryString).setParameters(queryParameters));
+            LoadContext ctx = new LoadContext(metaClass.getJavaClass())
+                    .setQuery(new LoadContext.Query(queryString).setParameters(queryParameters));
             count = dataManager.getCount(ctx);
         }
 
@@ -315,7 +318,7 @@ public class EntitiesControllerManager {
         FetchPlan view = null;
         if (!Strings.isNullOrEmpty(viewName)) {
             view = restControllerUtils.getView(metaClass, viewName);
-            ctx.setView(view);
+            ctx.setFetchPlan(view);
         }
 
         ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
@@ -382,10 +385,10 @@ public class EntitiesControllerManager {
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
-                .buildAndExpand(entity.getId().toString());
+                .buildAndExpand(EntityValues.getId(entity).toString());
 
-        if (restApiConfig.getRestResponseViewEnabled() && responseView != null && !entityStates.isLoadedWithView(entity, responseView)) {
-            entity = dataManager.reload(entity, responseView);
+        if (restProperties.getRestResponseViewEnabled() && responseView != null && !entityStates.isLoadedWithView(entity, responseView)) {
+            entity = dataManager.load(new LoadContext(metaClass).setFetchPlan(restControllerUtils.getView(metaClass, responseView)));
         }
         restControllerUtils.applyAttributesSecurity(entity);
         String bodyJson = createEntityJson(entity, metaClass, responseView, modelVersion);
@@ -406,11 +409,11 @@ public class EntitiesControllerManager {
         Collection<Entity> mainCollectionEntity = new ArrayList<>();
         JsonArray entitiesJsonArray = new JsonParser().parse(entitiesJson).getAsJsonArray();
 
-        if (restApiConfig.getRestResponseViewEnabled() && responseView != null) {
+        if (restProperties.getRestResponseViewEnabled() && responseView != null) {
             for (JsonElement jsonElement : entitiesJsonArray) {
                 Entity mainEntity = createEntityFromJson(metaClass, jsonElement.toString());
                 if (!entityStates.isLoadedWithView(mainEntity, responseView)) {
-                    mainEntity = dataManager.reload(mainEntity, responseView);
+                    mainEntity = dataManager.load(new LoadContext(metaClass).setFetchPlan(restControllerUtils.getView(metaClass, responseView)));
                 }
                 restControllerUtils.applyAttributesSecurity(mainEntity);
                 mainCollectionEntity.add(mainEntity);
@@ -461,8 +464,8 @@ public class EntitiesControllerManager {
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
         Entity entity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
-        if (restApiConfig.getRestResponseViewEnabled() && responseView != null && !entityStates.isLoadedWithView(entity, responseView)) {
-            entity = dataManager.reload(entity, responseView);
+        if (restProperties.getRestResponseViewEnabled() && responseView != null && !entityStates.isLoadedWithView(entity, responseView)) {
+            entity = dataManager.load(new LoadContext(metaClass).setFetchPlan(restControllerUtils.getView(metaClass, responseView)));
         }
         restControllerUtils.applyAttributesSecurity(entity);
         String bodyJson = createEntityJson(entity, metaClass, responseView, modelVersion);
@@ -479,12 +482,12 @@ public class EntitiesControllerManager {
 
         JsonArray entitiesJsonArray = new JsonParser().parse(entitiesJson).getAsJsonArray();
         Collection<Entity> entities = new ArrayList<>();
-        if (restApiConfig.getRestResponseViewEnabled() && responseView != null) {
+        if (restProperties.getRestResponseViewEnabled() && responseView != null) {
             for (JsonElement jsonElement : entitiesJsonArray) {
                 String entityId = jsonElement.getAsJsonObject().get("id").getAsString();
                 Entity entity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, jsonElement.toString(), entityId);
-                if (!entityStates.isLoadedWithView(entity, responseView)) {
-                    entity = dataManager.reload(entity, responseView);
+                if (!entityStates.isLoadedWithFetchPlan(entity, responseView)) {
+                    entity = dataManager.load(new LoadContext(metaClass).setFetchPlan(restControllerUtils.getView(metaClass, responseView)));
                 }
                 restControllerUtils.applyAttributesSecurity(entity);
                 entities.add(entity);
@@ -523,16 +526,14 @@ public class EntitiesControllerManager {
             throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST, e);
         }
 
-        if (entity instanceof BaseGenericIdEntity) {
-            //noinspection unchecked
-            ((BaseGenericIdEntity) entity).setId(id);
-        }
+        //noinspection unchecked
+        EntityValues.setId(entity, id);
 
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity),
-                    entityImportView, true, restApiConfig.getOptimisticLockingEnabled());
+                    entityImportView, true, restProperties.getOptimisticLockingEnabled());
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
@@ -575,7 +576,7 @@ public class EntitiesControllerManager {
 
     private Object getIdFromString(String entityId, MetaClass metaClass) {
         try {
-            if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+            if (metadataTools.hasDbGeneratedPrimaryKey(metaClass)) {
                 if (BaseIdentityIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
                     return IdProxy.of(Long.valueOf(entityId));
                 } else if (BaseIntIdentityIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
@@ -688,7 +689,7 @@ public class EntitiesControllerManager {
         Preconditions.checkNotNullArgument(entity);
 
         String json;
-        if (restApiConfig.getRestResponseViewEnabled()) {
+        if (restProperties.getRestResponseViewEnabled()) {
             FetchPlan view = findOrCreateResponseView(metaClass, responseView);
             json = entitySerializationAPI.toJson(entity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         } else {
@@ -699,7 +700,7 @@ public class EntitiesControllerManager {
 
     protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String responseView, String version) {
         String json;
-        if (restApiConfig.getRestResponseViewEnabled()) {
+        if (restProperties.getRestResponseViewEnabled()) {
             FetchPlan view = findOrCreateResponseView(metaClass, responseView);
             json = entitySerializationAPI.toJson(entities, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         } else {

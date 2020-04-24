@@ -21,9 +21,8 @@ import io.jmix.samples.rest.service.app.RestTestService;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Rule;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -56,7 +55,7 @@ public class BeanValidationFT extends AbstractRestControllerFT {
             assertEquals(1, locationHeaders.length);
             String location = locationHeaders[0].getValue();
             String expectedUrl = baseUrl + "/entities/ref$Currency";
-            
+
             assertTrue(location.startsWith(expectedUrl));
             String idString = location.substring(location.lastIndexOf("/") + 1);
 
@@ -121,6 +120,8 @@ public class BeanValidationFT extends AbstractRestControllerFT {
         }
     }
 
+    //todo validation
+    @Ignore
     @Test
     public void commitInvalidClassLevelValidators() throws Exception {
         String json = getFileContent("currency-invalid-code-ban.json", null);
@@ -167,6 +168,8 @@ public class BeanValidationFT extends AbstractRestControllerFT {
         }
     }
 
+    //todo validation
+    @Ignore
     @Test
     public void callInvalidService() throws Exception {
         String requestBody = getFileContent("service-invalid-call.json", null);
@@ -182,6 +185,8 @@ public class BeanValidationFT extends AbstractRestControllerFT {
         }
     }
 
+    //todo validation
+    @Ignore
     @Test
     public void callInvalidServiceResult() throws Exception {
         String requestBody = getFileContent("service-valid-call.json", null);

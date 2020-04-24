@@ -21,18 +21,18 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Table;
+import io.jmix.core.Resources;
+import io.jmix.core.commons.util.Dom4j;
 import io.jmix.rest.api.transform.EntityJsonTransformer;
 import io.jmix.rest.api.transform.JsonTransformationDirection;
 import io.jmix.rest.api.transform.StandardEntityJsonTransformer;
-import io.jmix.core.commons.util.Dom4j;
-import io.jmix.core.Resources;
-import io.jmix.core.compatibility.AppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -54,7 +54,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component("jmix_RestJsonTransformations")
 public class RestJsonTransformations {
 
-    protected static final String CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME = "jmix.rest.jsonTransformationConfig";
+    protected static final String JMIX_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME = "jmix.rest.jsonTransformationConfig";
 
     private static final Logger log = LoggerFactory.getLogger(RestJsonTransformations.class);
 
@@ -72,6 +72,9 @@ public class RestJsonTransformations {
     //inject the context here because we can't use the AppContext for getting beans. REST API has its own spring context
     @Inject
     protected WebApplicationContext restApiContext;
+
+    @Inject
+    protected Environment environment;
 
     /**
      * Tries to find the transformer for the given entity, model version and transformation direction. If such
@@ -131,7 +134,7 @@ public class RestJsonTransformations {
     }
 
     protected void init() {
-        String configName = AppContext.getProperty(CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME);
+        String configName = environment.getProperty(JMIX_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME);
         StringTokenizer tokenizer = new StringTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);

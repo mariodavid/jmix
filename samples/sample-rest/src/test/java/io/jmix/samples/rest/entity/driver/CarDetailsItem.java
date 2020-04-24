@@ -16,7 +16,7 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.StandardEntity;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 

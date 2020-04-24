@@ -16,15 +16,16 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.EmbeddableEntity;
-import io.jmix.core.metamodel.annotations.MetaClass;
+import io.jmix.core.Entity;
+import io.jmix.core.metamodel.annotations.ModelObject;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.sql.Date;
 
 @Embeddable
-@MetaClass(name = "ref$Address")
-public class Address extends EmbeddableEntity {
+@ModelObject(name = "ref$Address")
+public class Address implements Entity {
 
     private static final long serialVersionUID = -6835930349916854264L;
 
@@ -49,7 +50,7 @@ public class Address extends EmbeddableEntity {
     @Column(name = "FLATNUMBER")
     private String flatNumber;
 
-    //@MetaProperty(datatype = GeoCoordinateDatatype.NAME)
+    //@ModelProperty(datatype = GeoCoordinateDatatype.NAME)
     @Column(name = "LATITUDE")
     private Double latitude;
 

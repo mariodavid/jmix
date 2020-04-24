@@ -652,11 +652,11 @@ public class ServicesControllerFT extends AbstractRestControllerFT {
     @Test
     public void serviceThatReturnsNotPersistedStringIdEntityGET() throws Exception {
         Map<String, String> params = new LinkedHashMap<>();
-        try (CloseableHttpResponse response = sendGet(baseUrl + "/services/" + RestTestService.NAME + "/getRefappNotPersistentStringIdEntity", oauthToken, params)) {
+        try (CloseableHttpResponse response = sendGet(baseUrl + "/services/" + RestTestService.NAME + "/getNotPersistentStringIdEntity", oauthToken, params)) {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
             assertEquals("application/json;charset=UTF-8", responseContentType(response));
             ReadContext readContext = parseResponse(response);
-            assertEquals("jmix$RefappNotPersistentStringIdEntity", readContext.read("$._entityName"));
+            assertEquals("jmix$NotPersistentStringIdEntity", readContext.read("$._entityName"));
             assertEquals("1", readContext.read("$.id"));
             assertEquals("Bob", readContext.read("$.name"));
         }

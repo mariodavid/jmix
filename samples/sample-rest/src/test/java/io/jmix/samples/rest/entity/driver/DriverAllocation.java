@@ -17,17 +17,16 @@ package io.jmix.samples.rest.entity.driver;
 
 
 import io.jmix.core.DeletePolicy;
-import io.jmix.core.entity.BaseUuidEntity;
 import io.jmix.core.entity.Creatable;
 import io.jmix.core.entity.annotation.OnDeleteInverse;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.BaseUuidEntity;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "ref$DriverAllocation")
 @Table(name = "REF_DRIVER_ALLOC")
-@NamePattern("#getCaption|driver,car")
 public class DriverAllocation extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 8101497971694305079L;
@@ -46,6 +45,11 @@ public class DriverAllocation extends BaseUuidEntity implements Creatable {
     @ManyToOne
     @JoinColumn(name = "CAR_ID")
     private Car car;
+
+    @InstanceName(relatedProperties = {"driver", "car"})
+    public String getCaption() {
+        return String.format("%s:(%s)", getDriver(), getCar());
+    }
 
     @Override
     public Date getCreateTs() {

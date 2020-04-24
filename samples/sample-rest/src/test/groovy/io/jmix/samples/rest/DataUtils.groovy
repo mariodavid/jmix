@@ -133,7 +133,7 @@ class DataUtils {
         sql.dataSet('ref_Driver').add(
                 id: driverId,
                 version: 1,
-//                dtype: 'ref$ExtDriver',
+                dtype: 'ref$ExtDriver',
                 status: status.id,
                 name: name
         )

@@ -18,10 +18,10 @@ package io.jmix.samples.rest.entity.driver;
 
 import io.jmix.core.UuidProvider;
 import io.jmix.core.entity.*;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.BaseLongIdEntity;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import java.util.Date;
@@ -29,7 +29,6 @@ import java.util.UUID;
 
 @Entity(name = "ref$Seller")
 @Table(name = "REF_SELLER")
-@NamePattern("%s|name")
 public class Seller extends BaseLongIdEntity implements Versioned, Creatable, Updatable, SoftDelete, HasUuid {
 
     private static final long serialVersionUID = 3238417347166814388L;
@@ -59,6 +58,7 @@ public class Seller extends BaseLongIdEntity implements Versioned, Creatable, Up
     @Column(name = "DELETED_BY", length = 50)
     protected String deletedBy;
 
+    @InstanceName
     @Column(name = "NAME")
     protected String name;
 

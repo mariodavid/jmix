@@ -22,7 +22,6 @@ import io.jmix.core.security.Authenticator;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.rest.JmixRestConfiguration;
 import io.jmix.security.JmixSecurityConfiguration;
-import io.jmix.security.entity.User;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @SpringBootApplication
 @Import({JmixCoreConfiguration.class,
@@ -55,17 +53,6 @@ public class SampleRestApplication {
     @EventListener(ApplicationStartedEvent.class)
     private void onStartup() {
         authenticator.withSystem(() -> {
-//            Group group = new Group();
-//            group.setName("Root");
-//            User user = new User();
-//            user.setLogin("u1");
-//            user.setName("User 1");
-//            user.setGroup(group);
-//            dataManager.save(group, user);
-//
-//            List<User> users = dataManager.load(User.class).list();
-//            System.out.println(">>> users: " + users);
-
             Greeting greeting = new Greeting();
             greeting.setText("Hello");
             dataManager.save(greeting);

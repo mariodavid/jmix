@@ -16,16 +16,15 @@
 
 package io.jmix.samples.rest.entity.driver;
 
-import io.jmix.core.entity.StandardEntity;
 import io.jmix.core.metamodel.annotations.Composition;
-import io.jmix.core.metamodel.annotations.NamePattern;
+import io.jmix.core.metamodel.annotations.InstanceName;
+import io.jmix.data.entity.StandardEntity;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity(name = "ref$CarDetails")
 @Table(name = "REF_CAR_DETAILS")
-@NamePattern("%s|details")
 public class CarDetails extends StandardEntity {
 
     private static final long serialVersionUID = 8201548746103223718L;
@@ -38,6 +37,7 @@ public class CarDetails extends StandardEntity {
     @Composition
     protected List<CarDetailsItem> items;
 
+    @InstanceName
     @Column(name = "DETAILS")
     protected String details;
 

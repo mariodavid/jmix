@@ -21,11 +21,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.jmix.core.DataManager;
+import io.jmix.core.Entity;
 import io.jmix.core.LoadContext;
 import io.jmix.core.Metadata;
 import io.jmix.core.app.serialization.EntitySerializationAPI;
 import io.jmix.core.app.serialization.EntitySerializationOption;
-import io.jmix.core.Entity;
 import io.jmix.core.metamodel.datatypes.Datatypes;
 import io.jmix.core.metamodel.datatypes.impl.EnumClass;
 import io.jmix.core.metamodel.model.MetaClass;
@@ -37,7 +37,6 @@ import io.jmix.rest.api.common.RestParseUtils;
 import io.jmix.rest.api.config.RestQueriesConfiguration;
 import io.jmix.rest.api.exception.RestAPIException;
 import io.jmix.rest.api.transform.JsonTransformationDirection;
-//import io.jmix.ui.sys.PersistenceManagerClient;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -126,8 +125,7 @@ public class QueriesControllerManager {
         //override default view defined in queries config
         if (!Strings.isNullOrEmpty(viewName)) {
             MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
-            restControllerUtils.getView(metaClass, viewName);
-            ctx.setView(viewName);
+            ctx.setFetchPlan(restControllerUtils.getView(metaClass, viewName));
         }
         List<Entity> entities = dataManager.loadList(ctx);
         entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
@@ -136,7 +134,7 @@ public class QueriesControllerManager {
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
 
-        String json = entitySerializationAPI.toJson(entities, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
+        String json = entitySerializationAPI.toJson(entities, ctx.getFetchPlan(), serializationOptions.toArray(new EntitySerializationOption[0]));
         json = restControllerUtils.transformJsonIfRequired(entityName, version, JsonTransformationDirection.TO_VERSION, json);
         return json;
     }
@@ -232,7 +230,7 @@ public class QueriesControllerManager {
 
         query.setCacheable(queryInfo.isCacheable());
         ctx.setQuery(query);
-        ctx.setFetchPlan(queryInfo.getViewName());
+        ctx.setFetchPlan(restControllerUtils.getView(metaClass, queryInfo.getViewName()));
         return ctx;
     }
 
