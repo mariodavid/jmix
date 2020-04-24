@@ -20,7 +20,10 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import io.jmix.core.entity.BaseUser;
-import io.jmix.core.security.*;
+import io.jmix.core.security.SecurityContextHelper;
+import io.jmix.core.security.SystemAuthenticationToken;
+import io.jmix.core.security.UserAuthentication;
+import io.jmix.core.security.UserRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -32,11 +35,8 @@ import java.util.UUID;
 @Component(UserSessionSource.NAME)
 public class UserSessionSourceImpl implements UserSessionSource {
 
-//    @Inject
-//    protected UserSessions userSessions;
-
     @Inject
-    protected ServiceUserRepository serviceUserRepository;
+    protected UserRepository userRepository;
 
     @Override
     public boolean checkCurrentUserSession() {
@@ -68,13 +68,13 @@ public class UserSessionSourceImpl implements UserSessionSource {
                 session.setUser((BaseUser) authentication.getPrincipal());
                 session.setLocale(Locale.getDefault());
             } else {
-                session.setUser(serviceUserRepository.getSystemUser());
+                session.setUser(userRepository.getSystemUser());
                 session.setLocale(Locale.getDefault());
             }
         } else if (authentication == null) {
             //todo MG should null authentication be possible?
             //todo MG what user to return?
-            session.setUser(serviceUserRepository.getSystemUser());
+            session.setUser(userRepository.getSystemUser());
             session.setLocale(Locale.getDefault());
         } else {
             throw new RuntimeException("Authentication type is not supported: " + authentication.getClass().getCanonicalName());
