@@ -42,9 +42,6 @@ public class AuthenticatorImpl extends AuthenticatorSupport implements Authentic
     protected AuthenticationManager authenticationManager;
 
     @Inject
-    protected UserSessionFactory userSessionFactory;
-
-    @Inject
     protected UserSessions userSessions;
 
     @Inject
