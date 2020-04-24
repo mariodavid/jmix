@@ -17,7 +17,6 @@
 package spec.haulmont.cuba.web
 
 import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.web.DefaultApp
 import com.haulmont.cuba.web.testsupport.TestSupport
 import com.haulmont.cuba.web.testsupport.WebTest
 
@@ -38,7 +37,6 @@ import com.haulmont.cuba.core.model.common.User
 import io.jmix.ui.*
 import io.jmix.ui.model.DataComponents
 import io.jmix.ui.sys.AppCookies
-import io.jmix.ui.sys.ConnectionImpl
 import io.jmix.ui.sys.UiControllersConfiguration
 import io.jmix.ui.theme.ThemeConstants
 import org.springframework.context.ApplicationContext
@@ -113,22 +111,14 @@ class WebSpec extends Specification {
 
         def injectFactory = applicationContext.getAutowireCapableBeanFactory()
 
-        def app = new DefaultApp()
+        def app = new JmixApp()
         app.themeConstants = new ThemeConstants([:])
         app.cookies = new AppCookies()
-
-        def connection = new ConnectionImpl()
-        // injectFactory.autowireBean(connection)
-
-        app.connection = connection
 
         def vaadinSession = new TestVaadinSession(new WebBrowser(), Locale.ENGLISH)
 
         vaadinSession.setAttribute(App.class, app)
         vaadinSession.setAttribute(App.NAME, app)
-        vaadinSession.setAttribute(Connection.class, connection)
-        vaadinSession.setAttribute(Connection.NAME, connection)
-        vaadinSession.setAttribute(UserSession.class, session)
 
         VaadinSession.setCurrent(vaadinSession)
 

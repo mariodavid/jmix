@@ -393,12 +393,13 @@ public class ExceptionDialog extends JmixWindow {
     protected void forceLogout() {
         AppUI ui = (AppUI) getUI();
 
+        //todo MG logout
         App app = ui.getApp();
         try {
-            Connection connection = app.getConnection();
-            if (connection.isConnected()) {
-                connection.logout();
-            }
+//            Connection connection = app.getConnection();
+//            if (connection.isConnected()) {
+//                connection.logout();
+//            }
         } catch (Exception e) {
             log.warn("Exception on forced logout", e);
         } finally {

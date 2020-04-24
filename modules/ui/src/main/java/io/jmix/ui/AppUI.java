@@ -268,19 +268,19 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
                 this.app = App.getInstance();
             }
 
-            Connection connection = app.getConnection();
-            if (connection != null && !isUserSessionAlive(connection)) {
-                connection.logout();
-
-                Notification.show(
-                        messages.getMessage("app.sessionExpiredCaption"),
-                        messages.getMessage("app.sessionExpiredMessage"),
-                        Notification.Type.HUMANIZED_MESSAGE);
-            }
-
-            if (connection != null) {
-                setUserSession(connection.getSession());
-            }
+//            Connection connection = app.getConnection();
+//            if (connection != null && !isUserSessionAlive(connection)) {
+//                connection.logout();
+//
+//                Notification.show(
+//                        messages.getMessage("app.sessionExpiredCaption"),
+//                        messages.getMessage("app.sessionExpiredMessage"),
+//                        Notification.Type.HUMANIZED_MESSAGE);
+//            }
+//
+//            if (connection != null) {
+//                setUserSession(connection.getSession());
+//            }
 
             setupUI();
         } catch (Exception e) {
@@ -352,19 +352,19 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
         }
     }
 
-    protected boolean isUserSessionAlive(Connection connection) {
-        try {
-            UserSession session = connection.getSession();
-
-            // todo do we need this ?
-            /*if (session.isAuthenticated()) {
-                userSessionService.getUserSession(session.getId());
-            }*/
-            return true;
-        } catch (NoUserSessionException e) {
-            return false;
-        }
-    }
+//    protected boolean isUserSessionAlive(Connection connection) {
+//        try {
+//            UserSession session = connection.getSession();
+//
+//            // todo do we need this ?
+//            /*if (session.isAuthenticated()) {
+//                userSessionService.getUserSession(session.getId());
+//            }*/
+//            return true;
+//        } catch (NoUserSessionException e) {
+//            return false;
+//        }
+//    }
 
     public boolean hasAuthenticatedSession() {
         return currentAuthentication.isSet();
@@ -423,11 +423,12 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
     }
 
     protected void setupUI() throws LoginException {
-        if (!app.getConnection().isConnected()) {
-            app.loginOnStart();
-        } else {
-            app.createTopLevelWindow(this);
-        }
+//        if (!app.getConnection().isConnected()) {
+//            app.loginOnStart();
+//        } else {
+//            app.createTopLevelWindow(this);
+//        }
+        app.loginOnStart();
     }
 
     @Override
@@ -436,33 +437,33 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
 
         boolean sessionIsAlive = true;
 
-        Connection connection = app.getConnection();
-
-        if (connection.isAuthenticated()) {
-            // Ping middleware session if connected
-            log.debug("Ping middleware session");
-
-            try {
-                UserSession session = connection.getSession();
-                if (session != null && session.isAuthenticated()) {
-                    // todo do we need this ?
-                    // userSessionService.getUserSession(session.getId());
-
-                    if (hasAuthenticatedSession()
-                            && !Objects.equals(userSession, session)) {
-                        setUserSession(session);
-                    }
-                }
-            } catch (Exception e) {
-                sessionIsAlive = false;
-
-                app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
-            }
-
-            if (sessionIsAlive) {
-                events.publish(new SessionHeartbeatEvent(app));
-            }
-        }
+//        Connection connection = app.getConnection();
+//
+//        if (connection.isAuthenticated()) {
+//            // Ping middleware session if connected
+//            log.debug("Ping middleware session");
+//
+//            try {
+//                UserSession session = connection.getSession();
+//                if (session != null && session.isAuthenticated()) {
+//                    // todo do we need this ?
+//                    // userSessionService.getUserSession(session.getId());
+//
+//                    if (hasAuthenticatedSession()
+//                            && !Objects.equals(userSession, session)) {
+//                        setUserSession(session);
+//                    }
+//                }
+//            } catch (Exception e) {
+//                sessionIsAlive = false;
+//
+//                app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
+//            }
+//
+//            if (sessionIsAlive) {
+//                events.publish(new SessionHeartbeatEvent(app));
+//            }
+//        }
 
         urlChangeHandler.restoreState();
 
@@ -581,7 +582,7 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
         try {
             String action = (String) wrappedSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
             LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
-            if (app.connection.isConnected() && linkHandler.canHandleLink()) {
+            if (linkHandler.canHandleLink()) {
                 linkHandler.handle();
             } else {
                 app.linkHandler = linkHandler;
