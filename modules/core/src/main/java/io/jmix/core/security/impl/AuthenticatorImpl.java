@@ -19,7 +19,10 @@ package io.jmix.core.security.impl;
 import com.google.common.base.Strings;
 import io.jmix.core.Events;
 import io.jmix.core.impl.logging.LogMdc;
-import io.jmix.core.security.*;
+import io.jmix.core.security.Authenticator;
+import io.jmix.core.security.AuthenticatorSupport;
+import io.jmix.core.security.SecurityContextHelper;
+import io.jmix.core.security.SystemAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -41,8 +44,6 @@ public class AuthenticatorImpl extends AuthenticatorSupport implements Authentic
     @Inject
     protected AuthenticationManager authenticationManager;
 
-    @Inject
-    protected UserSessions userSessions;
 
     @Inject
     public AuthenticatorImpl(SystemSessions sessions) {

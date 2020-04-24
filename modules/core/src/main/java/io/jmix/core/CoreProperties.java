@@ -16,7 +16,6 @@
 
 package io.jmix.core;
 
-import io.jmix.core.security.UserSessions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -38,10 +37,6 @@ public class CoreProperties {
     private String anonymousAuthenticationTokenKey;
     Map<String, Locale> availableLocales;
     boolean localeSelectVisible;
-    int userSessionExpirationTimeoutSec;
-    int userSessionSendTimeoutSec;
-    int userSessionTouchTimeoutSec;
-    boolean syncNewUserSessionReplication;
     int crossDataStoreReferenceLoadingBatchSize;
     boolean idGenerationForEntitiesInAdditionalDataStoresEnabled;
     int dom4jMaxPoolSize;
@@ -55,10 +50,6 @@ public class CoreProperties {
             String dbDir,
             Map<String, String> availableLocales,
             @DefaultValue("true") boolean localeSelectVisible,
-            @DefaultValue("1800") int userSessionExpirationTimeoutSec,
-            @DefaultValue("10") int userSessionSendTimeoutSec,
-            @DefaultValue("1") int userSessionTouchTimeoutSec,
-            boolean syncNewUserSessionReplication,
             @DefaultValue("50") int crossDataStoreReferenceLoadingBatchSize,
             @DefaultValue("true") boolean idGenerationForEntitiesInAdditionalDataStoresEnabled,
             @DefaultValue("100") int dom4jMaxPoolSize,
@@ -83,10 +74,6 @@ public class CoreProperties {
         }
 
         this.localeSelectVisible = localeSelectVisible;
-        this.userSessionExpirationTimeoutSec = userSessionExpirationTimeoutSec;
-        this.userSessionSendTimeoutSec = userSessionSendTimeoutSec;
-        this.userSessionTouchTimeoutSec = userSessionTouchTimeoutSec;
-        this.syncNewUserSessionReplication = syncNewUserSessionReplication;
         this.crossDataStoreReferenceLoadingBatchSize = crossDataStoreReferenceLoadingBatchSize;
         this.idGenerationForEntitiesInAdditionalDataStoresEnabled = idGenerationForEntitiesInAdditionalDataStoresEnabled;
         this.dom4jMaxPoolSize = dom4jMaxPoolSize;
@@ -128,30 +115,6 @@ public class CoreProperties {
 
     public boolean isLocaleSelectVisible() {
         return localeSelectVisible;
-    }
-
-    /**
-     * User session expiration timeout in seconds.
-     */
-    public int getUserSessionExpirationTimeoutSec() {
-        return userSessionExpirationTimeoutSec;
-    }
-
-    /**
-     * User session ping timeout in cluster.
-     * If ping is performed by {@link UserSessions#getAndRefresh},
-     * the user session is sent to the cluster only after the specified timeout.
-     */
-    public int getUserSessionSendTimeoutSec() {
-        return userSessionSendTimeoutSec;
-    }
-
-    public int getUserSessionTouchTimeoutSec() {
-        return userSessionTouchTimeoutSec;
-    }
-
-    public boolean isSyncNewUserSessionReplication() {
-        return syncNewUserSessionReplication;
     }
 
     public int getCrossDataStoreReferenceLoadingBatchSize() {

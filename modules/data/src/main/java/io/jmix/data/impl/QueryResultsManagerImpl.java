@@ -19,8 +19,6 @@ package io.jmix.data.impl;
 import io.jmix.core.*;
 import io.jmix.core.cluster.ClusterManager;
 import io.jmix.core.security.CurrentAuthentication;
-import io.jmix.core.security.UserSession;
-import io.jmix.core.security.UserSessions;
 import io.jmix.data.PersistenceHints;
 import io.jmix.data.persistence.DbTypeConverter;
 import io.jmix.data.persistence.DbmsSpecifics;
@@ -55,9 +53,6 @@ public class QueryResultsManagerImpl implements QueryResultsManager {
 
     @Inject
     protected CurrentAuthentication currentAuthentication;
-
-    @Inject
-    protected UserSessions userSessions;
 
     @Inject
     protected ClusterManager clusterManager;
