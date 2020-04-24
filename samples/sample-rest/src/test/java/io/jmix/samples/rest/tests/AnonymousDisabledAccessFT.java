@@ -62,6 +62,14 @@ public class AnonymousDisabledAccessFT extends AbstractRestControllerFT {
         }
     }
 
+    @Test
+    public void loadEntitiesWithoutPermissionAnonymous() throws Exception {
+        String url = baseUrl + "/entities/sec$Group";
+        try (CloseableHttpResponse response = sendGet(url, null)) {
+            assertEquals(HttpStatus.SC_UNAUTHORIZED, statusCode(response));
+        }
+    }
+
     //todo security
     @Ignore
     @Test
