@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.testsupport;
 
 import com.haulmont.cuba.core.global.impl.UserSessionSourceImpl;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.UserSession;
 
 public class TestUserSessionSource extends UserSessionSourceImpl {
 

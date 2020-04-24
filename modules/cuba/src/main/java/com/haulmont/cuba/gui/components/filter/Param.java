@@ -43,7 +43,7 @@ import io.jmix.core.metamodel.datatypes.DatatypeRegistry;
 import io.jmix.core.metamodel.datatypes.Datatypes;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import io.jmix.ui.UiComponents;
 import io.jmix.ui.components.*;

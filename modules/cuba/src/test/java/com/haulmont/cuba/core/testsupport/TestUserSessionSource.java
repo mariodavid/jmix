@@ -18,8 +18,8 @@
 package com.haulmont.cuba.core.testsupport;
 
 import com.haulmont.cuba.core.global.impl.UserSessionSourceImpl;
-import io.jmix.core.security.NoUserSessionException;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 import io.jmix.core.security.impl.CoreUser;
 
 import java.util.Locale;

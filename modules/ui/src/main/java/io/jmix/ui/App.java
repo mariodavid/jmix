@@ -23,7 +23,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import io.jmix.core.*;
 import io.jmix.core.security.LoginException;
-import io.jmix.core.security.UserSession;
 import io.jmix.ui.actions.Action;
 import io.jmix.ui.actions.BaseAction;
 import io.jmix.ui.actions.DialogAction;
@@ -446,14 +445,13 @@ public abstract class App {
      * Removes all windows from all UIs.
      */
     public void removeAllWindows() {
-        UserSession currentSession = AppUI.getCurrent().getUserSession();
-
         List<AppUI> authenticatedUIs = getAppUIs()
                 .stream()
                 .filter(ui ->
-                        ui.hasAuthenticatedSession()
-                                && (Objects.equals(ui.getUserSession(), currentSession)
-                                || uiProperties.isForceRefreshAuthenticatedTabs()))
+                                uiProperties.isForceRefreshAuthenticatedTabs()
+//                        ui.hasAuthenticatedSession()
+//                                && (Objects.equals(ui.getUserSession(), currentSession)
+                                )
                 .collect(Collectors.toList());
 
         removeAllWindows(authenticatedUIs);

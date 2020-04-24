@@ -17,6 +17,8 @@
 package com.haulmont.cuba.core.global.impl;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

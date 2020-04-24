@@ -50,7 +50,7 @@ import io.jmix.core.Entity;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.queryconditions.JpqlCondition;
 import io.jmix.core.security.Security;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import io.jmix.ui.*;
 import io.jmix.ui.actions.AbstractAction;

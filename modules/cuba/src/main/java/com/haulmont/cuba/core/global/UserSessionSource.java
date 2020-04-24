@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.global;
 
 import io.jmix.core.security.CurrentAuthentication;
-import io.jmix.core.security.NoUserSessionException;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Locale;
 import java.util.UUID;

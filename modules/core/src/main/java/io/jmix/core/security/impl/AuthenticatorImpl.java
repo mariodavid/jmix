@@ -46,8 +46,7 @@ public class AuthenticatorImpl extends AuthenticatorSupport implements Authentic
 
 
     @Inject
-    public AuthenticatorImpl(SystemSessions sessions) {
-        super(sessions);
+    public AuthenticatorImpl() {
     }
 
     @EventListener

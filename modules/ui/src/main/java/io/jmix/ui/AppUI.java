@@ -29,11 +29,8 @@ import io.jmix.core.Events;
 import io.jmix.core.Messages;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.core.security.LoginException;
-import io.jmix.core.security.NoUserSessionException;
-import io.jmix.core.security.UserSession;
 import io.jmix.ui.components.RootWindow;
 import io.jmix.ui.events.AppInitializedEvent;
-import io.jmix.ui.events.SessionHeartbeatEvent;
 import io.jmix.ui.events.UIRefreshEvent;
 import io.jmix.ui.exception.UiExceptionHandler;
 import io.jmix.ui.icons.IconResolver;
@@ -116,16 +113,6 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
     protected UrlChangeHandler urlChangeHandler;
     protected UrlRouting urlRouting;
     protected History history;
-
-    protected UserSession userSession;
-
-    public UserSession getUserSession() {
-        return userSession;
-    }
-
-    public void setUserSession(UserSession userSession) {
-        this.userSession = userSession;
-    }
 
     /**
      * Dynamically init external JS libraries.
@@ -366,6 +353,7 @@ public class AppUI extends UI implements ErrorHandler, UiExceptionHandler.UiCont
 //        }
 //    }
 
+    //todo MG remove
     public boolean hasAuthenticatedSession() {
         return currentAuthentication.isSet();
     }

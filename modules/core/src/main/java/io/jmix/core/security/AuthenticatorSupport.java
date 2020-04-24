@@ -16,7 +16,6 @@
 
 package io.jmix.core.security;
 
-import io.jmix.core.security.impl.SystemSessions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -34,10 +33,7 @@ public abstract class AuthenticatorSupport {
 
     protected ThreadLocal<Deque<Authentication>> threadLocalStack = new ThreadLocal<>();
 
-    protected SystemSessions sessions;
-
-    public AuthenticatorSupport(SystemSessions sessions) {
-        this.sessions = sessions;
+    public AuthenticatorSupport() {
     }
 
     protected Authentication getFromCacheOrCreate(String login, Supplier<Authentication> supplier) {

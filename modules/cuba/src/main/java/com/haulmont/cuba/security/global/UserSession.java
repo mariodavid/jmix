@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package io.jmix.core.security;
+package com.haulmont.cuba.security.global;
 
 import io.jmix.core.entity.BaseUser;
+import io.jmix.core.security.ClientDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

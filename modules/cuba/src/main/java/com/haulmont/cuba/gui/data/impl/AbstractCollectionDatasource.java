@@ -29,7 +29,7 @@ import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.core.metamodel.model.utils.ObjectPathUtils;
-import io.jmix.core.security.UserSession;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import io.jmix.ui.components.ComponentsHelper;
 import io.jmix.ui.components.Frame;

@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.haulmont.cuba.security.global;
 
-package io.jmix.samples.customsecurity;
+import io.jmix.core.Logging;
 
-import io.jmix.core.security.UserSession;
-import org.springframework.security.core.Authentication;
+import java.util.UUID;
 
-public class CustomUserSession extends UserSession {
+/**
+ * Thrown if there is no {@link UserSession} on the current thread or if it is expired.
+ */
+@Logging(Logging.Type.BRIEF)
+public class NoUserSessionException extends RuntimeException {
 
-    private static final long serialVersionUID = -4481480396182663248L;
+    private static final long serialVersionUID = 4820628023682230319L;
 
-    public CustomUserSession(Authentication authentication) {
-        super(authentication);
+    public NoUserSessionException() {
+        super("No UserSession bound to the current thread");
+    }
+
+    public NoUserSessionException(UUID sessionId) {
+        super(String.format("User session not found: %s", sessionId.toString()));
     }
 }

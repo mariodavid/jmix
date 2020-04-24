@@ -28,10 +28,8 @@ import com.vaadin.server.WebBrowser
 import com.vaadin.ui.UI
 import io.jmix.core.*
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory
-import io.jmix.core.security.SecurityContextHelper
 import io.jmix.core.security.LoginPasswordCredentials
-import io.jmix.core.security.SystemAuthenticationToken
-import io.jmix.core.security.UserSession
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.core.global.UserSessionSource
 import com.haulmont.cuba.core.model.common.User
 import io.jmix.ui.*
