@@ -17,21 +17,21 @@
 package spec.haulmont.cuba.web
 
 import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.UserSessionSource
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.web.testsupport.TestSupport
 import com.haulmont.cuba.web.testsupport.WebTest
-
 import com.haulmont.cuba.web.testsupport.ui.TestConnectorTracker
 import com.haulmont.cuba.web.testsupport.ui.TestVaadinRequest
 import com.haulmont.cuba.web.testsupport.ui.TestVaadinSession
 import com.vaadin.server.VaadinSession
 import com.vaadin.server.WebBrowser
 import com.vaadin.ui.UI
-import io.jmix.core.*
+import io.jmix.core.EntityStates
+import io.jmix.core.FetchPlanRepository
+import io.jmix.core.Metadata
+import io.jmix.core.MetadataTools
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory
-import io.jmix.core.security.LoginPasswordCredentials
-import com.haulmont.cuba.security.global.UserSession
-import com.haulmont.cuba.core.global.UserSessionSource
-import com.haulmont.cuba.core.model.common.User
 import io.jmix.ui.*
 import io.jmix.ui.model.DataComponents
 import io.jmix.ui.sys.AppCookies
@@ -88,19 +88,6 @@ class WebSpec extends Specification {
     @SuppressWarnings("GroovyAccessibility")
     void setup() {
         exportScreensPackages(['com.haulmont.cuba.web.app.main'])
-
-        def credentials = new LoginPasswordCredentials('test', 'test', Locale.ENGLISH) {
-            @Override
-            Object getPrincipal() {
-                def user = new User()
-
-                user.login = 'test'
-                user.password = 'test'
-                user.name = 'test'
-
-                user
-            }
-        }
 
         def session = new UserSession()
         session.setAuthenticated(false)
