@@ -17,10 +17,10 @@
 package io.jmix.samples.helloworld.screen.login;
 
 
+import com.google.common.base.Strings;
 import io.jmix.core.Messages;
 import io.jmix.core.security.ClientDetails;
 import io.jmix.core.security.SecurityContextHelper;
-import io.jmix.core.security.LoginException;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.ScreenBuilders;
 import io.jmix.ui.UiProperties;
@@ -77,6 +77,7 @@ public class LoginScreen extends Screen {
     @Subscribe
     protected void onInit(InitEvent event) {
         usernameField.focus();
+        initDefaultCredentials();
         initLocalesField();
     }
 
@@ -91,6 +92,18 @@ public class LoginScreen extends Screen {
         localesMap.put("Russian", new Locale("ru"));
         localesField.setOptionsMap(localesMap);
         localesField.setValue(Locale.US);
+    }
+
+    protected void initDefaultCredentials() {
+        //todo MG take values from config
+        String username = "admin";
+        if (!Strings.isNullOrEmpty(username)) {
+            usernameField.setValue(username);
+        }
+        String password = "admin";
+        if (!Strings.isNullOrEmpty(password)) {
+            passwordField.setValue(password);
+        }
     }
 
     protected void login() {
