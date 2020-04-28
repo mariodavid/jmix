@@ -10,19 +10,23 @@ dependencies {
     api 'org.springframework.boot:spring-boot-autoconfigure'
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = 'sources'
+jar {
+    archivesBaseName = 'jmix-starter-security-ui'
+}
+
+java {
+    withSourcesJar()
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 publishing {
     publications {
         javaMaven(MavenPublication) {
-            groupId = 'io.jmix.starter.securityui'
             artifactId = 'jmix-starter-security-ui'
-
             from components.java
-            artifact sourcesJar
         }
     }
 }
