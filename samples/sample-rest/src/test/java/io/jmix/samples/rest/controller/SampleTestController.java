@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright 2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package io.jmix.rest.api.controllers;
+package io.jmix.samples.rest.controller;
 
-import io.jmix.rest.api.service.filter.data.UserInfo;
-import io.jmix.rest.api.service.UserInfoControllerManager;
-import org.springframework.http.MediaType;
+import io.jmix.core.entity.BaseUser;
+import io.jmix.core.security.CurrentAuthentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-/**
- * REST controller that is used for getting an information about the current user
- */
-@RestController("jmix_UserInfoController")
-@RequestMapping(value = "/rest/userInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class UserInfoController {
+@RestController
+@RequestMapping(value = "/myapi/sample")
+public class SampleTestController {
 
     @Inject
-    protected UserInfoControllerManager userInfoControllerManager;
+    protected CurrentAuthentication currentAuthentication;
 
-    @GetMapping
-    public UserInfo getUserInfo() {
-        return userInfoControllerManager.getUserInfo();
+    @GetMapping(value = "/protectedMethod")
+    public String protectedMethod() {
+        BaseUser user = currentAuthentication.getUser();
+        return "protectedMethod";
+    }
+
+    @GetMapping(value = "/unprotectedMethod")
+    public String unprotectedMethod() {
+        return "unprotectedMethod";
     }
 }
