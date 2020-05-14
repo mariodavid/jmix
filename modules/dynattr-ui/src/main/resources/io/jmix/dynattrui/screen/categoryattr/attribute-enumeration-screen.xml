@@ -20,7 +20,7 @@
     <data>
         <collection id="localizedEnumValuesDc"
                     class="io.jmix.dynattrui.impl.model.AttributeLocalizedEnumValue"
-                    view="_local">
+                    fetchPlan="_local">
             <loader id="localizedEnumValuesDl"/>
         </collection>
     </data>

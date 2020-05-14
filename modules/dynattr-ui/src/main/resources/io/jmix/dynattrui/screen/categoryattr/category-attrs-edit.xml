@@ -20,13 +20,13 @@
     <data>
         <instance id="categoryAttributeDc"
                   class="io.jmix.dynattr.impl.model.CategoryAttribute"
-                  view="categoryAttribute.edit">
+                  fetchPlan="categoryAttribute.edit">
             <loader id="categoryAttributeDl"/>
             <instance id="configurationDc" property="configuration"/>
         </instance>
         <collection id="targetScreensDc"
                     class="io.jmix.dynattrui.impl.model.ScreenAndComponent"
-                    view="_local">
+                    fetchPlan="_local">
             <loader id="targetScreensDl"/>
         </collection>
     </data>

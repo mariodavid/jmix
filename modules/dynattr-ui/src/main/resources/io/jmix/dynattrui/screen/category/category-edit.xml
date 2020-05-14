@@ -20,7 +20,7 @@
     <data>
         <instance id="categoryDc"
                   class="io.jmix.dynattr.impl.model.Category"
-                  view="category.edit">
+                  fetchPlan="category.edit">
             <loader id="categoryDl"/>
             <collection id="categoryAttributesDc" property="categoryAttrs"/>
         </instance>
