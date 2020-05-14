@@ -23,6 +23,9 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import io.jmix.core.*;
 import io.jmix.core.entity.HasUuid;
+import io.jmix.core.metamodel.datatypes.Datatype;
+import io.jmix.core.metamodel.datatypes.Datatypes;
+import io.jmix.core.metamodel.datatypes.impl.AdaptiveNumberDatatype;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.dynattr.AttributeType;
 import io.jmix.dynattr.OptionsLoaderType;
@@ -45,6 +48,7 @@ import io.jmix.ui.model.CollectionContainer;
 import io.jmix.ui.model.DataContext;
 import io.jmix.ui.model.InstanceContainer;
 import io.jmix.ui.screen.*;
+import io.jmix.ui.sys.ScreensHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -174,6 +178,8 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
     protected Dialogs dialogs;
     @Inject
     protected Notifications notifications;
+    @Inject
+    protected ScreensHelper screensHelper;
 
     @Inject
     protected CheckBox lookupField;
@@ -213,6 +219,12 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
     protected TabSheet tabSheet;
     @Inject
     protected TextField<String> codeField;
+    @Inject
+    protected TextField<BigDecimal> defaultDecimalField;
+    @Inject
+    protected TextField<BigDecimal> minDecimalField;
+    @Inject
+    protected TextField<BigDecimal> maxDecimalField;
 
     @Inject
     protected CollectionContainer<ScreenAndComponent> targetScreensDc;
@@ -429,12 +441,10 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
 
         Category category = getEditedEntity().getCategory();
         if (category != null) {
-            MetaClass categorizedEntityMetaClass = metadata.getClass(getEditedEntity().getCategory().getEntityType());
-            Map<String, String> optionsMap = new HashMap<>();
-        /* TODO screensHelper
-        Map<String, String> optionsMap = categorizedEntityMetaClass != null ?
-                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass(), true)) :
-                new HashMap<>();*/
+            MetaClass categorizedEntityMetaClass = metadata.findClass(getEditedEntity().getCategory().getEntityType());
+            Map<String, String> optionsMap = categorizedEntityMetaClass != null ?
+                    new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass(), true)) :
+                    new HashMap<>();
 
             targetScreensTable.addGeneratedColumn(
                     "screen",
@@ -508,17 +518,22 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
     }
 
     protected void setupNumberFormat() {
-        /* TODO dynamicAttributesGuiTools
-        Datatype datatype = dynamicAttributesGuiTools.getCustomNumberDatatype(getItem());
-        if (datatype != null) {
-            defaultDecimal.setDatatype(datatype);
-            minDecimal.setDatatype(datatype);
-            maxDecimal.setDatatype(datatype);
+        String formatPattern = getEditedEntity().getConfiguration().getNumberFormatPattern();
+        Datatype datatype;
+        if (!Strings.isNullOrEmpty(formatPattern)) {
+            Class type = getEditedEntity().getDataType() == DECIMAL ? BigDecimal.class : Number.class;
+            datatype = new AdaptiveNumberDatatype(type, formatPattern, "", "");
+        } else {
+            datatype = Datatypes.get(BigDecimal.class);
+        }
 
-            defaultDecimal.setValue(defaultDecimal.getValue());
-            minDecimal.setValue(minDecimal.getValue());
-            maxDecimal.setValue(maxDecimal.getValue());
-        }*/
+        defaultDecimalField.setDatatype(datatype);
+        minDecimalField.setDatatype(datatype);
+        maxDecimalField.setDatatype(datatype);
+
+        defaultDecimalField.setValue(defaultDecimalField.getValue());
+        minDecimalField.setValue(minDecimalField.getValue());
+        maxDecimalField.setValue(maxDecimalField.getValue());
     }
 
     protected void refreshAttributesUI() {
@@ -546,9 +561,9 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
                 if (javaClass != null) {
                     defaultEntityIdField.setEditable(true);
                     defaultEntityIdField.setMetaClass(metadata.getClass(javaClass));
-                    // todo: dynamic attributes (init picker field) and screensHelper
+                    // todo: dynamic attributes (init picker field)
                     //dynamicAttributesGuiTools.initEntityPickerField(defaultEntityId, attribute);
-                    //screenField.setOptionsMap(screensHelper.getAvailableBrowserScreens(entityClass));
+                    screenField.setOptionsMap(screensHelper.getAvailableBrowserScreens(javaClass));
                     refreshDefaultEntityIdFieldValue();
                 }
             } else {
