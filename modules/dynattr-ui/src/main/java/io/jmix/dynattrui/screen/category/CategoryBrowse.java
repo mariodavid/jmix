@@ -20,6 +20,7 @@ import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
 import io.jmix.core.Metadata;
 import io.jmix.core.metamodel.model.MetaClass;
+import io.jmix.dynattr.AttributeType;
 import io.jmix.dynattr.impl.model.Category;
 import io.jmix.dynattr.impl.model.CategoryAttribute;
 import io.jmix.ui.Notifications;
@@ -82,7 +83,8 @@ public class CategoryBrowse extends StandardLookup<Category> {
                 labelContent = "";
             }
         } else {
-            labelContent = messages.getMessage(categoryAttribute.getDataType().name());
+            String key = AttributeType.class.getSimpleName() + "." + categoryAttribute.getDataType().toString();
+            labelContent = messages.getMessage(AttributeType.class, key);
         }
 
         return new Table.PlainTextCell(labelContent);
