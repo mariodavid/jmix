@@ -521,8 +521,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         String formatPattern = getEditedEntity().getConfiguration().getNumberFormatPattern();
         Datatype datatype;
         if (!Strings.isNullOrEmpty(formatPattern)) {
-            Class type = getEditedEntity().getDataType() == DECIMAL ? BigDecimal.class : Number.class;
-            datatype = new AdaptiveNumberDatatype(type, formatPattern, "", "");
+            datatype = new AdaptiveNumberDatatype(BigDecimal.class, formatPattern, "", "");
         } else {
             datatype = Datatypes.get(BigDecimal.class);
         }
@@ -832,7 +831,6 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         dialogWindow.setDialogWidth(width);
     }
 
-    /* TODO validationEvent
     @Subscribe
     protected void onValidation(ValidationEvent event) {
         ValidationErrors validationErrors = new ValidationErrors();
@@ -866,42 +864,39 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
             validationErrors.addAll(errors);
         }
 
-        CollectionDatasource<CategoryAttribute, UUID> parent
-                = (CollectionDatasource<CategoryAttribute, UUID>) ((DatasourceImplementation) attributeDs).getParent();
-        if (parent != null) {
-            CategoryAttribute categoryAttribute = getItem();
-            for (UUID id : parent.getItemIds()) {
-                CategoryAttribute ca = parent.getItemNN(id);
-                if (ca.getName().equals(categoryAttribute.getName())
-                        && (!ca.equals(categoryAttribute))) {
-                    errors.add(getMessage("uniqueName"));
-                    return;
-                } else if (ca.getCode() != null && ca.getCode().equals(categoryAttribute.getCode())
-                        && (!ca.equals(categoryAttribute))) {
-                    errors.add(getMessage("uniqueCode"));
-                    return;
+        Category category = getEditedEntity().getCategory();
+        if (category != null && category.getCategoryAttrs() != null) {
+            for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {
+                if (!categoryAttribute.equals(attribute)) {
+                    if (categoryAttribute.getName().equals(attribute.getName())) {
+                        validationErrors.add(messages.getMessage(CategoryAttrsEdit.class, "uniqueName"));
+                        return;
+                    } else if (categoryAttribute.getCode().equals(attribute.getCode())) {
+                        validationErrors.add(messages.getMessage(CategoryAttrsEdit.class, "uniqueCode"));
+                        return;
+                    }
                 }
             }
         }
 
         event.addErrors(validationErrors);
-    }*/
+    }
 
     protected ValidationErrors validateNumbers(AttributeType type, Number minNumber, Number maxNumber, Number defaultNumber) {
         ValidationErrors validationErrors = new ValidationErrors();
         if (minNumber != null
                 && maxNumber != null
                 && compareNumbers(type, minNumber, maxNumber) > 0) {
-            validationErrors.add(messages.getMessage("minGreaterThanMax"));
+            validationErrors.add(messages.getMessage(CategoryAttrsEdit.class, "minGreaterThanMax"));
         } else if (defaultNumber != null) {
             if (minNumber != null
                     && compareNumbers(type, minNumber, defaultNumber) > 0) {
-                validationErrors.add("defaultLessThanMin");
+                validationErrors.add(messages.getMessage(CategoryAttrsEdit.class, "defaultLessThanMin"));
             }
 
             if (maxNumber != null
                     && compareNumbers(type, maxNumber, defaultNumber) < 0) {
-                validationErrors.add("defaultGreaterThanMax");
+                validationErrors.add(messages.getMessage(CategoryAttrsEdit.class, "defaultGreaterThanMax"));
             }
         }
 
