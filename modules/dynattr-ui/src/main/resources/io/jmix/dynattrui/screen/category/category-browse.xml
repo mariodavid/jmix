@@ -16,6 +16,7 @@
   -->
 
 <window xmlns="http://jmix.io/schema/ui/window"
+        xmlns:c="http://jmix.io/schema/ui/jpql-condition"
         caption="msg://browseCaption">
     <data readOnly="true">
         <collection id="categoriesDc"
@@ -32,7 +33,12 @@
                     fetchPlan="_local">
             <loader id="attributesDl">
                 <query>
-                    <![CDATA[select c from sys$CategoryAttribute c where c.category = :container_categoriesDc]]>
+                    <![CDATA[select c from sys$CategoryAttribute c]]>
+                    <condition>
+                        <c:jpql>
+                            <c:where>c.category = :category</c:where>
+                        </c:jpql>
+                    </condition>
                 </query>
             </loader>
         </collection>

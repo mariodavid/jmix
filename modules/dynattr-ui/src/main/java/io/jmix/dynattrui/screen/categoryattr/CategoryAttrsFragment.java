@@ -24,8 +24,10 @@ import io.jmix.dynattr.AttributeType;
 import io.jmix.dynattr.impl.model.CategoryAttribute;
 import io.jmix.ui.UiComponents;
 import io.jmix.ui.actions.Action;
+import io.jmix.ui.components.Button;
 import io.jmix.ui.components.GroupTable;
 import io.jmix.ui.components.Label;
+import io.jmix.ui.components.Table;
 import io.jmix.ui.model.CollectionPropertyContainer;
 import io.jmix.ui.screen.Install;
 import io.jmix.ui.screen.ScreenFragment;
@@ -34,6 +36,7 @@ import io.jmix.ui.screen.UiController;
 import io.jmix.ui.screen.UiDescriptor;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -70,6 +73,10 @@ public class CategoryAttrsFragment extends ScreenFragment {
     protected CollectionPropertyContainer<CategoryAttribute> categoryAttributesDc;
     @Inject
     protected GroupTable<CategoryAttribute> categoryAttrsTable;
+    @Inject
+    protected Button moveUpBtn;
+    @Inject
+    protected Button moveDownBtn;
 
     @Install(to = "categoryAttrsTable.defaultValue", subject = "columnGenerator")
     protected Label<String> categoryAttrsTableDefaultValueColumnGenerator(CategoryAttribute attribute) {
@@ -181,6 +188,16 @@ public class CategoryAttrsFragment extends ScreenFragment {
         categoryAttributesDc.getItem(categoryAttribute.getId()).setOrderNo(orderNo);
     }
 
+    @Subscribe("categoryAttrsTable")
+    protected void onCategoryAttrsTableSelection(Table.SelectionEvent<CategoryAttribute> event) {
+        Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
+        if (selected.isEmpty()) {
+            refreshMoveButtonsEnabled(null);
+        } else {
+            refreshMoveButtonsEnabled(selected.iterator().next());
+        }
+    }
+
     @Subscribe("categoryAttrsTable.moveUp")
     protected void onCategoryAttrsTableMoveUp(Action.ActionPerformedEvent event) {
         Set<CategoryAttribute> selectedItem = categoryAttrsTable.getSelected();
@@ -196,6 +213,7 @@ public class CategoryAttrsFragment extends ScreenFragment {
             selectedAttribute.setOrderNo(prevAttribute.getOrderNo());
             prevAttribute.setOrderNo(selectedAttributeOrderNo);
             sortCategoryAttrsTableByOrderNo();
+            refreshMoveButtonsEnabled(selectedAttribute);
         }
     }
 
@@ -214,6 +232,7 @@ public class CategoryAttrsFragment extends ScreenFragment {
             selectedAttribute.setOrderNo(nextAttribute.getOrderNo());
             nextAttribute.setOrderNo(selectedAttributeOrderNo);
             sortCategoryAttrsTableByOrderNo();
+            refreshMoveButtonsEnabled(selectedAttribute);
         }
     }
 
@@ -244,5 +263,10 @@ public class CategoryAttrsFragment extends ScreenFragment {
 
     protected void sortCategoryAttrsTableByOrderNo() {
         categoryAttributesDc.getSorter().sort(Sort.by(Sort.Direction.ASC, "orderNo"));
+    }
+
+    protected void refreshMoveButtonsEnabled(@Nullable CategoryAttribute categoryAttribute) {
+        moveUpBtn.setEnabled(categoryAttribute != null && getPrevAttribute(categoryAttribute.getOrderNo()) != null);
+        moveDownBtn.setEnabled(categoryAttribute != null && getNextAttribute(categoryAttribute.getOrderNo()) != null);
     }
 }

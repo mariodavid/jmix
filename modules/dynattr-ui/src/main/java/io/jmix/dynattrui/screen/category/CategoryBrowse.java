@@ -19,6 +19,7 @@ package io.jmix.dynattrui.screen.category;
 import io.jmix.core.MessageTools;
 import io.jmix.core.Messages;
 import io.jmix.core.Metadata;
+import io.jmix.core.Sort;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.dynattr.AttributeType;
 import io.jmix.dynattr.impl.model.Category;
@@ -28,6 +29,8 @@ import io.jmix.ui.UiComponents;
 import io.jmix.ui.actions.Action;
 import io.jmix.ui.components.Label;
 import io.jmix.ui.components.Table;
+import io.jmix.ui.model.CollectionContainer;
+import io.jmix.ui.model.CollectionLoader;
 import io.jmix.ui.screen.Install;
 import io.jmix.ui.screen.LookupComponent;
 import io.jmix.ui.screen.StandardLookup;
@@ -37,11 +40,14 @@ import io.jmix.ui.screen.UiDescriptor;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
+import java.util.Set;
 
 @UiController("sys$Category.browse")
 @UiDescriptor("category-browse.xml")
 @LookupComponent("categoriesTable")
 public class CategoryBrowse extends StandardLookup<Category> {
+
+    protected static final String CATEGORY_PARAMETER = "category";
 
     @Inject
     protected Notifications notifications;
@@ -53,6 +59,19 @@ public class CategoryBrowse extends StandardLookup<Category> {
     protected Metadata metadata;
     @Inject
     protected MessageTools messageTools;
+
+    @Inject
+    protected CollectionLoader<Category> categoriesDl;
+    @Inject
+    protected CollectionLoader<CategoryAttribute> attributesDl;
+    @Inject
+    protected CollectionContainer<CategoryAttribute> attributesDc;
+
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
+        categoriesDl.load();
+        attributesDc.getSorter().sort(Sort.by(Sort.Direction.ASC, "orderNo"));
+    }
 
     @Subscribe("categoriesTable.applyChanges")
     protected void onCategoriesTableApplyChanges(Action.ActionPerformedEvent event) {
@@ -88,5 +107,16 @@ public class CategoryBrowse extends StandardLookup<Category> {
         }
 
         return new Table.PlainTextCell(labelContent);
+    }
+
+    @Subscribe("categoriesTable")
+    protected void onCategoriesTableSelection(Table.SelectionEvent<Category> event) {
+        Set<Category> selected = event.getSelected();
+        Category category = null;
+        if (!selected.isEmpty()) {
+            category = selected.iterator().next();
+        }
+        attributesDl.setParameter(CATEGORY_PARAMETER, category);
+        attributesDl.load();
     }
 }

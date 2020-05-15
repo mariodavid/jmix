@@ -41,6 +41,7 @@ import io.jmix.ui.model.CollectionContainer;
 import io.jmix.ui.model.DataContext;
 import io.jmix.ui.model.InstanceContainer;
 import io.jmix.ui.screen.EditedEntityContainer;
+import io.jmix.ui.screen.LoadDataBeforeShow;
 import io.jmix.ui.screen.StandardEditor;
 import io.jmix.ui.screen.Subscribe;
 import io.jmix.ui.screen.Target;
@@ -56,6 +57,7 @@ import java.util.TreeMap;
 @UiController("sys$Category.edit")
 @UiDescriptor("category-edit.xml")
 @EditedEntityContainer("categoryDc")
+@LoadDataBeforeShow
 public class CategoryEdit extends StandardEditor<Category> {
 
     protected static final String ATTRIBUTES_LOCATION_TAB = "attributesLocationTab";
