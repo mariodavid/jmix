@@ -141,6 +141,8 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_TYPES.put(DATE_WITHOUT_TIME, "widthField");
         FIELDS_VISIBLE_FOR_TYPES.put(DATE_WITHOUT_TIME, "isCollectionField");
         FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "enumerationBox");
+        FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "enumerationField");
+        FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "editEnumerationBtn");
         FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "defaultStringField");
         FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "widthField");
         FIELDS_VISIBLE_FOR_TYPES.put(ENUMERATION, "isCollectionField");
@@ -539,15 +541,17 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         CategoryAttribute categoryAttribute = getEditedEntity();
         CategoryAttributeConfiguration configuration = categoryAttribute.getConfiguration();
 
-        for (Component component : optionalAttributeForm.getOwnComponents()) {
-            component.setVisible(false);
-        }
-
         AttributeType attributeType = dataTypeField.getValue();
         Collection<String> visibleFields = FIELDS_VISIBLE_FOR_TYPES.get(attributeType);
-        for (String componentId : visibleFields) {
-            optionalAttributeForm.getComponentNN(componentId).setVisible(true);
+        for (Component component : optionalAttributeForm.getComponents()) {
+            boolean visible = visibleFields.contains(component.getId());
+            component.setVisible(visible);
+
+            if (!visible && component instanceof HasValue) {
+                ((HasValue) component).clear();
+            }
         }
+
         if (MAIN_TAB_NAME.equals(tabSheet.getSelectedTab().getName()) && !visibleFields.isEmpty()) {
             setDialogWindowWidth(TWO_COLUMNS_WIDTH);
             optionalAttributeForm.setVisible(true);
