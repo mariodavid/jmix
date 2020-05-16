@@ -19,8 +19,11 @@
         caption="msg://editorCaption">
     <data>
         <instance id="categoryAttributeDc"
-                  class="io.jmix.dynattr.impl.model.CategoryAttribute"
-                  fetchPlan="categoryAttribute.edit">
+                  class="io.jmix.dynattr.impl.model.CategoryAttribute">
+            <fetchPlan extends="_local">
+                <property name="category" fetchPlan="_local"/>
+                <property name="defaultEntity" fetchPlan="_local"/>
+            </fetchPlan>
             <loader id="categoryAttributeDl"/>
             <instance id="configurationDc" property="configuration"/>
         </instance>
