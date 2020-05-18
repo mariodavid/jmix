@@ -18,7 +18,8 @@ package io.jmix.dynattrui.screen.category;
 
 import io.jmix.core.CoreProperties;
 import io.jmix.core.DataManager;
-import io.jmix.core.FetchPlanRepository;
+import io.jmix.core.FetchPlan;
+import io.jmix.core.FetchPlanBuilder;
 import io.jmix.core.LoadContext;
 import io.jmix.core.MessageTools;
 import io.jmix.core.MetadataTools;
@@ -69,8 +70,6 @@ public class CategoryEdit extends StandardEditor<Category> {
     @Inject
     protected DataManager dataManager;
     @Inject
-    protected FetchPlanRepository fetchPlanRepository;
-    @Inject
     protected Fragments fragments;
     @Inject
     protected CoreProperties coreProperties;
@@ -115,8 +114,11 @@ public class CategoryEdit extends StandardEditor<Category> {
     @Subscribe("isDefaultField")
     protected void onIsDefaultFieldValueChange(HasValue.ValueChangeEvent<Boolean> event) {
         if (Boolean.TRUE.equals(event.getValue())) {
+            FetchPlan fetchPlan = FetchPlanBuilder.of(Category.class)
+                    .add("isDefault")
+                    .build();
             LoadContext<Category> lc = new LoadContext<>(Category.class)
-                    .setFetchPlan(fetchPlanRepository.getFetchPlan(Category.class, "category.defaultEdit"));
+                    .setFetchPlan(fetchPlan);
             Category category = getEditedEntity();
             lc.setQueryString("select c from sys$Category c where c.entityType = :entityType and not c.id = :id")
                     .setParameter("entityType", category.getEntityType())

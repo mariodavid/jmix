@@ -52,7 +52,7 @@
                                               height="220px"/>
                         </column>
                     </form>
-                    <form id="optionalAttributeForm" dataContainer="categoryAttributeDc" height="100%" width="400px"
+                    <form id="optionalAttributeForm" dataContainer="categoryAttributeDc" height="100%" width="100%"
                           visible="false">
                         <column width="100%">
                             <checkBox id="lookupField" property="lookup"
