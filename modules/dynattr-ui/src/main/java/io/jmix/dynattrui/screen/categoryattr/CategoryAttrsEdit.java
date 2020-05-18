@@ -52,6 +52,7 @@ import io.jmix.ui.model.InstanceContainer;
 import io.jmix.ui.screen.*;
 import io.jmix.ui.sys.ScreensHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -229,6 +230,8 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
     protected TextField<BigDecimal> minDecimalField;
     @Inject
     protected TextField<BigDecimal> maxDecimalField;
+    @Inject
+    protected TokenList<CategoryAttribute> dependsOnAttributesField;
 
     @Inject
     protected CollectionContainer<ScreenAndComponent> targetScreensDc;
@@ -252,9 +255,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         initTargetScreensTable();
         initCategoryAttributeConfigurationField();
         initLocalizationTab();
-
-        // todo: dependsOnAttribute
-        // dependsOnAttributesListEditor.setOptionsList(getAttributesOptions());
+        initDependsOnAttributesField();
 
         setupNumberFormat();
         refreshAttributesUI();
@@ -404,6 +405,14 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         });*/
     }
 
+    @Install(to = "dependsOnAttributesField", subject = "validator")
+    protected void dependsOnAttributesFieldValidator(Collection<CategoryAttribute> categoryAttributes) {
+        if (recalculationScriptField.getValue() != null
+                && CollectionUtils.isEmpty(categoryAttributes)) {
+            throw new ValidationException(messages.getMessage(CategoryAttrsEdit.class, "dependsOnAttributes.validationMsg"));
+        }
+    }
+
     protected void initAttributeForm() {
         defaultBooleanField.setOptionsMap(getBooleanOptions());
         dataTypeField.setOptionsMap(getDataTypeOptions());
@@ -419,21 +428,6 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
                 messages.getMessage(CategoryAttrsEdit.class, "recalculationScript"),
                 messages.getMessage(CategoryAttrsEdit.class, "recalculationScriptHelp")
         ));
-
-        /* todo: dependsOnAttribute
-        dependsOnAttributesListEditor = uiComponents.create(ListEditor.NAME);
-        dependsOnAttributesListEditor.setValueSource(new DatasourceValueSource(configurationDs, "dependsOnAttributes"));
-        dependsOnAttributesListEditor.setWidth(fieldWidth);
-        dependsOnAttributesListEditor.setFrame(frame);
-        dependsOnAttributesListEditor.setItemType(ListEditor.ItemType.ENTITY);
-        dependsOnAttributesListEditor.setEntityName("sys$CategoryAttribute");
-        dependsOnAttributesListEditor.addValidator(categoryAttributes -> {
-            if (recalculationScript.getValue() != null && CollectionUtils.isEmpty(categoryAttributes)) {
-                throw new ValidationException(getMessage("dependsOnAttributesValidationMsg"));
-            }
-        });
-
-        calculatedAttrsAndOptionsFieldGroup.getFieldNN("dependsOnAttributes").setComponent(dependsOnAttributesListEditor);*/
 
         whereClauseField.setSuggester((source, text, cursorPosition) -> requestHint(whereClauseField, cursorPosition));
         joinClauseField.setSuggester((source, text, cursorPosition) -> requestHint(joinClauseField, cursorPosition));
@@ -518,6 +512,10 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
             fragment.setHeight("250px");
             localizationTabComponent.add(fragment);
         }
+    }
+
+    protected void initDependsOnAttributesField() {
+        dependsOnAttributesField.setOptionsList(getAttributesOptions());
     }
 
     protected void setupNumberFormat() {
