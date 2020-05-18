@@ -21,6 +21,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.jmix.core.*;
 import io.jmix.core.entity.HasUuid;
 import io.jmix.core.metamodel.datatypes.Datatype;
@@ -28,6 +29,7 @@ import io.jmix.core.metamodel.datatypes.Datatypes;
 import io.jmix.core.metamodel.datatypes.impl.AdaptiveNumberDatatype;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.dynattr.AttributeType;
+import io.jmix.dynattr.ConfigurationExclusionStrategy;
 import io.jmix.dynattr.OptionsLoaderType;
 import io.jmix.dynattr.impl.model.Category;
 import io.jmix.dynattr.impl.model.CategoryAttribute;
@@ -955,7 +957,8 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
 
     protected void preCommitConfiguration() {
         if (getScreenData().getDataContext().isModified(getEditedEntity().getCategory())) {
-            getEditedEntity().setAttributeConfigurationJson(new Gson().toJson(configurationDc.getItemOrNull()));
+            Gson gson = new GsonBuilder().setExclusionStrategies(new ConfigurationExclusionStrategy()).create();
+            getEditedEntity().setAttributeConfigurationJson(gson.toJson(configurationDc.getItemOrNull()));
         }
     }
 }
