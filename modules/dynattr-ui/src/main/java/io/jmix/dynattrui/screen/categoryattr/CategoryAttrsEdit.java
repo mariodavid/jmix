@@ -206,7 +206,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
     @Inject
     protected LookupField<OptionsLoaderType> optionsLoaderTypeField;
     @Inject
-    protected PickerField<Entity<?>> defaultEntityIdField; // TODO ListEditor
+    protected PickerField<Entity<?>> defaultEntityIdField;
     @Inject
     protected SourceCodeEditor optionsLoaderScriptField;
     @Inject
@@ -253,7 +253,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         initCategoryAttributeConfigurationField();
         initLocalizationTab();
 
-        // TODO ListEditor
+        // todo: dependsOnAttribute
         // dependsOnAttributesListEditor.setOptionsList(getAttributesOptions());
 
         setupNumberFormat();
@@ -308,7 +308,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         if (SCREEN_PROPERTY.equals(property)
                 || JOIN_CLAUSE_PROPERTY.equals(property)
                 || WHERE_CLAUSE_PROPERTY.equals(property)) {
-            // todo: dynamic attributes (init picker field)
+            // todo: filter support FilteringLookupAction
             //dynamicAttributesGuiTools.initEntityPickerField(defaultEntityIdField, e.getItem());
         }
     }
@@ -326,7 +326,6 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
         }
     }
 
-    // TODO ListEditor
     @Subscribe("editEnumerationBtn")
     protected void onEditEnumerationBtnClick(Button.ClickEvent event) {
         AttributeEnumerationScreen enumerationScreen = screenBuilders.screen(this)
@@ -369,7 +368,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
 
         MetaClass metaClass = metadata.getClass(entityClass);
 
-        /* TODO filter support
+        /* todo: filter support
         FakeFilterSupport filterSupport = new FakeFilterSupport(this, metaClass);
         Filter fakeFilter = filterSupport.createFakeFilter();
         FilterEntity filterEntity = filterSupport.createFakeFilterEntity(attribute.getFilterXml());
@@ -421,7 +420,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
                 messages.getMessage(CategoryAttrsEdit.class, "recalculationScriptHelp")
         ));
 
-        /* TODO ListEditor
+        /* todo: dependsOnAttribute
         dependsOnAttributesListEditor = uiComponents.create(ListEditor.NAME);
         dependsOnAttributesListEditor.setValueSource(new DatasourceValueSource(configurationDs, "dependsOnAttributes"));
         dependsOnAttributesListEditor.setWidth(fieldWidth);
@@ -566,7 +565,7 @@ public class CategoryAttrsEdit extends StandardEditor<CategoryAttribute> {
                 if (javaClass != null) {
                     defaultEntityIdField.setEditable(true);
                     defaultEntityIdField.setMetaClass(metadata.getClass(javaClass));
-                    // todo: dynamic attributes (init picker field)
+                    // todo: filter support FilteringLookupAction
                     //dynamicAttributesGuiTools.initEntityPickerField(defaultEntityId, attribute);
                     screenField.setOptionsMap(screensHelper.getAvailableBrowserScreens(javaClass));
                     refreshDefaultEntityIdFieldValue();

@@ -281,7 +281,7 @@ public class DynAttrComponentGenerationStrategy implements ComponentGenerationSt
             pickerField.addClearAction();
             pickerField.addLookupAction();
 
-            //todo: dynamic attributes (init picker field)
+            // todo: filter support FilteringLookupAction
             //getDynamicAttributesGuiTools().initEntityPickerField(pickerField, attributeDefinition);
 
             setValueSource(pickerField, context);

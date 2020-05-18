@@ -86,7 +86,7 @@ public class CategoryAttributeConfiguration implements Entity<String> {
     @ModelProperty
     protected Integer rowNumber;
 
-//    TODO:
+//    todo: dependsOnAttribute
 //    @Transient
 //    protected transient Collection<CategoryAttribute> dependentAttributes;
 //
