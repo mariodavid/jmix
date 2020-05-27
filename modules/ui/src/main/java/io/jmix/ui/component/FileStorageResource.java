@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package io.jmix.sample.customwidgets;
+package io.jmix.ui.component;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+/**
+ * A resource that can be obtained from the <code>FileStorage</code> using the given file reference.
+ */
+public interface FileStorageResource<T> extends Resource, ResourceView.HasMimeType, ResourceView.HasStreamSettings {
+    FileStorageResource<T> setFileReference(T fileReference);
 
-@SpringBootApplication
-public class CustomWidgetsApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(CustomWidgetsApplication.class, args);
-    }
+    T getFileReference();
 }

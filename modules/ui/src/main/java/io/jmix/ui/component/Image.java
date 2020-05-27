@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * The Image component is intended for displaying graphic content.
  */
-public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
+public interface Image<T> extends ResourceView, HasValueSource<T> {
     String NAME = "image";
 
     /**

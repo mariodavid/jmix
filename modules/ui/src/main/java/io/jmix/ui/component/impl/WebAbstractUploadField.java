@@ -16,25 +16,33 @@
 
 package io.jmix.ui.component.impl;
 
-import io.jmix.core.entity.FileDescriptor;
+import io.jmix.core.Messages;
 import io.jmix.core.metamodel.datatype.Datatype;
 import io.jmix.core.metamodel.datatype.DatatypeRegistry;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.ui.UiProperties;
 import io.jmix.ui.component.ComponentContainer;
 import io.jmix.ui.component.UploadField;
+import io.jmix.ui.export.ExportDisplay;
+import io.jmix.ui.widget.JmixFileUpload;
 
+import java.io.InputStream;
 import java.util.Set;
+import java.util.function.Supplier;
 
-public abstract class WebAbstractUploadField<T extends com.vaadin.ui.AbstractField<FileDescriptor>>
-        extends WebV8AbstractField<T, FileDescriptor, FileDescriptor>
+public abstract class WebAbstractUploadField<T extends com.vaadin.ui.AbstractField<String>, R>
+        extends WebV8AbstractField<T, String, R>
         implements UploadField {
 
     protected static final int BYTES_IN_MEGABYTE = 1048576;
 
-    protected long fileSizeLimit = 0;
+    protected ExportDisplay exportDisplay;
+    protected Messages messages;
+    protected Supplier<InputStream> contentProvider;
 
+    protected long fileSizeLimit = 0;
     protected Set<String> permittedExtensions;
+    protected String accept;
 
     protected DropZone dropZone;
     protected ComponentContainer pasteZone;
