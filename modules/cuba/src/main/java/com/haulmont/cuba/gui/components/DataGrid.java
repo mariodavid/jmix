@@ -31,7 +31,8 @@ import com.haulmont.cuba.gui.components.data.datagrid.DatasourceDataGridItems;
  */
 @SuppressWarnings("rawtypes, unchecked")
 @Deprecated
-public interface DataGrid<E extends Entity> extends ListComponent<E>, io.jmix.ui.component.DataGrid<E> {
+public interface DataGrid<E extends Entity> extends ListComponent<E>, io.jmix.ui.component.DataGrid<E>,
+        HasSettings, HasDataLoadingSettings {
 
     /**
      * @return the DataGrid data source

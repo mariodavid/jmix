@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.settings.compatibility.converter;
+package com.haulmont.cuba.settings.converter;
 
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.SplitPanelSettings;

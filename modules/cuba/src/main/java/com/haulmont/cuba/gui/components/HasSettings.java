@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.component;
+package com.haulmont.cuba.gui.components;
 
 import io.jmix.ui.settings.UserSettingService;
 import io.jmix.ui.settings.component.ComponentSettings;

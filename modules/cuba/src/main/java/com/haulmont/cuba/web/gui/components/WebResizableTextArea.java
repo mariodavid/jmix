@@ -18,12 +18,44 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.settings.CubaResizableTextAreaSettingsBinder;
+import com.haulmont.cuba.settings.component.LegacySettingsApplier;
+import com.haulmont.cuba.settings.converter.LegacyResizableTextAreaSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
+import org.dom4j.Element;
 
 @Deprecated
 public class WebResizableTextArea<V> extends io.jmix.ui.component.impl.WebResizableTextArea<V> implements ResizableTextArea<V> {
 
+    protected LegacySettingsApplier settingsApplier;
+
+    public WebResizableTextArea() {
+        settingsApplier = createSettingsApplier();
+    }
+
     @Override
+    public void applySettings(Element element) {
+        settingsApplier.applySettings(element);
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        return settingsApplier.saveSettings(element);
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settingsApplier.isSettingsEnabled();
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        settingsApplier.setSettingsEnabled(settingsEnabled);
+    }
+
+    protected LegacySettingsApplier createSettingsApplier() {
+        return new LegacySettingsApplier(this, new LegacyResizableTextAreaSettingsConverter(), getSettingsBinder());
+    }
+
     protected ComponentSettingsBinder getSettingsBinder() {
         return beanLocator.get(CubaResizableTextAreaSettingsBinder.NAME);
     }

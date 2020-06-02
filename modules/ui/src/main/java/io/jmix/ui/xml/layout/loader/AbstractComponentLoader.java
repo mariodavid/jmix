@@ -53,7 +53,6 @@ import io.jmix.ui.xml.DeclarativeTrackingAction;
 import io.jmix.ui.xml.layout.ComponentLoader;
 import io.jmix.ui.xml.layout.LayoutLoaderConfig;
 import io.jmix.ui.xml.layout.LoaderResolver;
-import io.jmix.ui.xml.layout.loader.LoadPresentationsPostInitTask;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -425,14 +424,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         String tabIndex = element.attributeValue("tabIndex");
         if (StringUtils.isNotEmpty(tabIndex)) {
             component.setTabIndex(Integer.parseInt(tabIndex));
-        }
-    }
-
-    // TODO VM
-    protected void loadSettingsEnabled(HasSettings component, Element element) {
-        String settingsEnabled = element.attributeValue("settingsEnabled");
-        if (StringUtils.isNotEmpty(settingsEnabled)) {
-            component.setSettingsEnabled(Boolean.parseBoolean(settingsEnabled));
         }
     }
 

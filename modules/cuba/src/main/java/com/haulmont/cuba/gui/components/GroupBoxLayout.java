@@ -16,16 +16,11 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.Datasource;
+import io.jmix.ui.screen.Screen;
 
 /**
- * Component compatible with {@link Datasource}.
- *
- * @param <V> type of value
- * @deprecated Use {@link io.jmix.ui.component.ResizableTextArea} instead
+ * @deprecated for new screens that based on {@link Screen} use {@link io.jmix.ui.component.GroupBoxLayout} instead.
  */
 @Deprecated
-public interface ResizableTextArea<V> extends TextArea<V>, io.jmix.ui.component.ResizableTextArea<V>, HasSettings {
-
-    String NAME = io.jmix.ui.component.ResizableTextArea.NAME;
+public interface GroupBoxLayout extends io.jmix.ui.component.GroupBoxLayout, HasSettings {
 }

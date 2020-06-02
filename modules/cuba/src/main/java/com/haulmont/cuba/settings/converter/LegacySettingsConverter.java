@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.settings.compatibility.converter;
+package com.haulmont.cuba.settings.converter;
 
-import io.jmix.ui.component.HasSettings;
+import com.haulmont.cuba.gui.components.HasSettings;
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.TableSettings;
 import org.dom4j.Element;

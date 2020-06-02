@@ -16,28 +16,22 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.settings.CubaDataGridSettingsBinder;
+import com.haulmont.cuba.gui.components.SplitPanel;
+import com.haulmont.cuba.settings.CubaSplitPanelSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsApplier;
-import io.jmix.core.Entity;
-import com.haulmont.cuba.settings.converter.LegacyDataGridSettingsConverter;
+import com.haulmont.cuba.settings.converter.LegacySplitPanelSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Element;
 
 @Deprecated
-public class WebDataGrid<E extends Entity> extends io.jmix.ui.component.impl.WebDataGrid<E> implements DataGrid<E> {
+public class WebSplitPanel extends io.jmix.ui.component.impl.WebSplitPanel implements SplitPanel {
 
     protected LegacySettingsApplier settingsApplier;
 
-    public WebDataGrid() {
+    public WebSplitPanel() {
         super();
 
         settingsApplier = createSettingsApplier();
-    }
-
-    @Override
-    public void applyDataLoadingSettings(Element element) {
-        settingsApplier.applyDataLoadingSettings(element);
     }
 
     @Override
@@ -60,11 +54,11 @@ public class WebDataGrid<E extends Entity> extends io.jmix.ui.component.impl.Web
         settingsApplier.setSettingsEnabled(settingsEnabled);
     }
 
-    protected ComponentSettingsBinder getSettingsBinder() {
-        return beanLocator.get(CubaDataGridSettingsBinder.NAME);
+    protected LegacySettingsApplier createSettingsApplier() {
+        return new LegacySettingsApplier(this, new LegacySplitPanelSettingsConverter(), getSettingsBinder());
     }
 
-    protected LegacySettingsApplier createSettingsApplier() {
-        return new LegacySettingsApplier(this, new LegacyDataGridSettingsConverter(), getSettingsBinder());
+    protected ComponentSettingsBinder getSettingsBinder() {
+        return beanLocator.get(CubaSplitPanelSettingsBinder.NAME);
     }
 }

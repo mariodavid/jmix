@@ -19,13 +19,20 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.xml.data.ComponentLoaderHelper;
 import com.haulmont.cuba.gui.xml.data.DatasourceLoaderHelper;
 import io.jmix.dynattrui.DynAttrEmbeddingStrategies;
-import io.jmix.ui.component.Frame;
 import io.jmix.ui.xml.layout.loader.DataGridLoader;
 
 @SuppressWarnings("rawtypes")
 public class CubaDataGridLoader extends DataGridLoader {
+
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        ComponentLoaderHelper.loadSettingsEnabled((DataGrid) resultComponent, element);
+    }
 
     @Override
     protected CubaDataGridDataHolder initDataGridDataHolder() {

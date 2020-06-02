@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.settings;
 
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.components.WebSplitPanel;
+import io.jmix.ui.component.Component;
+import io.jmix.ui.settings.component.binder.SplitPanelSettingsBinder;
 
-/**
- * Component compatible with {@link Datasource}.
- *
- * @param <V> type of value
- * @deprecated Use {@link io.jmix.ui.component.ResizableTextArea} instead
- */
-@Deprecated
-public interface ResizableTextArea<V> extends TextArea<V>, io.jmix.ui.component.ResizableTextArea<V>, HasSettings {
+@org.springframework.stereotype.Component
+public class CubaSplitPanelSettingsBinder extends SplitPanelSettingsBinder {
 
-    String NAME = io.jmix.ui.component.ResizableTextArea.NAME;
+    public static final String NAME = "jmix_CubaSplitPanelSettingsBinder";
+
+    @Override
+    public Class<? extends Component> getComponentClass() {
+        return WebSplitPanel.class;
+    }
 }

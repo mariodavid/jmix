@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+@NonNullApi
+package com.haulmont.cuba.settings.converter;
 
-import com.haulmont.cuba.gui.data.Datasource;
-
-/**
- * Component compatible with {@link Datasource}.
- *
- * @param <V> type of value
- * @deprecated Use {@link io.jmix.ui.component.ResizableTextArea} instead
- */
-@Deprecated
-public interface ResizableTextArea<V> extends TextArea<V>, io.jmix.ui.component.ResizableTextArea<V>, HasSettings {
-
-    String NAME = io.jmix.ui.component.ResizableTextArea.NAME;
-}
+import org.springframework.lang.NonNullApi;

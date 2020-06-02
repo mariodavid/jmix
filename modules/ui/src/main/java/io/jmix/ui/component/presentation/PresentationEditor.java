@@ -28,7 +28,6 @@ import io.jmix.ui.AppUI;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.component.Component;
 import io.jmix.ui.component.HasTablePresentations;
-import io.jmix.ui.component.HasSettings;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.presentation.model.TablePresentation;
 import io.jmix.ui.screen.FrameOwner;
@@ -187,26 +186,7 @@ public class PresentationEditor extends JmixWindow {
     protected void commit() {
         TablePresentations presentations = component.getPresentations();
 
-        String stringSettings;
-        if (frameOwner instanceof CubaLegacySettings) {
-            Document doc = DocumentHelper.createDocument();
-            doc.setRootElement(doc.addElement("presentation"));
-
-            if (component instanceof HasSettings) {
-                ((HasSettings) component).saveSettings(doc.getRootElement());
-                stringSettings = Dom4j.writeDocument(doc, false);
-            } else {
-                throw new IllegalStateException(String.format("Cannot commit presentation." +
-                        " Component must implement '%s'", HasSettings.class));
-            }
-        } else {
-            ComponentSettings componentSettings = SettingsHelper.createSettings(settingsBinder.getSettingsClass());
-            settingsBinder.saveSettings((Component) component, new SettingsWrapperImpl(componentSettings));
-
-            ScreenSettings screenSettings = AppBeans.getPrototype(ScreenSettings.NAME, ((Screen) frameOwner).getId());
-            stringSettings = screenSettings.toSettingsString(componentSettings);
-        }
-
+        String stringSettings = getStringSettings();
         presentation.setSettings(stringSettings);
 
         presentation.setName(nameField.getValue());
@@ -235,6 +215,14 @@ public class PresentationEditor extends JmixWindow {
                 component.applyPresentation(EntityValues.<UUID>getId(presentation));
             }
         });
+    }
+
+    protected String getStringSettings() {
+        ComponentSettings componentSettings = SettingsHelper.createSettings(settingsBinder.getSettingsClass());
+        settingsBinder.saveSettings((Component) component, new SettingsWrapperImpl(componentSettings));
+
+        ScreenSettings screenSettings = AppBeans.getPrototype(ScreenSettings.NAME, ((Screen) frameOwner).getId());
+        return screenSettings.toSettingsString(componentSettings);
     }
 
     protected String getPresentationCaption() {

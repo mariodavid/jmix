@@ -31,7 +31,8 @@ import io.jmix.ui.component.data.DataGridItems;
  */
 @SuppressWarnings("rawtypes")
 @Deprecated
-public interface TreeDataGrid<E extends Entity> extends ListComponent<E>, io.jmix.ui.component.TreeDataGrid<E> {
+public interface TreeDataGrid<E extends Entity> extends ListComponent<E>, io.jmix.ui.component.TreeDataGrid<E>,
+        HasSettings, HasDataLoadingSettings {
 
     /**
      * @return the hierarchical data source

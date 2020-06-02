@@ -36,7 +36,7 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
-public class TablePresentations extends VerticalLayout {
+public class TablePresentationsLayout extends VerticalLayout {
 
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
 
@@ -60,7 +60,7 @@ public class TablePresentations extends VerticalLayout {
 
     protected PresentationActionsBuilder presentationActionsBuilder;
 
-    public TablePresentations(Table component, ComponentSettingsBinder settingsBinder) {
+    public TablePresentationsLayout(Table component, ComponentSettingsBinder settingsBinder) {
         this.table = component;
         this.messages = AppBeans.get(Messages.NAME);
 

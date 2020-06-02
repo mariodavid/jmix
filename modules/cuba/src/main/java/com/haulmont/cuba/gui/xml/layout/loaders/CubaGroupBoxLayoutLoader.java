@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.xml.data.ComponentLoaderHelper;
+import io.jmix.ui.xml.layout.loader.GroupBoxLayoutLoader;
 
-/**
- * Component compatible with {@link Datasource}.
- *
- * @param <V> type of value
- * @deprecated Use {@link io.jmix.ui.component.ResizableTextArea} instead
- */
-@Deprecated
-public interface ResizableTextArea<V> extends TextArea<V>, io.jmix.ui.component.ResizableTextArea<V>, HasSettings {
+public class CubaGroupBoxLayoutLoader extends GroupBoxLayoutLoader {
 
-    String NAME = io.jmix.ui.component.ResizableTextArea.NAME;
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        ComponentLoaderHelper.loadSettingsEnabled((GroupBoxLayout) resultComponent, element);
+    }
 }

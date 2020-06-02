@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.settings.compatibility.converter;
+package com.haulmont.cuba.settings.converter;
 
 import io.jmix.ui.settings.component.ComponentSettings;
-import io.jmix.ui.settings.component.ResizableTextAreaSettings;
+import io.jmix.ui.settings.component.GroupBoxSettings;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-public class LegacyResizableTextAreaSettingsConverter implements LegacySettingsConverter {
+public class LegacyGroupBoxSettingsConverter implements LegacySettingsConverter {
 
     @Override
     public Element convertToElement(ComponentSettings settings) {
         Element element = DocumentHelper.createElement("component");
 
-        copySettingsToElement((ResizableTextAreaSettings) settings, element);
+        copySettingsToElement((GroupBoxSettings) settings, element);
 
         return element;
     }
@@ -39,37 +37,36 @@ public class LegacyResizableTextAreaSettingsConverter implements LegacySettingsC
         element.attributes().clear();
         element.clearContent();
 
-        copySettingsToElement((ResizableTextAreaSettings) settings, element);
+        copySettingsToElement((GroupBoxSettings) settings, element);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ComponentSettings> T convertToComponentSettings(Element settings) {
-        ResizableTextAreaSettings textAreaSettings = createSettings();
-        textAreaSettings.setId(settings.attributeValue("name"));
+        GroupBoxSettings groupBoxSettings = createSettings();
+        groupBoxSettings.setId(settings.attributeValue("name"));
 
-        String width = settings.attributeValue("width");
-        String height = settings.attributeValue("height");
-
-        if (isNotBlank(width) && isNotBlank(height)) {
-            textAreaSettings.setWidth(width);
-            textAreaSettings.setHeight(height);
+        Element groupBoxElem = settings.element("groupBox");
+        if (groupBoxElem != null) {
+            String expanded = groupBoxElem.attributeValue("expanded");
+            if (expanded != null) {
+                groupBoxSettings.setExpanded(Boolean.parseBoolean(expanded));
+            }
         }
 
-        return (T) textAreaSettings;
+        return (T) groupBoxSettings;
     }
 
-    protected void copySettingsToElement(ResizableTextAreaSettings settings, Element element) {
+    protected void copySettingsToElement(GroupBoxSettings settings, Element element) {
         element.addAttribute("name", settings.getId());
 
-        if (isNotBlank(settings.getHeight())
-                && isNotBlank(settings.getWidth())) {
-            element.addAttribute("width", settings.getWidth());
-            element.addAttribute("height", settings.getHeight());
+        if (settings.getExpanded() != null) {
+            Element groupBoxElem = element.addElement("groupBox");
+            groupBoxElem.addAttribute("expanded", settings.getExpanded().toString());
         }
     }
 
-    protected ResizableTextAreaSettings createSettings() {
-        return new ResizableTextAreaSettings();
+    protected GroupBoxSettings createSettings() {
+        return new GroupBoxSettings();
     }
 }

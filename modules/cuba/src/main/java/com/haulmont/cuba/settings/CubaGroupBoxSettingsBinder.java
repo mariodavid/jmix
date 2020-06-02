@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-@NonNullApi
-package io.jmix.ui.settings.compatibility.converter;
+package com.haulmont.cuba.settings;
 
-import org.springframework.lang.NonNullApi;
+import com.haulmont.cuba.web.gui.components.WebGroupBox;
+import io.jmix.ui.component.Component;
+import io.jmix.ui.settings.component.binder.GroupBoxSettingsBinder;
+
+@org.springframework.stereotype.Component(CubaGroupBoxSettingsBinder.NAME)
+public class CubaGroupBoxSettingsBinder extends GroupBoxSettingsBinder {
+
+    public static final String NAME = "jmix_CubaGroupBoxSettingsBinder";
+
+    @Override
+    public Class<? extends Component> getComponentClass() {
+        return WebGroupBox.class;
+    }
+}

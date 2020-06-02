@@ -17,16 +17,90 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.components.presentation.CubaPresentationActionsBuilder;
 import com.haulmont.cuba.settings.CubaGroupTableSettingsBinder;
+import com.haulmont.cuba.settings.component.LegacySettingsApplier;
 import io.jmix.core.Entity;
+import io.jmix.ui.component.presentation.TablePresentationsLayout;
+import io.jmix.ui.presentation.TablePresentations;
+import io.jmix.ui.presentation.model.TablePresentation;
+import io.jmix.ui.screen.compatibility.CubaLegacySettings;
+import com.haulmont.cuba.settings.converter.LegacyGroupTableSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
+import org.dom4j.Element;
 
 @Deprecated
 public class WebGroupTable<E extends Entity> extends io.jmix.ui.component.impl.WebGroupTable<E>
         implements GroupTable<E> {
 
+    protected LegacySettingsApplier settingsApplier;
+
+    public WebGroupTable() {
+        super();
+
+        settingsApplier = createSettingsApplier();
+    }
+
+    @Override
+    public void applyDataLoadingSettings(Element element) {
+        settingsApplier.applyDataLoadingSettings(element);
+    }
+
+    @Override
+    public void applySettings(Element element) {
+        settingsApplier.applySettings(element);
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        return settingsApplier.saveSettings(element);
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settingsApplier.isSettingsEnabled();
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        settingsApplier.setSettingsEnabled(settingsEnabled);
+    }
+
     @Override
     protected ComponentSettingsBinder getSettingsBinder() {
         return beanLocator.get(CubaGroupTableSettingsBinder.NAME);
+    }
+
+    @Override
+    protected TablePresentationsLayout createPresentationsLayout() {
+        TablePresentationsLayout layout = super.createPresentationsLayout();
+        layout.setPresentationActionsBuilder(new CubaPresentationActionsBuilder(this, getSettingsBinder()));
+        layout.build();
+        return layout;
+    }
+
+    @Override
+    protected void updatePresentationSettings(TablePresentations p) {
+        if (getFrame().getFrameOwner() instanceof CubaLegacySettings) {
+            Element e = p.getSettings(p.getCurrent());
+            saveSettings(e);
+            p.setSettings(p.getCurrent(), e);
+        } else {
+            super.updatePresentationSettings(p);
+        }
+    }
+
+    @Override
+    protected void applyPresentationSettings(TablePresentation p) {
+        if (getFrame().getFrameOwner() instanceof CubaLegacySettings) {
+            Element settingsElement = presentations.getSettings(p);
+            applySettings(settingsElement);
+        } else {
+            super.applyPresentationSettings(p);
+        }
+    }
+
+    protected LegacySettingsApplier createSettingsApplier() {
+        return new LegacySettingsApplier(this, new LegacyGroupTableSettingsConverter(), getSettingsBinder());
     }
 }

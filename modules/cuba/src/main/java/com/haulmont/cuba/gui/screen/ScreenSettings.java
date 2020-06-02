@@ -16,9 +16,9 @@
 
 package com.haulmont.cuba.gui.screen;
 
-import io.jmix.ui.component.HasDataLoadingSettings;
+import com.haulmont.cuba.gui.components.HasDataLoadingSettings;
 import io.jmix.ui.component.HasTablePresentations;
-import io.jmix.ui.component.HasSettings;
+import com.haulmont.cuba.gui.components.HasSettings;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.screen.Screen;
 import io.jmix.ui.settings.compatibility.Settings;

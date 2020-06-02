@@ -386,7 +386,7 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
         com.vaadin.ui.Accordion.Tab tabControl = this.component.addTab(tabComponent);
         getLazyTabs().add(tabComponent);
 
-        this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
+        this.component.addSelectedTabChangeListener(createLazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
 
         if (!postInitTaskAdded
@@ -551,6 +551,10 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
         });
     }
 
+    protected LazyTabChangeListener createLazyTabChangeListener(ComponentContainer tabContent, Element descriptor, ComponentLoader loader) {
+        return new LazyTabChangeListener(tabContent, descriptor, loader);
+    }
+
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {
         protected ComponentContainer tabContent;
         protected Element descriptor;
@@ -587,45 +591,29 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
                 contentComponent.setDescription(null);
 
                 Window window = ComponentsHelper.getWindow(WebAccordion.this);
-                if (window != null) {
-                    if (window.getFrameOwner() instanceof CubaLegacySettings) {
-                        Settings settings = ((CubaLegacySettings) window.getFrameOwner()).getSettings();
-                        if (settings != null) {
-                            walkComponents(tabContent, (settingsComponent, name) -> {
-                                if (settingsComponent.getId() != null
-                                        && settingsComponent instanceof HasSettings) {
-                                    Element e = settings.get(name);
-                                    ((HasSettings) settingsComponent).applySettings(e);
+                applySettings(window);
+            }
+        }
 
-                                    if (component instanceof HasTablePresentations
-                                            && e.attributeValue("presentation") != null) {
-                                        final String def = e.attributeValue("presentation");
-                                        if (!StringUtils.isEmpty(def)) {
-                                            UUID defaultId = UUID.fromString(def);
-                                            ((HasTablePresentations) component).applyPresentationAsDefault(defaultId);
-                                        }
-                                    }
-                                }
-                            });
-                        }
+        protected void applySettings(Window window) {
+            if (window == null) {
+                return;
+            }
+
+            window.getFacets().forEach(facet -> {
+                if (facet instanceof ScreenSettingsFacet) {
+                    ScreenSettingsFacet settingsFacet = (ScreenSettingsFacet) facet;
+                    Consumer<ScreenSettingsFacet.SettingsContext> applyHandler = settingsFacet.getApplySettingsDelegate();
+                    if (applyHandler != null) {
+                        applyHandler.accept(new ScreenSettingsFacet.SettingsContext(
+                                WebAccordion.this,
+                                tabContent.getComponents(),
+                                settingsFacet.getSettings()));
                     } else {
-                        window.getFacets().forEach(facet -> {
-                            if (facet instanceof ScreenSettingsFacet) {
-                                ScreenSettingsFacet settingsFacet = (ScreenSettingsFacet) facet;
-                                Consumer<ScreenSettingsFacet.SettingsContext> applyHandler = settingsFacet.getApplySettingsDelegate();
-                                if (applyHandler != null) {
-                                    applyHandler.accept(new ScreenSettingsFacet.SettingsContext(
-                                            WebAccordion.this,
-                                            tabContent.getComponents(),
-                                            settingsFacet.getSettings()));
-                                } else {
-                                    settingsFacet.applySettings(settingsFacet.getSettings());
-                                }
-                            }
-                        });
+                        settingsFacet.applySettings(settingsFacet.getSettings());
                     }
                 }
-            }
+            });
         }
     }
 
