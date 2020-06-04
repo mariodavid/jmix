@@ -19,17 +19,14 @@ import com.vaadin.ui.Button;
 import io.jmix.core.FileStorage;
 import io.jmix.core.FileStorageException;
 import io.jmix.core.FileStorageLocator;
-import io.jmix.core.Messages;
 import io.jmix.ui.component.FileStorageUploadField;
 import io.jmix.ui.component.data.ConversionException;
 import io.jmix.ui.component.data.ValueSource;
-import io.jmix.ui.export.ExportDisplay;
 import io.jmix.ui.upload.TemporaryStorage;
 import io.jmix.ui.widget.JmixFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
@@ -41,8 +38,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class WebFileStorageUploadField<T> extends WebSingleFileUploadField<T>
-        implements FileStorageUploadField<T>, InitializingBean {
+public class WebFileStorageUploadField<T> extends WebAbstractSingleFileUploadField<T>
+        implements FileStorageUploadField<T> {
 
     private static final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
@@ -61,16 +58,6 @@ public class WebFileStorageUploadField<T> extends WebSingleFileUploadField<T>
      */
     protected boolean internalValueChangedOnUpload = false;
 
-    public WebFileStorageUploadField() {
-        component = createComponent();
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        initComponent();
-        attachValueChangeListener(component);
-    }
-
     @Override
     protected void valueBindingConnected(ValueSource<T> valueSource) {
         super.valueBindingConnected(valueSource);
@@ -81,19 +68,6 @@ public class WebFileStorageUploadField<T> extends WebSingleFileUploadField<T>
     @Autowired
     public void setTemporaryStorage(TemporaryStorage temporaryStorage) {
         this.temporaryStorage = temporaryStorage;
-    }
-
-    @Autowired
-    public void setExportDisplay(ExportDisplay exportDisplay) {
-        this.exportDisplay = exportDisplay;
-    }
-
-    @Autowired
-    public void setMessages(Messages messages) {
-        this.messages = messages;
-
-        component.setClearButtonCaption(messages.getMessage("FileUploadField.clearButtonCaption"));
-        component.setFileNotSelectedMessage(messages.getMessage("FileUploadField.fileNotSelected"));
     }
 
     @Autowired

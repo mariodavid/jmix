@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright 2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package io.jmix.ui.component.impl;
@@ -21,6 +20,9 @@ import com.vaadin.ui.Component;
 import io.jmix.core.FileStorageException;
 import io.jmix.core.Messages;
 import io.jmix.core.common.event.Subscription;
+import io.jmix.core.metamodel.datatype.Datatype;
+import io.jmix.core.metamodel.datatype.DatatypeRegistry;
+import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.Notifications.NotificationType;
 import io.jmix.ui.UiProperties;
@@ -48,10 +50,18 @@ import java.util.stream.Collectors;
 import static io.jmix.ui.component.ComponentsHelper.getScreenContext;
 import static io.jmix.ui.upload.FileUploadTypesHelper.convertToMIME;
 
-public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFileUpload>
+public class WebFileMultiUploadField extends WebAbstractComponent<JmixFileUpload>
         implements FileMultiUploadField, InitializingBean {
 
+    protected static final int BYTES_IN_MEGABYTE = 1048576;
+
     protected final Map<UUID, String> files = new LinkedHashMap<>();
+
+    protected long fileSizeLimit = 0;
+    protected Set<String> permittedExtensions;
+    protected DropZone dropZone;
+    protected ComponentContainer pasteZone;
+    protected String dropZonePrompt;
 
     protected TemporaryStorage temporaryStorage;
     protected UUID tempFileId;
@@ -201,8 +211,13 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFile
     }
 
     @Override
+    public DropZone getDropZone() {
+        return dropZone;
+    }
+
+    @Override
     public void setDropZone(DropZone dropZone) {
-        super.setDropZone(dropZone);
+        this.dropZone = dropZone;
 
         if (dropZone == null) {
             component.setDropZone(null);
@@ -218,8 +233,13 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFile
     }
 
     @Override
+    public ComponentContainer getPasteZone() {
+        return pasteZone;
+    }
+
+    @Override
     public void setPasteZone(ComponentContainer pasteZone) {
-        super.setPasteZone(pasteZone);
+        this.pasteZone = pasteZone;
 
         if (pasteZone == null) {
             component.setPasteZone(null);
@@ -230,8 +250,13 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFile
     }
 
     @Override
+    public String getDropZonePrompt() {
+        return dropZonePrompt;
+    }
+
+    @Override
     public void setDropZonePrompt(String dropZonePrompt) {
-        super.setDropZonePrompt(dropZonePrompt);
+        this.dropZonePrompt = dropZonePrompt;
 
         component.setDropZonePrompt(dropZonePrompt);
     }
@@ -257,10 +282,20 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFile
     }
 
     @Override
+    public long getFileSizeLimit() {
+        return fileSizeLimit;
+    }
+
+    @Override
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
 
         this.component.setFileSizeLimit(fileSizeLimit);
+    }
+
+    @Override
+    public Set<String> getPermittedExtensions() {
+        return permittedExtensions;
     }
 
     @Override
@@ -289,5 +324,54 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<JmixFile
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    protected String getFileSizeLimitString() {
+        String fileSizeLimitString;
+        if (fileSizeLimit > 0) {
+            if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
+            } else {
+                DatatypeRegistry datatypeRegistry = beanLocator.get(DatatypeRegistry.NAME);
+                Datatype<Double> doubleDatatype = datatypeRegistry.get(Double.class);
+                double fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+
+                CurrentAuthentication currentAuthentication = beanLocator.get(CurrentAuthentication.NAME);
+                fileSizeLimitString = doubleDatatype.format(fileSizeInMb, currentAuthentication.getLocale());
+            }
+        } else {
+            fileSizeLimitString = String.valueOf(beanLocator.get(UiProperties.class).getMaxUploadSizeMb());
+        }
+        return fileSizeLimitString;
+    }
+
+    @Override
+    public Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        return getEventHub().subscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener) {
+        unsubscribe(FileUploadStartEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        return getEventHub().subscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener) {
+        unsubscribe(FileUploadFinishEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        return getEventHub().subscribe(FileUploadErrorEvent.class, listener);
+    }
+
+    @Override
+    public void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
+        unsubscribe(FileUploadErrorEvent.class, listener);
     }
 }

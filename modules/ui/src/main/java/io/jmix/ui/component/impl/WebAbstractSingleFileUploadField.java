@@ -28,16 +28,15 @@ import io.jmix.ui.Notifications;
 import io.jmix.ui.UiProperties;
 import io.jmix.ui.component.ComponentContainer;
 import io.jmix.ui.component.SingleFileUploadField;
-import io.jmix.ui.component.UploadField;
 import io.jmix.ui.component.Window;
 import io.jmix.ui.components.impl.JmixFileUploadField;
 import io.jmix.ui.export.ExportDisplay;
 import io.jmix.ui.icon.IconResolver;
 import io.jmix.ui.widget.JmixFileUpload;
-import io.jmix.ui.widget.UploadComponent;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
@@ -49,8 +48,8 @@ import java.util.stream.Collectors;
 import static io.jmix.ui.component.ComponentsHelper.getScreenContext;
 import static io.jmix.ui.upload.FileUploadTypesHelper.convertToMIME;
 
-public abstract class WebSingleFileUploadField<R> extends WebV8AbstractField<JmixFileUploadField, String, R>
-        implements SingleFileUploadField {
+public abstract class WebAbstractSingleFileUploadField<R> extends WebV8AbstractField<JmixFileUploadField, String, R>
+        implements SingleFileUploadField, InitializingBean {
 
     protected static final int BYTES_IN_MEGABYTE = 1048576;
 
@@ -67,8 +66,31 @@ public abstract class WebSingleFileUploadField<R> extends WebV8AbstractField<Jmi
     protected ComponentContainer pasteZone;
     protected String dropZonePrompt;
 
+    public WebAbstractSingleFileUploadField() {
+        component = createComponent();
+    }
+
     protected JmixFileUploadField createComponent() {
-        return new JmixFileUploadFieldImpl();
+        return new JmixSingleFileUploadField();
+    }
+
+    @Autowired
+    public void setExportDisplay(ExportDisplay exportDisplay) {
+        this.exportDisplay = exportDisplay;
+    }
+
+    @Autowired
+    public void setMessages(Messages messages) {
+        this.messages = messages;
+
+        component.setClearButtonCaption(messages.getMessage("FileUploadField.clearButtonCaption"));
+        component.setFileNotSelectedMessage(messages.getMessage("FileUploadField.fileNotSelected"));
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        initComponent();
+        attachValueChangeListener(component);
     }
 
     protected void initComponent() {
@@ -501,7 +523,7 @@ public abstract class WebSingleFileUploadField<R> extends WebV8AbstractField<Jmi
         return super.isModified();
     }
 
-    protected class JmixFileUploadFieldImpl extends JmixFileUploadField {
+    protected class JmixSingleFileUploadField extends JmixFileUploadField {
         @Override
         protected void onSetInternalValue(Object newValue) {
             internalValueChanged(newValue);

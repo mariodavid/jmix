@@ -16,16 +16,10 @@
 package io.jmix.ui.component.impl;
 
 import com.vaadin.ui.Button;
-import io.jmix.core.Messages;
 import io.jmix.ui.component.FileUploadField;
 import io.jmix.ui.component.data.ConversionException;
-import io.jmix.ui.export.ExportDisplay;
 import io.jmix.ui.widget.JmixFileUpload;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.unit.DataSize;
 
 import java.io.ByteArrayInputStream;
@@ -33,36 +27,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class WebFileUploadField extends WebSingleFileUploadField<byte[]>
-        implements FileUploadField, InitializingBean {
+public class WebFileUploadField extends WebAbstractSingleFileUploadField<byte[]>
+        implements FileUploadField {
 
-    private static final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
     private static final String DEFAULT_FILENAME = "attachment";
 
     protected ByteArrayOutputStream outputStream;
-
-    public WebFileUploadField() {
-        component = createComponent();
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        initComponent();
-        attachValueChangeListener(component);
-    }
-
-    @Autowired
-    public void setExportDisplay(ExportDisplay exportDisplay) {
-        this.exportDisplay = exportDisplay;
-    }
-
-    @Autowired
-    public void setMessages(Messages messages) {
-        this.messages = messages;
-
-        component.setClearButtonCaption(messages.getMessage("FileUploadField.clearButtonCaption"));
-        component.setFileNotSelectedMessage(messages.getMessage("FileUploadField.fileNotSelected"));
-    }
 
     @Override
     protected void onFileNameClick(Button.ClickEvent e) {
