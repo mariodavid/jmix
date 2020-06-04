@@ -16,6 +16,7 @@
 
 package io.jmix.ui.upload;
 
+import io.jmix.core.CoreProperties;
 import io.jmix.core.FileStorage;
 import io.jmix.core.FileStorageException;
 import io.jmix.core.FileStorageLocator;
@@ -63,8 +64,8 @@ public class TemporaryStorageImpl implements TemporaryStorage {
     protected FileStorageLocator fileStorageLocator;
 
     @Autowired
-    public void setEnvironment(Environment environment) {
-        tempDir = environment.getProperty("jmix.core.tempDir");
+    public void setCoreProperties(CoreProperties coreProperties) {
+        tempDir = coreProperties.getTempDir();
     }
 
     @Override
@@ -127,12 +128,6 @@ public class TemporaryStorageImpl implements TemporaryStorage {
     }
 
     @Override
-    public UUID createEmptyFile() {
-        FileInfo fileInfo = createFileInternal();
-        return fileInfo.getId();
-    }
-
-    @Override
     public FileInfo createFile() {
         return createFileInternal();
     }
@@ -156,18 +151,6 @@ public class TemporaryStorageImpl implements TemporaryStorage {
         }
 
         return new FileInfo(file, uuid);
-    }
-
-    @Override
-    public UUID createNewFileId() {
-        UUID uuid = UuidProvider.createUuid();
-        File dir = new File(tempDir);
-        File file = new File(dir, uuid.toString());
-        if (file.exists()) {
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-        }
-        tempFiles.put(uuid, file);
-        return uuid;
     }
 
     @Override

@@ -19,7 +19,7 @@ package io.jmix.core;
 import java.io.InputStream;
 
 /**
- * Component providing an interface to store and load files defined by file reference.
+ * Interface of a component to store and load files defined by file reference.
  *
  * @param <R> file reference type
  * @param <I> file info type

@@ -15,6 +15,6 @@
  */
 
 @NonNullApi
-package io.jmix.filestorage.fs;
+package io.jmix.fsfilestorage;
 
 import org.springframework.lang.NonNullApi;

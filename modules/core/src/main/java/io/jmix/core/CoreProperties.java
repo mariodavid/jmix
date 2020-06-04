@@ -34,6 +34,8 @@ public class CoreProperties {
     String webHostName;
     String webPort;
     String confDir;
+    String workDir;
+    String tempDir;
     String dbDir;
     String defaultFileStorage;
     private String anonymousAuthenticationTokenKey;
@@ -49,6 +51,8 @@ public class CoreProperties {
             String webHostName,
             String webPort,
             String confDir,
+            String workDir,
+            String tempDir,
             String dbDir,
             Map<String, String> availableLocales,
             @DefaultValue("true") boolean localeSelectVisible,
@@ -63,6 +67,8 @@ public class CoreProperties {
         this.webHostName = webHostName;
         this.webPort = webPort;
         this.confDir = confDir;
+        this.workDir = workDir;
+        this.tempDir = tempDir;
         this.dbDir = dbDir;
         this.defaultFileStorage = defaultFileStorage;
         this.anonymousAuthenticationTokenKey = anonymousAuthenticationTokenKey;
@@ -106,6 +112,14 @@ public class CoreProperties {
 
     public String getConfDir() {
         return confDir;
+    }
+
+    public String getWorkDir() {
+        return workDir;
+    }
+
+    public String getTempDir() {
+        return tempDir;
     }
 
     public String getDbDir() {

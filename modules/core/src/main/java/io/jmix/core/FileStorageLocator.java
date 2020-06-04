@@ -16,9 +16,32 @@
 
 package io.jmix.core;
 
+/**
+ * Provides access to all registered file storage beans of the application.
+ * <p>
+ * If exactly one file storage registered in the application, this file storage is considered as the default
+ * file storage of the application. If more than one file storage registered, the default file storage
+ * should be specified in the {@code jmix.core.defaultFileStorage} application property.
+ */
 public interface FileStorageLocator {
 
+    /**
+     * Returns the file storage with the given name.
+     *
+     * @param beanName file storage bean name
+     * @return file storage
+     * @throws IllegalArgumentException if no file storage with the given name found
+     */
     <T extends FileStorage> T get(String beanName);
 
+    /**
+     * Returns the default file storage of the application.
+     *
+     * @return file storage
+     * @throws IllegalStateException if no file storage registered in the application
+     *                               or there are more than one file storage registered and
+     *                               the default file storage is not specified
+     *                               in the {@code jmix.core.defaultFileStorage} application property.
+     */
     <T extends FileStorage> T getDefault();
 }

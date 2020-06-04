@@ -34,6 +34,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
+
 @Component(FileUploadingAPI.NAME)
 public class FileUploading implements FileUploadingAPI {
     @Autowired
@@ -68,7 +71,8 @@ public class FileUploading implements FileUploadingAPI {
     @Override
     public UUID createEmptyFile() throws FileStorageException {
         try {
-            return delegate.createEmptyFile();
+            TemporaryStorage.FileInfo fileInfo = delegate.createFile();
+            return fileInfo.getId();
         } catch (io.jmix.core.FileStorageException e) {
             throw new FileStorageException(e);
         }
@@ -87,7 +91,9 @@ public class FileUploading implements FileUploadingAPI {
     @Override
     public UUID createNewFileId() throws FileStorageException {
         try {
-            return delegate.createNewFileId();
+            TemporaryStorage.FileInfo fileInfo = delegate.createFile();
+            fileInfo.getFile().delete();
+            return fileInfo.getId();
         } catch (io.jmix.core.FileStorageException e) {
             throw new FileStorageException(e);
         }
@@ -138,8 +144,20 @@ public class FileUploading implements FileUploadingAPI {
     }
 
     @Override
-    public FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle) throws FileStorageException, InterruptedException {
-        //todo shalyganov implement
-        return null;
+    public FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle)
+            throws FileStorageException, InterruptedException {
+        checkNotNullArgument(taskLifeCycle);
+
+        UUID fileId = (UUID) taskLifeCycle.getParams().get("fileId");
+        String fileName = (String) taskLifeCycle.getParams().get("fileName");
+
+        checkNotNull(fileId);
+        checkNotNull(fileName);
+
+        FileDescriptor fileDescriptor = getFileDescriptor(fileId, fileName);
+        checkNotNull(fileDescriptor);
+        putFileIntoStorage(fileId, fileDescriptor);
+
+        return fileDescriptor;
     }
 }

@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import io.jmix.core.FileStorage;
 import io.jmix.core.TimeSource;
 import io.jmix.core.common.util.URLEncodeUtils;
-import io.jmix.filestorage.fs.FileSystemFileStorage;
+import io.jmix.fsfilestorage.FileSystemFileStorage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -17,12 +17,12 @@
 package io.jmix.ui.export;
 
 import io.jmix.core.AppBeans;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.UuidProvider;
 import io.jmix.ui.UiProperties;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -53,14 +53,10 @@ public class ByteArrayDataProvider implements ExportDataProvider {
         }
     }
 
-    protected Environment getEnvironment() {
-        return AppBeans.get(Environment.class);
-    }
-
     protected File saveToTempStorage(byte[] data) {
         UUID uuid = UuidProvider.createUuid();
 
-        String tempDir = getEnvironment().getProperty("jmix.core.tempDir");
+        String tempDir = AppBeans.get(CoreProperties.class).getTempDir();
 
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());

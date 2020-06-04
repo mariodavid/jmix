@@ -17,14 +17,15 @@
 
 import io.jmix.core.FileStorage
 import io.jmix.core.JmixCoreConfiguration
-import io.jmix.filestorage.JmixFileStorageFSConfiguration
+import io.jmix.fsfilestorage.JmixFileSystemFileStorageConfiguration
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
-import test_support.JmixFileStorageFSTestConfiguration
+import test_support.JmixFileSystemFileStorageTestConfiguration
 
-@ContextConfiguration(classes = [JmixCoreConfiguration, JmixFileStorageFSConfiguration, JmixFileStorageFSTestConfiguration])
+@ContextConfiguration(classes = [JmixCoreConfiguration, JmixFileSystemFileStorageConfiguration,
+        JmixFileSystemFileStorageTestConfiguration])
 class FileSystemFileStorageTest extends Specification {
 
     @Autowired

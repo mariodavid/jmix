@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.filestorage;
+package io.jmix.fsfilestorage;
 
 import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.core.annotation.JmixModule;
@@ -27,6 +27,6 @@ import org.springframework.context.annotation.PropertySource;
 @ComponentScan
 @ConfigurationPropertiesScan
 @JmixModule(dependsOn = JmixCoreConfiguration.class)
-@PropertySource(name = "io.jmix.filestorage", value = "classpath:/io/jmix/filestorage/module.properties")
-public class JmixFileStorageFSConfiguration {
+@PropertySource(name = "io.jmix.fsfilestorage", value = "classpath:/io/jmix/fsfilestorage/module.properties")
+public class JmixFileSystemFileStorageConfiguration {
 }

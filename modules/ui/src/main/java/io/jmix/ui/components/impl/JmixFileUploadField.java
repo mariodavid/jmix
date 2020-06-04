@@ -23,17 +23,19 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.themes.ValoTheme;
 import io.jmix.ui.widget.JmixButton;
-import io.jmix.ui.widget.UploadComponent;
+import io.jmix.ui.widget.JmixFileUpload;
 import org.apache.commons.lang3.StringUtils;
 
-public class JmixFileUploadWrapper extends CustomField<String> {
+import java.util.Set;
+
+public class JmixFileUploadField extends CustomField<String> {
     protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLENAME = "c-fileupload-empty";
 
     protected CssLayout container;
     protected Button fileNameButton;
     protected Button clearButton;
-    protected UploadComponent uploadButton;
+    protected JmixFileUpload uploadButton;
 
     protected boolean showFileName = false;
     protected boolean showClearButton = false;
@@ -42,6 +44,16 @@ public class JmixFileUploadWrapper extends CustomField<String> {
     protected String fileNotSelectedMessage = "";
 
     protected String value;
+
+    public JmixFileUploadField() {
+        uploadButton = createUploadButton();
+        setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
+        initLayout();
+    }
+
+    protected JmixFileUpload createUploadButton() {
+        return new JmixFileUpload();
+    }
 
     @Override
     protected Component initContent() {
@@ -165,14 +177,7 @@ public class JmixFileUploadWrapper extends CustomField<String> {
         }
     }
 
-    public JmixFileUploadWrapper(UploadComponent uploadButton) {
-        setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
-        initLayout(uploadButton);
-    }
-
-    protected void initLayout(UploadComponent uploadComponent) {
-        this.uploadButton = uploadComponent;
-
+    protected void initLayout() {
         container = new CssLayout();
         container.addStyleName("c-fileupload-container");
 
@@ -183,7 +188,7 @@ public class JmixFileUploadWrapper extends CustomField<String> {
         setFileNameButtonCaption(null);
         container.addComponent(fileNameButton);
 
-        container.addComponent(uploadComponent);
+        container.addComponent(uploadButton);
 
         clearButton = new JmixButton("");
         clearButton.setStyleName("c-fileupload-clear");
@@ -313,5 +318,71 @@ public class JmixFileUploadWrapper extends CustomField<String> {
     public void setTabIndex(int tabIndex) {
         uploadButton.setTabIndex(tabIndex);
         clearButton.setTabIndex(tabIndex);
+    }
+
+    //----JmixFileUpload delegate methods
+
+    public void setProgressWindowCaption(String progressWindowCaption) {
+        uploadButton.setProgressWindowCaption(progressWindowCaption);
+    }
+
+    public void setUnableToUploadFileMessage(String message) {
+        uploadButton.setUnableToUploadFileMessage(message);
+    }
+
+    public void setCancelButtonCaption(String cancelButtonCaption) {
+        uploadButton.setCancelButtonCaption(cancelButtonCaption);
+    }
+
+    public void setDropZonePrompt(String dropZonePrompt) {
+        uploadButton.setDropZonePrompt(dropZonePrompt);
+    }
+
+    public void setFileSizeLimit(long fileSizeLimit) {
+        uploadButton.setFileSizeLimit(fileSizeLimit);
+    }
+
+    public void setUploadReceiver(JmixFileUpload.Receiver receiver) {
+        uploadButton.setReceiver(receiver);
+    }
+
+    public void addUploadStartedListener(JmixFileUpload.StartedListener listener) {
+        uploadButton.addStartedListener(listener);
+    }
+
+    public void addUploadFinishedListener(JmixFileUpload.FinishedListener listener) {
+        uploadButton.addFinishedListener(listener);
+    }
+
+    public void addUploadSucceededListener(JmixFileUpload.SucceededListener listener) {
+        uploadButton.addSucceededListener(listener);
+    }
+
+    public void addUploadFailedListener(JmixFileUpload.FailedListener listener) {
+        uploadButton.addFailedListener(listener);
+    }
+
+    public void addFileSizeLimitExceededListener(JmixFileUpload.FileSizeLimitExceededListener listener) {
+        uploadButton.addFileSizeLimitExceededListener(listener);
+    }
+
+    public void addFileExtensionNotAllowedListener(JmixFileUpload.FileExtensionNotAllowedListener listener) {
+        uploadButton.addFileExtensionNotAllowedListener(listener);
+    }
+
+    public void setAccept(String accept) {
+        uploadButton.setAccept(accept);
+    }
+
+    public void setDropZone(Component component) {
+        uploadButton.setDropZone(component);
+    }
+
+    public void setPasteZone(Component component) {
+        uploadButton.setPasteZone(component);
+    }
+
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        uploadButton.setPermittedExtensions(permittedExtensions);
     }
 }

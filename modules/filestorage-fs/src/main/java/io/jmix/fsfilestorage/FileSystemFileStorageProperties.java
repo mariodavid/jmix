@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.filestorage;
+package io.jmix.fsfilestorage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -22,11 +22,11 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "jmix.filestorage.fs")
 @ConstructorBinding
-public class FileStorageFSProperties {
+public class FileSystemFileStorageProperties {
     String storageDir;
     boolean immutableFileStorage;
 
-    public FileStorageFSProperties(
+    public FileSystemFileStorageProperties(
             String storageDir,
             @DefaultValue("true") boolean immutableFileStorage) {
         this.storageDir = storageDir;

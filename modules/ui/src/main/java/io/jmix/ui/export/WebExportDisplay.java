@@ -60,6 +60,8 @@ public class WebExportDisplay implements ExportDisplay {
 
     protected Messages messages;
 
+    protected FileStorageLocator fileStorageLocator;
+
     protected FileStorage fileStorage;
 
     protected boolean newWindow;
@@ -82,7 +84,7 @@ public class WebExportDisplay implements ExportDisplay {
 
     @Autowired
     public void setFileStorageLocator(FileStorageLocator fileStorageLocator) {
-        fileStorage = fileStorageLocator.getDefault();
+        this.fileStorageLocator = fileStorageLocator;
     }
 
     /**
@@ -163,6 +165,9 @@ public class WebExportDisplay implements ExportDisplay {
     @Override
     @SuppressWarnings("unchecked")
     public <R> void show(R fileReference, @Nullable ExportFormat format) {
+        if (fileStorage == null) {
+            fileStorage = fileStorageLocator.getDefault();
+        }
         String fileName = fileStorage.getFileInfo(fileReference).toString();
         show(new FileDataProvider<>(fileReference), fileName, format);
     }
@@ -186,6 +191,9 @@ public class WebExportDisplay implements ExportDisplay {
 
     @Override
     public <R> void show(R fileReference) {
+        if (fileStorage == null) {
+            fileStorage = fileStorageLocator.getDefault();
+        }
         String fileName = fileStorage.getFileInfo(fileReference).toString();
         ExportFormat format = ExportFormat.getByExtension(FilenameUtils.getExtension(fileName));
         show(new FileDataProvider<>(fileReference), format);

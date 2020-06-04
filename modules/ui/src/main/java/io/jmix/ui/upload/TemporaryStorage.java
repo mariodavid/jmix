@@ -65,23 +65,7 @@ public interface TemporaryStorage {
      * @return the new temporary file ID
      * @throws FileStorageException in case of IO problems
      */
-    UUID createEmptyFile();
-
-    /**
-     * Create a new empty temporary file and cache its ID for subsequent operations.
-     *
-     * @return the new temporary file ID
-     * @throws FileStorageException in case of IO problems
-     */
     FileInfo createFile();
-
-    /**
-     * Create and cache a new temporary file ID. Doesn't create any real file on disk.
-     *
-     * @return temporary file ID
-     * @throws FileStorageException in case of IO problems
-     */
-    UUID createNewFileId();
 
     /**
      * Return a previously registered temporary file by its ID.
@@ -110,9 +94,6 @@ public interface TemporaryStorage {
      * @param fileName absolute path to the temporary file
      */
     void deleteFileLink(String fileName);
-
-    //todo shalyganov
-//    <R> R putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle) throws InterruptedException;
 
     /**
      * Uploads a file from the temporary storage to the FileStorage.

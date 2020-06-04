@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.jmix.filestorage.fs;
+package io.jmix.fsfilestorage;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.jmix.core.CoreProperties;
 import io.jmix.core.FileStorage;
 import io.jmix.core.FileStorageException;
 import io.jmix.core.TimeSource;
 import io.jmix.core.UuidProvider;
 import io.jmix.core.common.util.URLEncodeUtils;
-import io.jmix.filestorage.FileStorageFSProperties;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -58,10 +58,10 @@ public class FileSystemFileStorage implements FileStorage<URI, String> {
     private static final Logger log = LoggerFactory.getLogger(FileSystemFileStorage.class);
 
     @Autowired
-    protected FileStorageFSProperties properties;
+    protected FileSystemFileStorageProperties properties;
 
     @Autowired
-    protected Environment environment;
+    protected CoreProperties coreProperties;
 
     @Autowired
     protected TimeSource timeSource;
@@ -116,7 +116,7 @@ public class FileSystemFileStorage implements FileStorage<URI, String> {
         if (storageRoots == null) {
             String conf = properties.getStorageDir();
             if (StringUtils.isBlank(conf)) {
-                String workDir = environment.getProperty("jmix.core.workDir");
+                String workDir = coreProperties.getWorkDir();
                 Path dir = Paths.get(workDir, "filestorage");
                 dir.toFile().mkdirs();
                 storageRoots = new Path[]{dir};

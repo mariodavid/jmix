@@ -18,8 +18,8 @@ package test_support;
 
 import io.jmix.core.FileStorage;
 import io.jmix.core.annotation.JmixModule;
-import io.jmix.filestorage.JmixFileStorageFSConfiguration;
-import io.jmix.filestorage.fs.FileSystemFileStorage;
+import io.jmix.fsfilestorage.JmixFileSystemFileStorageConfiguration;
+import io.jmix.fsfilestorage.FileSystemFileStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -29,8 +29,8 @@ import java.net.URI;
 
 @Configuration
 @PropertySource("classpath:/test_support/test-app.properties")
-@JmixModule(dependsOn = JmixFileStorageFSConfiguration.class)
-public class JmixFileStorageFSTestConfiguration {
+@JmixModule(dependsOn = JmixFileSystemFileStorageConfiguration.class)
+public class JmixFileSystemFileStorageTestConfiguration {
     @Bean
     @Primary
     FileStorage<URI, String> fileStorage() {

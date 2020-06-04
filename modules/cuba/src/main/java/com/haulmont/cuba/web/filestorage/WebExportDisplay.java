@@ -40,7 +40,8 @@ public class WebExportDisplay extends io.jmix.ui.export.WebExportDisplay impleme
     @Autowired
     @Override
     public void setFileStorageLocator(FileStorageLocator fileStorageLocator) {
-        //ignore FileStorageLocator and use cuba file storage
+        super.setFileStorageLocator(fileStorageLocator);
+        //use cuba file storage
         fileStorage = cubaFileStorage.asFileStorage();
     }
 
