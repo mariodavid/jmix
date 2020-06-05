@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,6 +64,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<JmixFileUpload
     protected ComponentContainer pasteZone;
     protected String dropZonePrompt;
 
+    protected Messages messages;
     protected TemporaryStorage temporaryStorage;
     protected UUID tempFileId;
     protected String accept;
@@ -76,15 +78,23 @@ public class WebFileMultiUploadField extends WebAbstractComponent<JmixFileUpload
         this.temporaryStorage = temporaryStorage;
     }
 
+    @Autowired
+    public void setMessages(Messages messages) {
+        this.messages = messages;
+    }
+
     @Override
     public void afterPropertiesSet() {
         initComponent(component);
     }
 
+    protected JmixFileUpload createComponent() {
+        return new JmixFileUpload();
+    }
+
     protected void initComponent(JmixFileUpload impl) {
         impl.setMultiSelect(true);
 
-        Messages messages = beanLocator.get(Messages.NAME);
         impl.setProgressWindowCaption(messages.getMessage("upload.uploadingProgressTitle"));
         impl.setUnableToUploadFileMessage(messages.getMessage("upload.unableToUploadFile"));
         impl.setCancelButtonCaption(messages.getMessage("upload.cancel"));
@@ -97,68 +107,82 @@ public class WebFileMultiUploadField extends WebAbstractComponent<JmixFileUpload
 
         impl.setFileSizeLimit(maxSizeBytes);
 
-        impl.setReceiver((fileName, MIMEType) -> {
-            FileOutputStream outputStream;
-            try {
-                TemporaryStorage.FileInfo fileInfo = temporaryStorage.createFile();
-                tempFileId = fileInfo.getId();
-                File tmpFile = fileInfo.getFile();
-                outputStream = new FileOutputStream(tmpFile);
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to receive file", e);
-            }
-            return outputStream;
-        });
+        impl.setReceiver(this::receiveUpload);
 
-        impl.addStartedListener(event -> fireFileUploadStart(event.getFileName(), event.getContentLength()));
+        impl.addStartedListener(this::onUploadStarted);
 
-        impl.addQueueUploadFinishedListener(event -> fireQueueUploadComplete());
+        impl.addQueueUploadFinishedListener(this::onQueueUploadFinished);
 
-        impl.addSucceededListener(event -> {
-            files.put(tempFileId, event.getFileName());
-
-            fireFileUploadFinish(event.getFileName(), event.getContentLength());
-        });
-        impl.addFailedListener(event -> {
-            try {
-                // close and remove temp file
-                temporaryStorage.deleteFile(tempFileId);
-                tempFileId = null;
-            } catch (Exception e) {
-                if (e instanceof FileStorageException) {
-                    FileStorageException fse = (FileStorageException) e;
-                    if (fse.getType() != FileStorageException.Type.FILE_NOT_FOUND) {
-                        LoggerFactory.getLogger(WebFileMultiUploadField.class)
-                                .warn("Could not remove temp file {} after broken uploading", tempFileId);
-                    }
-                }
-                LoggerFactory.getLogger(WebFileMultiUploadField.class)
-                        .warn("Error while delete temp file {}", tempFileId);
-            }
-
-            fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
-        });
-        impl.addFileSizeLimitExceededListener(e -> {
-            Notifications notifications = getScreenContext(this).getNotifications();
-
-            notifications.create(NotificationType.WARNING)
-                    .withCaption(
-                            messages.formatMessage("multiupload.filesizeLimitExceed",
-                                    e.getFileName(), getFileSizeLimitString())
-                    )
-                    .show();
-        });
-        impl.addFileExtensionNotAllowedListener(e -> {
-            Notifications notifications = getScreenContext(this).getNotifications();
-
-            notifications.create(NotificationType.WARNING)
-                    .withCaption(messages.formatMessage("upload.fileIncorrectExtension.message", e.getFileName()))
-                    .show();
-        });
+        impl.addSucceededListener(this::onUploadSucceeded);
+        impl.addFailedListener(this::onUploadFailed);
+        impl.addFileSizeLimitExceededListener(this::onFileSizeLimitExceeded);
+        impl.addFileExtensionNotAllowedListener(this::onFileExtensionNotAllowed);
     }
 
-    protected JmixFileUpload createComponent() {
-        return new JmixFileUpload();
+    private OutputStream receiveUpload(String fileName, String MIMEType) {
+        FileOutputStream outputStream;
+        try {
+            TemporaryStorage.FileInfo fileInfo = temporaryStorage.createFile();
+            tempFileId = fileInfo.getId();
+            File tmpFile = fileInfo.getFile();
+            outputStream = new FileOutputStream(tmpFile);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to receive file", e);
+        }
+        return outputStream;
+    }
+
+    private void onUploadStarted(JmixFileUpload.StartedEvent event) {
+        fireFileUploadStart(event.getFileName(), event.getContentLength());
+    }
+
+    private void onQueueUploadFinished(JmixFileUpload.QueueFinishedEvent event) {
+        fireQueueUploadComplete();
+    }
+
+    private void onUploadSucceeded(JmixFileUpload.SucceededEvent event) {
+        files.put(tempFileId, event.getFileName());
+
+        fireFileUploadFinish(event.getFileName(), event.getContentLength());
+    }
+
+    private void onUploadFailed(JmixFileUpload.FailedEvent event) {
+        try {
+            // close and remove temp file
+            temporaryStorage.deleteFile(tempFileId);
+            tempFileId = null;
+        } catch (Exception e) {
+            if (e instanceof FileStorageException) {
+                FileStorageException fse = (FileStorageException) e;
+                if (fse.getType() != FileStorageException.Type.FILE_NOT_FOUND) {
+                    LoggerFactory.getLogger(WebFileMultiUploadField.class)
+                            .warn("Could not remove temp file {} after broken uploading", tempFileId);
+                }
+            }
+            LoggerFactory.getLogger(WebFileMultiUploadField.class)
+                    .warn("Error while delete temp file {}", tempFileId);
+        }
+
+        fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
+    }
+
+    private void onFileSizeLimitExceeded(JmixFileUpload.FileSizeLimitExceededEvent e) {
+        Notifications notifications = getScreenContext(this).getNotifications();
+
+        notifications.create(NotificationType.WARNING)
+                .withCaption(
+                        messages.formatMessage("multiupload.filesizeLimitExceed",
+                                e.getFileName(), getFileSizeLimitString())
+                )
+                .show();
+    }
+
+    private void onFileExtensionNotAllowed(JmixFileUpload.FileExtensionNotAllowedEvent e) {
+        Notifications notifications = getScreenContext(this).getNotifications();
+
+        notifications.create(NotificationType.WARNING)
+                .withCaption(messages.formatMessage("upload.fileIncorrectExtension.message", e.getFileName()))
+                .show();
     }
 
     /**
@@ -374,4 +398,5 @@ public class WebFileMultiUploadField extends WebAbstractComponent<JmixFileUpload
     public void removeFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener) {
         unsubscribe(FileUploadErrorEvent.class, listener);
     }
+
 }

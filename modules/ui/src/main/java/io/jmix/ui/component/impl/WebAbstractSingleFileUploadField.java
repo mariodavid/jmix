@@ -82,9 +82,6 @@ public abstract class WebAbstractSingleFileUploadField<R> extends WebV8AbstractF
     @Autowired
     public void setMessages(Messages messages) {
         this.messages = messages;
-
-        component.setClearButtonCaption(messages.getMessage("FileUploadField.clearButtonCaption"));
-        component.setFileNotSelectedMessage(messages.getMessage("FileUploadField.fileNotSelected"));
     }
 
     @Override
@@ -94,6 +91,9 @@ public abstract class WebAbstractSingleFileUploadField<R> extends WebV8AbstractF
     }
 
     protected void initComponent() {
+        component.setClearButtonCaption(messages.getMessage("FileUploadField.clearButtonCaption"));
+        component.setFileNotSelectedMessage(messages.getMessage("FileUploadField.fileNotSelected"));
+
         component.setProgressWindowCaption(messages.getMessage("upload.uploadingProgressTitle"));
         component.setUnableToUploadFileMessage(messages.getMessage("upload.unableToUploadFile"));
         component.setCancelButtonCaption(messages.getMessage("upload.cancel"));
