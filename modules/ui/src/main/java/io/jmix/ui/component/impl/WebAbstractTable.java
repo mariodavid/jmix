@@ -2612,9 +2612,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
     @Override
     public void loadPresentations() {
         if (isUsePresentations()) {
-            presentations = beanLocator.getPrototype(TablePresentations.NAME, this);
+            presentations = createTablePresentations();
 
-            setTablePresentationsLayout(createPresentationsLayout());
+            setTablePresentationsLayout(createTablePresentationsLayout());
         } else {
             throw new UnsupportedOperationException("Component doesn't use presentations");
         }
@@ -2682,8 +2682,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
         return settings;
     }
 
-    protected TablePresentationsLayout createPresentationsLayout() {
+    protected TablePresentationsLayout createTablePresentationsLayout() {
         return new TablePresentationsLayout(this, getSettingsBinder());
+    }
+
+    protected TablePresentations createTablePresentations() {
+        return beanLocator.getPrototype(TablePresentations.NAME, this);
     }
 
     @Override

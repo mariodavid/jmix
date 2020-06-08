@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.settings.CubaResizableTextAreaSettingsBinder;
-import com.haulmont.cuba.settings.component.LegacySettingsApplier;
+import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacyResizableTextAreaSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Element;
@@ -26,34 +26,37 @@ import org.dom4j.Element;
 @Deprecated
 public class WebResizableTextArea<V> extends io.jmix.ui.component.impl.WebResizableTextArea<V> implements ResizableTextArea<V> {
 
-    protected LegacySettingsApplier settingsApplier;
+    protected LegacySettingsDelegate settingsDelegate;
 
-    public WebResizableTextArea() {
-        settingsApplier = createSettingsApplier();
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+
+        settingsDelegate = createSettingsDelegate();
     }
 
     @Override
     public void applySettings(Element element) {
-        settingsApplier.applySettings(element);
+        settingsDelegate.applySettings(element);
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return settingsApplier.saveSettings(element);
+        return settingsDelegate.saveSettings(element);
     }
 
     @Override
     public boolean isSettingsEnabled() {
-        return settingsApplier.isSettingsEnabled();
+        return settingsDelegate.isSettingsEnabled();
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        settingsApplier.setSettingsEnabled(settingsEnabled);
+        settingsDelegate.setSettingsEnabled(settingsEnabled);
     }
 
-    protected LegacySettingsApplier createSettingsApplier() {
-        return new LegacySettingsApplier(this, new LegacyResizableTextAreaSettingsConverter(), getSettingsBinder());
+    protected LegacySettingsDelegate createSettingsDelegate() {
+        return new LegacySettingsDelegate(this, new LegacyResizableTextAreaSettingsConverter(), getSettingsBinder());
     }
 
     protected ComponentSettingsBinder getSettingsBinder() {

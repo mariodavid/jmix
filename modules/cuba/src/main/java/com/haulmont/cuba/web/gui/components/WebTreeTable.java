@@ -17,14 +17,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.components.presentation.CubaPresentationActionsBuilder;
+import com.haulmont.cuba.gui.presentation.LegacyPresentationsDelegate;
+import com.haulmont.cuba.gui.presentation.Presentations;
 import com.haulmont.cuba.settings.CubaTreeTableSettingsBinder;
-import com.haulmont.cuba.settings.component.LegacySettingsApplier;
+import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import io.jmix.core.Entity;
 import io.jmix.ui.component.presentation.TablePresentationsLayout;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.presentation.model.TablePresentation;
-import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import com.haulmont.cuba.settings.converter.LegacyTableSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Element;
@@ -32,37 +32,39 @@ import org.dom4j.Element;
 @Deprecated
 public class WebTreeTable<E extends Entity> extends io.jmix.ui.component.impl.WebTreeTable<E> implements TreeTable<E> {
 
-    protected LegacySettingsApplier settingsApplier;
+    protected LegacySettingsDelegate settingsDelegate;
+    protected LegacyPresentationsDelegate presentationsDelegate;
 
-    public WebTreeTable() {
-        super();
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
 
-        settingsApplier = createSettingsApplier();
+        settingsDelegate = createSettingsDelegate();
     }
 
     @Override
     public void applyDataLoadingSettings(Element element) {
-        settingsApplier.applyDataLoadingSettings(element);
+        settingsDelegate.applyDataLoadingSettings(element);
     }
 
     @Override
     public void applySettings(Element element) {
-        settingsApplier.applySettings(element);
+        settingsDelegate.applySettings(element);
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return settingsApplier.saveSettings(element);
+        return settingsDelegate.saveSettings(element);
     }
 
     @Override
     public boolean isSettingsEnabled() {
-        return settingsApplier.isSettingsEnabled();
+        return settingsDelegate.isSettingsEnabled();
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        settingsApplier.setSettingsEnabled(settingsEnabled);
+        settingsDelegate.setSettingsEnabled(settingsEnabled);
     }
 
     @Override
@@ -70,24 +72,29 @@ public class WebTreeTable<E extends Entity> extends io.jmix.ui.component.impl.We
         return beanLocator.get(CubaTreeTableSettingsBinder.NAME);
     }
 
-    protected LegacySettingsApplier createSettingsApplier() {
-        return new LegacySettingsApplier(this, new LegacyTableSettingsConverter(), getSettingsBinder());
+    protected LegacySettingsDelegate createSettingsDelegate() {
+        return new LegacySettingsDelegate(this, new LegacyTableSettingsConverter(), getSettingsBinder());
     }
 
     @Override
-    protected TablePresentationsLayout createPresentationsLayout() {
-        TablePresentationsLayout layout = super.createPresentationsLayout();
-        layout.setPresentationActionsBuilder(new CubaPresentationActionsBuilder(this, getSettingsBinder()));
-        layout.build();
-        return layout;
+    protected TablePresentations createTablePresentations() {
+        Presentations presentations = beanLocator.getPrototype(Presentations.NAME, this);
+
+        presentationsDelegate = new LegacyPresentationsDelegate(this, presentations, getSettingsBinder());
+
+        return presentations;
+    }
+
+    @Override
+    protected TablePresentationsLayout createTablePresentationsLayout() {
+        TablePresentationsLayout layout = super.createTablePresentationsLayout();
+        return presentationsDelegate.createTablePresentationsLayout(layout);
     }
 
     @Override
     protected void updatePresentationSettings(TablePresentations p) {
-        if (getFrame().getFrameOwner() instanceof CubaLegacySettings) {
-            Element e = p.getSettings(p.getCurrent());
-            saveSettings(e);
-            p.setSettings(p.getCurrent(), e);
+        if (settingsDelegate.isLegacySettings(getFrame())) {
+            presentationsDelegate.updatePresentationSettings((Presentations) p);
         } else {
             super.updatePresentationSettings(p);
         }
@@ -95,11 +102,19 @@ public class WebTreeTable<E extends Entity> extends io.jmix.ui.component.impl.We
 
     @Override
     protected void applyPresentationSettings(TablePresentation p) {
-        if (getFrame().getFrameOwner() instanceof CubaLegacySettings) {
-            Element settingsElement = presentations.getSettings(p);
-            applySettings(settingsElement);
+        if (settingsDelegate.isLegacySettings(getFrame())) {
+            presentationsDelegate.applyPresentationSettings(p);
         } else {
             super.applyPresentationSettings(p);
+        }
+    }
+
+    @Override
+    public void resetPresentation() {
+        if (settingsDelegate.isLegacySettings(getFrame())) {
+            presentationsDelegate.resetPresentations(settingsDelegate.getDefaultSettings());
+        } else {
+            super.resetPresentation();
         }
     }
 }

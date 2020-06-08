@@ -20,7 +20,7 @@ import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import io.jmix.ui.component.Component;
 import io.jmix.ui.settings.component.binder.SplitPanelSettingsBinder;
 
-@org.springframework.stereotype.Component
+@org.springframework.stereotype.Component(CubaSplitPanelSettingsBinder.NAME)
 public class CubaSplitPanelSettingsBinder extends SplitPanelSettingsBinder {
 
     public static final String NAME = "jmix_CubaSplitPanelSettingsBinder";

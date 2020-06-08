@@ -20,25 +20,31 @@ import com.haulmont.cuba.gui.components.HasDataLoadingSettings;
 import com.haulmont.cuba.gui.components.HasSettings;
 import io.jmix.ui.component.Component;
 import com.haulmont.cuba.settings.converter.LegacySettingsConverter;
-import io.jmix.ui.settings.component.DataGridSettings;
+import io.jmix.ui.component.Frame;
+import io.jmix.ui.screen.compatibility.CubaLegacySettings;
+import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.SettingsWrapperImpl;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import io.jmix.ui.settings.component.binder.DataLoadingSettingsBinder;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class LegacySettingsApplier implements HasSettings, HasDataLoadingSettings {
+public class LegacySettingsDelegate implements HasSettings, HasDataLoadingSettings {
 
     protected Component component;
 
     protected LegacySettingsConverter settingsConverter;
     protected ComponentSettingsBinder settingsBinder;
 
+    protected Document defaultSettings;
+
     protected boolean settingsEnabled = true;
 
-    public LegacySettingsApplier(Component component,
-                                 LegacySettingsConverter settingsConverter,
-                                 ComponentSettingsBinder settingsBinder) {
+    public LegacySettingsDelegate(Component component,
+                                  LegacySettingsConverter settingsConverter,
+                                  ComponentSettingsBinder settingsBinder) {
         this.component = component;
         this.settingsConverter = settingsConverter;
         this.settingsBinder = settingsBinder;
@@ -50,9 +56,17 @@ public class LegacySettingsApplier implements HasSettings, HasDataLoadingSetting
             return;
         }
 
-        DataGridSettings dataGridSettings = settingsConverter.convertToComponentSettings(element);
+        if (defaultSettings == null) {
+            // save default view before apply custom
+            defaultSettings = DocumentHelper.createDocument();
+            defaultSettings.setRootElement(defaultSettings.addElement("presentation"));
 
-        settingsBinder.applySettings(component, new SettingsWrapperImpl(dataGridSettings));
+            saveSettings(defaultSettings.getRootElement());
+        }
+
+        ComponentSettings settings = settingsConverter.convertToComponentSettings(element);
+
+        settingsBinder.applySettings(component, new SettingsWrapperImpl(settings));
     }
 
     @Override
@@ -60,10 +74,11 @@ public class LegacySettingsApplier implements HasSettings, HasDataLoadingSetting
         if (!isSettingsEnabled()) {
             return;
         }
-        DataGridSettings dataGridSettings = settingsConverter.convertToComponentSettings(element);
+
+        ComponentSettings settings = settingsConverter.convertToComponentSettings(element);
 
         ((DataLoadingSettingsBinder) settingsBinder)
-                .applyDataLoadingSettings(component, new SettingsWrapperImpl(dataGridSettings));
+                .applyDataLoadingSettings(component, new SettingsWrapperImpl(settings));
     }
 
     @Override
@@ -72,11 +87,11 @@ public class LegacySettingsApplier implements HasSettings, HasDataLoadingSetting
             return false;
         }
 
-        DataGridSettings dataGridSettings = settingsConverter.convertToComponentSettings(element);
+        ComponentSettings settings = settingsConverter.convertToComponentSettings(element);
 
-        boolean modified = settingsBinder.saveSettings(component, new SettingsWrapperImpl(dataGridSettings));
+        boolean modified = settingsBinder.saveSettings(component, new SettingsWrapperImpl(settings));
         if (modified)
-            settingsConverter.copyToElement(dataGridSettings, element);
+            settingsConverter.copyToElement(settings, element);
 
         return modified;
     }
@@ -89,5 +104,13 @@ public class LegacySettingsApplier implements HasSettings, HasDataLoadingSetting
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
         this.settingsEnabled = settingsEnabled;
+    }
+
+    public boolean isLegacySettings(Frame frame) {
+        return frame.getFrameOwner() instanceof CubaLegacySettings;
+    }
+
+    public Document getDefaultSettings() {
+        return defaultSettings;
     }
 }

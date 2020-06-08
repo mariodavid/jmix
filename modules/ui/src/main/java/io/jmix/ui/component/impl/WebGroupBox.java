@@ -26,13 +26,14 @@ import io.jmix.ui.widget.JmixHorizontalActionsLayout;
 import io.jmix.ui.widget.JmixOrderedActionsLayout;
 import io.jmix.ui.widget.JmixVerticalActionsLayout;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class WebGroupBox extends WebAbstractComponent<JmixGroupBox> implements GroupBoxLayout {
+public class WebGroupBox extends WebAbstractComponent<JmixGroupBox> implements GroupBoxLayout, InitializingBean {
 
     private static final String GROUPBOX_PANEL_STYLENAME = "c-panel-groupbox";
 
@@ -50,6 +51,10 @@ public class WebGroupBox extends WebAbstractComponent<JmixGroupBox> implements G
         JmixVerticalActionsLayout container = new JmixVerticalActionsLayout();
         container.setStyleName("c-groupbox-inner");
         component.setContent(container);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
     }
 
     @Override

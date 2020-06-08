@@ -17,7 +17,6 @@ package io.jmix.ui.presentation;
 
 import io.jmix.ui.presentation.model.TablePresentation;
 import io.jmix.ui.component.Component;
-import org.dom4j.Element;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -46,18 +45,8 @@ public class EmptyTablePresentationsImpl implements TablePresentations {
     }
 
     @Override
-    public Element getSettings(TablePresentation p) {
-        return null;
-    }
-
-    @Override
     public String getSettingsString(TablePresentation p) {
         return null;
-    }
-
-    @Override
-    public void setSettings(TablePresentation p, Element e) {
-        // do nothing
     }
 
     @Override

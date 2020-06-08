@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.settings.CubaGroupBoxSettingsBinder;
-import com.haulmont.cuba.settings.component.LegacySettingsApplier;
+import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacyGroupBoxSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Element;
@@ -26,36 +26,37 @@ import org.dom4j.Element;
 @Deprecated
 public class WebGroupBox extends io.jmix.ui.component.impl.WebGroupBox implements GroupBoxLayout {
 
-    protected LegacySettingsApplier settingsApplier;
+    protected LegacySettingsDelegate settingsDelegate;
 
-    public WebGroupBox() {
-        super();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
 
-        settingsApplier = createSettingsApplier();
+        settingsDelegate = createSettingsDelegate();
     }
 
     @Override
     public void applySettings(Element element) {
-        settingsApplier.applySettings(element);
+        settingsDelegate.applySettings(element);
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return settingsApplier.saveSettings(element);
+        return settingsDelegate.saveSettings(element);
     }
 
     @Override
     public boolean isSettingsEnabled() {
-        return settingsApplier.isSettingsEnabled();
+        return settingsDelegate.isSettingsEnabled();
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        settingsApplier.setSettingsEnabled(settingsEnabled);
+        settingsDelegate.setSettingsEnabled(settingsEnabled);
     }
 
-    protected LegacySettingsApplier createSettingsApplier() {
-        return new LegacySettingsApplier(this, new LegacyGroupBoxSettingsConverter(), getSettingsBinder());
+    protected LegacySettingsDelegate createSettingsDelegate() {
+        return new LegacySettingsDelegate(this, new LegacyGroupBoxSettingsConverter(), getSettingsBinder());
     }
 
     protected ComponentSettingsBinder getSettingsBinder() {

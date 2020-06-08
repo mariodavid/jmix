@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.presentation;
 
 import com.haulmont.cuba.gui.components.HasSettings;
+import com.haulmont.cuba.gui.presentation.Presentations;
 import io.jmix.ui.component.Table;
 import io.jmix.ui.component.presentation.action.SavePresentationAction;
 import io.jmix.ui.presentation.TablePresentations;
@@ -34,9 +35,11 @@ public class CubaSavePresentationAction extends SavePresentationAction {
     @Override
     protected void setSettingsToPresentation(TablePresentations presentations, TablePresentation current) {
         if (table.getFrame().getFrameOwner() instanceof CubaLegacySettings) {
-            Element e = presentations.getSettings(current);
+            Presentations ps = (Presentations) presentations;
+
+            Element e =  ps.getSettings(current);
             ((HasSettings) table).saveSettings(e);
-            presentations.setSettings(current, e);
+            ps.setSettings(current, e);
         } else {
             super.setSettingsToPresentation(presentations, current);
         }

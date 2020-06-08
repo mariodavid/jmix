@@ -18,44 +18,44 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.settings.CubaSplitPanelSettingsBinder;
-import com.haulmont.cuba.settings.component.LegacySettingsApplier;
+import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacySplitPanelSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 
 @Deprecated
-public class WebSplitPanel extends io.jmix.ui.component.impl.WebSplitPanel implements SplitPanel {
+public class WebSplitPanel extends io.jmix.ui.component.impl.WebSplitPanel implements SplitPanel, InitializingBean {
 
-    protected LegacySettingsApplier settingsApplier;
+    protected LegacySettingsDelegate settingsDelegate;
 
-    public WebSplitPanel() {
-        super();
-
-        settingsApplier = createSettingsApplier();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        settingsDelegate = createSettingsDelegate();
     }
 
     @Override
     public void applySettings(Element element) {
-        settingsApplier.applySettings(element);
+        settingsDelegate.applySettings(element);
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return settingsApplier.saveSettings(element);
+        return settingsDelegate.saveSettings(element);
     }
 
     @Override
     public boolean isSettingsEnabled() {
-        return settingsApplier.isSettingsEnabled();
+        return settingsDelegate.isSettingsEnabled();
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        settingsApplier.setSettingsEnabled(settingsEnabled);
+        settingsDelegate.setSettingsEnabled(settingsEnabled);
     }
 
-    protected LegacySettingsApplier createSettingsApplier() {
-        return new LegacySettingsApplier(this, new LegacySplitPanelSettingsConverter(), getSettingsBinder());
+    protected LegacySettingsDelegate createSettingsDelegate() {
+        return new LegacySettingsDelegate(this, new LegacySplitPanelSettingsConverter(), getSettingsBinder());
     }
 
     protected ComponentSettingsBinder getSettingsBinder() {
