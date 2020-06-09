@@ -40,6 +40,7 @@ dependencies {
         api "io.jmix.starter.auditui:jmix-starter-audit-ui:$version"
         api "io.jmix.starter.security:jmix-starter-security:$version"
         api "io.jmix.starter.securityui:jmix-starter-security-ui:$version"
+        api "io.jmix.starter.securitydata:jmix-starter-security-data:$version"
         api "io.jmix.starter.dynattr:jmix-starter-dynattr:$version"
         api "io.jmix.starter.dynattrui:jmix-starter-dynattr-ui:$version"
 

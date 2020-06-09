@@ -20,7 +20,6 @@ import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.core.annotation.JmixModule;
 import io.jmix.core.impl.scanning.AnnotationScanMetadataReaderFactory;
 import io.jmix.security.JmixSecurityConfiguration;
-import io.jmix.securitydata.JmixSecurityDataConfiguration;
 import io.jmix.ui.JmixUiConfiguration;
 import io.jmix.ui.sys.UiControllersConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -31,12 +30,11 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 @Configuration
-@JmixModule(dependsOn = {JmixCoreConfiguration.class, JmixSecurityConfiguration.class,
-        JmixSecurityDataConfiguration.class, JmixUiConfiguration.class})
+@JmixModule(dependsOn = {JmixCoreConfiguration.class, JmixSecurityConfiguration.class, JmixUiConfiguration.class})
 @ComponentScan
 public class JmixSecurityUiConfiguration {
 
-    @Bean("secui_SecurityUiControllers")
+    @Bean("sec_SecurityUiControllers")
     public UiControllersConfiguration screens(ApplicationContext applicationContext,
                                               AnnotationScanMetadataReaderFactory metadataReaderFactory) {
         UiControllersConfiguration uiControllers
@@ -46,3 +44,4 @@ public class JmixSecurityUiConfiguration {
     }
 
 }
+

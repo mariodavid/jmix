@@ -19,11 +19,14 @@ package io.jmix.autoconfigure;
 import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.security.JmixSecurityConfiguration;
+import io.jmix.securitydata.JmixSecurityDataConfiguration;
+import io.jmix.securityui.JmixSecurityUiConfiguration;
 import io.jmix.ui.JmixUiConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({JmixCoreConfiguration.class, JmixDataConfiguration.class, JmixSecurityConfiguration.class, JmixUiConfiguration.class})
+@Import({JmixCoreConfiguration.class, JmixDataConfiguration.class, JmixSecurityConfiguration.class,
+        JmixSecurityUiConfiguration.class, JmixSecurityDataConfiguration.class, JmixUiConfiguration.class})
 public class JmixStandardAutoConfiguration {
 }

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package io.jmix.securitydata;
+package io.jmix.autoconfigure.securitydata;
 
-import io.jmix.core.annotation.JmixModule;
+import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.security.JmixSecurityConfiguration;
-import org.springframework.context.annotation.ComponentScan;
+import io.jmix.securitydata.JmixSecurityDataConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Import;
 
 @Configuration
-@ComponentScan
-@JmixModule(dependsOn = {JmixSecurityConfiguration.class, JmixDataConfiguration.class})
-@PropertySource(name = "io.jmix.securitydata", value = "classpath:/io/jmix/securitydata/module.properties")
-public class JmixSecurityDataConfiguration {
+@Import({JmixCoreConfiguration.class, JmixDataConfiguration.class, JmixSecurityConfiguration.class,
+        JmixSecurityDataConfiguration.class,})
+public class JmixSecurityDataAutoConfiguration {
 }
