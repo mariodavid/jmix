@@ -18,15 +18,12 @@ package io.jmix.ui.component.impl;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
-import io.jmix.core.AppBeans;
 import io.jmix.core.common.event.Subscription;
 import io.jmix.ui.AppUI;
 import io.jmix.ui.UiComponents;
-import io.jmix.ui.component.ComponentsHelper;
 import io.jmix.ui.component.*;
 import io.jmix.ui.icon.IconResolver;
 import io.jmix.ui.icon.Icons;
-import io.jmix.ui.screen.UiControllerUtils;
 import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import io.jmix.ui.security.UiPermissionDescriptor;
 import io.jmix.ui.security.UiPermissionValue;
@@ -35,7 +32,6 @@ import io.jmix.ui.settings.facet.ScreenSettingsFacet;
 import io.jmix.ui.sys.TestIdManager;
 import io.jmix.ui.widget.JmixAccordion;
 import io.jmix.ui.xml.layout.ComponentLoader;
-import io.jmix.ui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
@@ -262,7 +258,7 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
         public void setIcon(String icon) {
             this.icon = icon;
             if (!StringUtils.isEmpty(icon)) {
-                Resource iconResource = AppBeans.get(IconResolver.class)
+                Resource iconResource = beanLocator.get(IconResolver.class)
                         .getIconResource(this.icon);
                 getVaadinTab().setIcon(iconResource);
             } else {
@@ -272,7 +268,7 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
 
         @Override
         public void setIconFromSet(Icons.Icon icon) {
-            String iconPath = AppBeans.get(Icons.class)
+            String iconPath = beanLocator.get(Icons.class)
                     .get(icon);
             setIcon(iconPath);
         }
@@ -370,9 +366,9 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
 
     @Override
     public Accordion.Tab addLazyTab(String name,
-                                   Element descriptor,
-                                   ComponentLoader loader) {
-        UiComponents uiComponents = AppBeans.get(UiComponents.NAME);
+                                    Element descriptor,
+                                    ComponentLoader loader) {
+        UiComponents uiComponents = beanLocator.get(UiComponents.NAME);
         CssLayout tabContent = uiComponents.create(CssLayout.NAME);
         tabContent.setStyleName("c-tabsheet-lazytab");
         tabContent.setSizeFull();

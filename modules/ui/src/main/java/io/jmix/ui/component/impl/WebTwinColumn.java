@@ -15,7 +15,6 @@
  */
 package io.jmix.ui.component.impl;
 
-import io.jmix.core.AppBeans;
 import io.jmix.core.MetadataTools;
 import io.jmix.ui.component.TwinColumn;
 import io.jmix.ui.component.data.ConversionException;
@@ -27,8 +26,8 @@ import io.jmix.ui.icon.IconResolver;
 import io.jmix.ui.widget.JmixTwinColSelect;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class WebTwinColumn<V> extends WebV8AbstractField<JmixTwinColSelect<V>, S
 
     protected MetadataTools metadataTools;
 
-    protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
+    protected IconResolver iconResolver = beanLocator.get(IconResolver.class);
 
     public WebTwinColumn() {
         component = createComponent();

@@ -1942,7 +1942,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & JmixEnhancedGrid<E
         MenuItem menuItem = contextMenu.addItem(action.getCaption(), null);
         menuItem.setStyleName("c-cm-item");
 
-        return new ActionMenuItemWrapper(menuItem, showIconsForPopupMenuActions) {
+        return new ActionMenuItemWrapper(menuItem, showIconsForPopupMenuActions, beanLocator.get(IconResolver.class)) {
             @Override
             public void performAction(Action action) {
                 action.actionPerform(WebAbstractDataGrid.this);
@@ -4205,7 +4205,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & JmixEnhancedGrid<E
 
         protected Consumer<PropertyChangeEvent> actionPropertyChangeListener;
 
-        public ActionMenuItemWrapper(MenuItem menuItem, boolean showIconsForPopupMenuActions) {
+        protected IconResolver iconResolver;
+
+        public ActionMenuItemWrapper(MenuItem menuItem, boolean showIconsForPopupMenuActions, IconResolver iconResolver) {
             this.menuItem = menuItem;
             this.showIconsForPopupMenuActions = showIconsForPopupMenuActions;
 
@@ -4214,6 +4216,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & JmixEnhancedGrid<E
                     performAction(action);
                 }
             });
+            this.iconResolver = iconResolver;
         }
 
         public void performAction(Action action) {
@@ -4276,7 +4279,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & JmixEnhancedGrid<E
         public void setIcon(String icon) {
             if (showIconsForPopupMenuActions) {
                 if (!StringUtils.isEmpty(icon)) {
-                    menuItem.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
+                    menuItem.setIcon(iconResolver.getIconResource(icon));
                 } else {
                     menuItem.setIcon(null);
                 }

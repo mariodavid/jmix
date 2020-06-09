@@ -137,10 +137,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
     /**
      * @param optionsList options list
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    default void setOptionsList(List optionsList) {
-        setOptions(new ListEntityOptions<>(optionsList));
-    }
+    void setOptionsList(List optionsList);
 
     /**
      * @return options map
@@ -159,10 +156,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
     /**
      * @param optionsMap options map
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    default void setOptionsMap(Map<String, ?> optionsMap) {
-        setOptions(new MapEntityOptions(optionsMap));
-    }
+    void setOptionsMap(Map<String, ?> optionsMap);
 
     /**
      * @return whether inner LookupPickerField component has lookup action

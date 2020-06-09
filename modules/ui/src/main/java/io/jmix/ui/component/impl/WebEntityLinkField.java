@@ -43,9 +43,9 @@ import io.jmix.ui.screen.*;
 import io.jmix.ui.widget.JmixButtonField;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -297,7 +297,7 @@ public class WebEntityLinkField<V> extends WebV8AbstractField<JmixButtonField<V>
 
         ScreenContext context = ComponentsHelper.getScreenContext(this);
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
-            Messages messages = AppBeans.get(Messages.NAME);
+            Messages messages = beanLocator.get(Messages.NAME);
             context.getNotifications().create(Notifications.NotificationType.HUMANIZED)
                     .withCaption(messages.getMessage("OpenAction.objectIsDeleted"))
                     .show();
@@ -311,7 +311,7 @@ public class WebEntityLinkField<V> extends WebV8AbstractField<JmixButtonField<V>
                 .one();
 
         String windowAlias = screen;
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        WindowConfig windowConfig = beanLocator.get(WindowConfig.NAME);
 
         MetaClass metaClass = metadata.getClass(entity);
         if (windowAlias == null) {

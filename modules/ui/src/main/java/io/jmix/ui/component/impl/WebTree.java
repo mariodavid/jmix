@@ -454,7 +454,7 @@ public class WebTree<E extends Entity>
         MenuItem menuItem = contextMenu.addItem(action.getCaption(), null);
         menuItem.setStyleName("c-cm-item");
 
-        return new WebAbstractDataGrid.ActionMenuItemWrapper(menuItem, showIconsForPopupMenuActions) {
+        return new WebAbstractDataGrid.ActionMenuItemWrapper(menuItem, showIconsForPopupMenuActions, beanLocator.get(IconResolver.class)) {
             @Override
             public void performAction(Action action) {
                 action.actionPerform(WebTree.this);

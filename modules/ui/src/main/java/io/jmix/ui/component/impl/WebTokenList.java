@@ -32,6 +32,8 @@ import io.jmix.ui.component.data.Options;
 import io.jmix.ui.component.data.ValueSource;
 import io.jmix.ui.component.data.meta.EntityOptions;
 import io.jmix.ui.component.data.meta.EntityValueSource;
+import io.jmix.ui.component.data.options.ListEntityOptions;
+import io.jmix.ui.component.data.options.MapEntityOptions;
 import io.jmix.ui.component.data.value.ContainerValueSource;
 import io.jmix.ui.gui.OpenType;
 import io.jmix.ui.icon.JmixIcon;
@@ -299,6 +301,16 @@ public class WebTokenList<V extends Entity>
     @Override
     public Options<V> getOptions() {
         return entityComboBox.getOptions();
+    }
+
+    @Override
+    public void setOptionsList(List optionsList) {
+        setOptions(new ListEntityOptions(optionsList, beanLocator.get(Metadata.class)));
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, ?> optionsMap) {
+        setOptions(new MapEntityOptions(optionsMap, beanLocator.get(Metadata.class)));
     }
 
     @Override
