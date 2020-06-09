@@ -16,15 +16,12 @@
 
 package io.jmix.core.entity;
 
-import io.jmix.core.Entity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Base class for users. In most cases projects will use {@code User} implementation from the {@code security} module.
- * If the project needs custom user class, it must implement this interface;
+ * Base class for users. If the project needs custom user class, it must implement this interface.
  */
-//todo MG BaseUser must not be Entity
-public interface BaseUser extends UserDetails, Entity {
+public interface BaseUser extends UserDetails {
 
     /**
      * Returns unique representation of the user. It may be a string with user identifier, a combination of tenant id
