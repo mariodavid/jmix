@@ -18,16 +18,12 @@ package io.jmix.samples.customsecurity;
 
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.security.UserRepository;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Component("jmix_CustomUserRepository")
-@Conditional(OnCustomSecurityImplementation.class)
 public class CustomUserRepository implements UserRepository {
 
     private List<BaseUser> users = Arrays.asList(
@@ -48,6 +44,16 @@ public class CustomUserRepository implements UserRepository {
     @Override
     public List<? extends BaseUser> getAll() {
         return users;
+    }
+
+    @Override
+    public void createUser(BaseUser user) {
+        users.add(user);
+    }
+
+    @Override
+    public void removeUser(BaseUser user) {
+        users.remove(user);
     }
 
     @Override

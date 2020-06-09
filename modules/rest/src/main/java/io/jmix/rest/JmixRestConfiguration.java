@@ -18,7 +18,7 @@ package io.jmix.rest;
 
 import io.jmix.core.JmixCoreConfiguration;
 import io.jmix.core.annotation.JmixModule;
-import io.jmix.core.security.JmixCoreSecurityConfiguration;
+import io.jmix.core.security.CoreSecurityConfiguration;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.rest.property.RestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @Configuration
 @ComponentScan("io.jmix.rest")
 @ConfigurationPropertiesScan
-@JmixModule(dependsOn = {JmixCoreConfiguration.class, JmixDataConfiguration.class, JmixCoreSecurityConfiguration.class})
+@JmixModule(dependsOn = {JmixCoreConfiguration.class, JmixDataConfiguration.class, CoreSecurityConfiguration.class})
 @PropertySource("classpath:/io/jmix/rest/module.properties")
 public class JmixRestConfiguration {
 

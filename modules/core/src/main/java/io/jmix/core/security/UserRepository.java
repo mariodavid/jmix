@@ -30,4 +30,8 @@ public interface UserRepository extends UserDetailsService {
     BaseUser getAnonymousUser();
 
     List<? extends BaseUser> getAll();
+
+    void createUser(BaseUser user);
+
+    void removeUser(BaseUser user);
 }

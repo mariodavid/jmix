@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+
 import io.jmix.core.BeanLocator
 import io.jmix.core.JmixCoreConfiguration
 import io.jmix.core.security.SecurityContextHelper
-import io.jmix.core.security.UserAuthentication
+import io.jmix.core.security.authentication.CoreAuthenticationToken
 import io.jmix.core.security.impl.CoreUser
 import io.jmix.data.JmixDataConfiguration
 import io.jmix.ui.JmixUiConfiguration
@@ -57,7 +58,7 @@ class UiPersistenceTestSpec extends Specification {
         reloadScreenSettings()
 
         CoreUser user = new CoreUser("test_admin", "test_admin", "test_admin")
-        UserAuthentication authentication = new UserAuthentication(user, Collections.emptyList())
+        CoreAuthenticationToken authentication = new CoreAuthenticationToken(user, Collections.emptyList())
         authentication.setLocale(Locale.US)
         SecurityContextHelper.setAuthentication(authentication)
     }

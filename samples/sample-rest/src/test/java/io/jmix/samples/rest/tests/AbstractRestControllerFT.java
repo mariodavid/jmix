@@ -6,6 +6,8 @@
 package io.jmix.samples.rest.tests;
 
 import io.jmix.core.JmixCoreConfiguration;
+import io.jmix.core.security.UserRepository;
+import io.jmix.core.security.impl.CoreUser;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.rest.JmixRestConfiguration;
 import io.jmix.samples.rest.JmixRestTestConfiguration;
@@ -17,13 +19,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -47,6 +49,11 @@ public abstract class AbstractRestControllerFT {
     @Autowired
     protected JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
+    @Autowired
+    protected UserRepository userRepository;
+
+    protected CoreUser admin;
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -57,6 +64,9 @@ public abstract class AbstractRestControllerFT {
 
     @Before
     public void setUp() throws Exception {
+        admin = new CoreUser("admin", "{noop}admin123");
+        userRepository.createUser(admin);
+
         baseUrl = "http://localhost:" + port + "/rest";
 
         oauthToken = getAuthToken(baseUrl, "admin", "admin123");
@@ -71,6 +81,7 @@ public abstract class AbstractRestControllerFT {
         if (conn != null) {
             conn.close();
         }
+        userRepository.removeUser(admin);
     }
 
     public void prepareDb() throws Exception {

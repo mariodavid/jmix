@@ -3,5 +3,7 @@
     <menu id="application" caption="msg://io.jmix.samples.helloworld/menu.application">
         <item screen="sec_User.browse" caption="msg://io.jmix.samples.helloworld/menu.sec_UserBrowse"/>
         <item screen="demoScreen" caption="msg://io.jmix.samples.helloworld/menu.demoScreen"/>
+        <item screen="sample_Customer.browse" caption="msg://io.jmix.samples.helloworld/menu.sample_Customer.browse"/>
+        <item screen="sample_Order.browse" caption="msg://io.jmix.samples.helloworld/menu.sample_Order.browse"/>
     </menu>
 </menu-config>
