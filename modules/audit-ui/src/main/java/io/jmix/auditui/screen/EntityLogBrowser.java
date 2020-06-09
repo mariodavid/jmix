@@ -22,12 +22,12 @@ import io.jmix.audit.entity.EntityLogItem;
 import io.jmix.audit.entity.LoggedAttribute;
 import io.jmix.audit.entity.LoggedEntity;
 import io.jmix.core.*;
-import io.jmix.core.Entity;
-import io.jmix.core.entity.HasUuid;
 import io.jmix.core.entity.BaseUser;
+import io.jmix.core.entity.HasUuid;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.Range;
+import io.jmix.core.security.UserRepository;
 import io.jmix.ui.*;
 import io.jmix.ui.action.Action;
 import io.jmix.ui.action.DialogAction;
@@ -38,8 +38,8 @@ import io.jmix.ui.model.DataContext;
 import io.jmix.ui.screen.LookupComponent;
 import io.jmix.ui.screen.*;
 import org.apache.commons.lang3.time.DateUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.*;
 
 @UiController("entityLog.browse")
@@ -83,10 +83,6 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
     @Autowired
     protected CollectionLoader<EntityLogItem> entityLogDl;
     @Autowired
-    protected CollectionLoader<BaseUser> usersDl;
-    @Autowired
-    protected CollectionContainer<BaseUser> usersDc;
-    @Autowired
     protected CollectionContainer<LoggedAttribute> loggedAttrDc;
     @Autowired
     protected CollectionLoader<LoggedAttribute> loggedAttrDl;
@@ -124,6 +120,8 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
     protected Button cancelBtn;
     @Autowired
     protected CheckBox selectAllCheckBox;
+    @Autowired
+    protected UserRepository userRepository;
 
     protected TreeMap<String, String> entityMetaClassesMap;
     protected TreeMap<String, String> usersMap;
@@ -250,9 +248,8 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
 
     public TreeMap<String, String> getUsersMap() {
         TreeMap<String, String> options = new TreeMap<>();
-        usersDl.load();
-        for (BaseUser user : usersDc.getItems()) {
-            options.put(metadataTools.getInstanceName(user), user.getUsername());
+        for (BaseUser user : userRepository.getAll()) {
+            options.put(user.getUsername(), user.getKey());
         }
         return options;
     }
