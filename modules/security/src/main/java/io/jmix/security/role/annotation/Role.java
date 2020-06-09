@@ -39,6 +39,7 @@ import java.lang.annotation.Target;
  * &#064;Role(code = "orderView", name = "Order view")
  * public interface OrderViewRole {
  *
+ *     &#064;MenuPolicy(menuIds = {"application", "application-orders"})
  *     &#064;ScreenPolicy(screenIds = {"sample_Order.browse", "sample_Order.edit"})
  *     &#064;EntityPolicy(entityClass = Order.class,
  *         actions = {EntityPolicyAction.CREATE, EntityPolicyAction.READ})

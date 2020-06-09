@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.jmix.security.model;
+package io.jmix.securityui.role.annotation;
 
-/**
- * Class stores constants for {@link ResourcePolicy} type field values.
- */
-public class ResourcePolicyType {
-    public static final String SCREEN = "screen";
-    public static final String MENU = "screen";
-    public static final String ENTITY = "entity";
-    public static final String ENTITY_ATTRIBUTE = "entityAttribute";
-    public static final String SPECIFIC = "specific";
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MenuPolicyContainer {
+    MenuPolicy[] value();
 }

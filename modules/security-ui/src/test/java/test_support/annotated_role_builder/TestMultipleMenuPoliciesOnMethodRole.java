@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.jmix.security.model;
+package test_support.annotated_role_builder;
 
-/**
- * Class stores constants for {@link ResourcePolicy} type field values.
- */
-public class ResourcePolicyType {
-    public static final String SCREEN = "screen";
-    public static final String MENU = "screen";
-    public static final String ENTITY = "entity";
-    public static final String ENTITY_ATTRIBUTE = "entityAttribute";
-    public static final String SPECIFIC = "specific";
+import io.jmix.security.role.annotation.Role;
+import io.jmix.securityui.role.annotation.MenuPolicy;
+
+@Role(name = "TestMultipleMenuPoliciesOnMethodRole", code = "testMultipleMenuPoliciesOnMethodRole")
+public interface TestMultipleMenuPoliciesOnMethodRole {
+
+    @MenuPolicy(menuIds = {"menu1", "menu2"})
+    @MenuPolicy(menuIds = {"menu3"})
+    void menus();
 }
