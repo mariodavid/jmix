@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Haulmont.
+ * Copyright 2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@ apply plugin: 'groovy'
 apply plugin: 'java-library'
 apply plugin: 'io.jmix'
 
-group = 'io.jmix.securityui'
+group = 'io.jmix.securitydata'
 
 dependencies {
     api platform(project(':jmix-platform'))
     api project(':modules:core')
+    api project(':modules:data')
     api project(':modules:security')
-    api project(':modules:security-data')
-    api project(':modules:ui')
+
+    implementation 'org.json:json'
 
     testImplementation 'org.springframework:spring-test'
     testImplementation 'org.spockframework:spock-core'
@@ -38,7 +39,7 @@ dependencies {
 }
 
 jar {
-    archivesBaseName = 'jmix-security-ui'
+    archivesBaseName = 'jmix-security-data'
 }
 
 java {
@@ -52,7 +53,7 @@ artifacts {
 publishing {
     publications {
         javaMaven(MavenPublication) {
-            artifactId = 'jmix-security-ui'
+            artifactId = 'jmix-security-data'
             from components.java
         }
     }
