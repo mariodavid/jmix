@@ -36,8 +36,11 @@ import java.util.Collection;
  */
 public class Role {
 
+    public static final String DEFAULT_SCOPE = "generic_ui";
+
     private String name;
     private String code;
+    private String scope;
     private Collection<ResourcePolicy> resourcePolicies = new ArrayList<>();
     private Collection<RowLevelPolicy> rowLevelPolicies = new ArrayList<>();
 
@@ -55,6 +58,14 @@ public class Role {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public Collection<ResourcePolicy> getResourcePolicies() {

@@ -58,6 +58,9 @@ class DatabaseRoleProviderTest extends SecurityPersistenceSpecification {
         role1 != null
         role2 != null
 
+        role1.scope == Role.DEFAULT_SCOPE
+        role2.scope == 'rest'
+
         role1.resourcePolicies.size() == 2
 
         def screen1ResourcePolicy = role1.resourcePolicies.find {it.resource == 'screen1'}
@@ -93,6 +96,7 @@ class DatabaseRoleProviderTest extends SecurityPersistenceSpecification {
         RoleEntity role1 = metadata.create(RoleEntity)
         role1.code = 'role1'
         role1.name = 'Role1'
+        role1.scope = Role.DEFAULT_SCOPE
 
         def entitiesToSave = []
 
@@ -107,6 +111,7 @@ class DatabaseRoleProviderTest extends SecurityPersistenceSpecification {
         RoleEntity role2 = metadata.create(RoleEntity)
         role2.code = 'role2'
         role2.name = 'Role2'
+        role2.scope = 'rest'
 
         entitiesToSave << role1
         entitiesToSave << role2

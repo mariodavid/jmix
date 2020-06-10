@@ -41,6 +41,9 @@ public class RoleEntity extends StandardEntity {
     @Column(name = "CODE", nullable = false)
     private @NotNull String code;
 
+    @Column(name = "SCOPE", nullable = false)
+    private @NotNull String scope;
+
     @Composition
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "role")
@@ -81,5 +84,13 @@ public class RoleEntity extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

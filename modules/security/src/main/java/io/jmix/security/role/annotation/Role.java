@@ -86,14 +86,17 @@ import java.lang.annotation.Target;
 public @interface Role {
 
     /**
-     * @return role name
+     * Role name.
      */
     String name();
 
     /**
      * Role code is an unique role identifier. It is used for linking the role with the user.
-     *
-     * @return role code
      */
     String code();
+
+    /**
+     * Defines role scope, e.g. "generic_ui", "rest", etc.
+     */
+    String scope()  default io.jmix.security.model.Role.DEFAULT_SCOPE;
 }

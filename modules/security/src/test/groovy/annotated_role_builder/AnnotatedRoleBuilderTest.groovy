@@ -41,6 +41,7 @@ class AnnotatedRoleBuilderTest extends SecuritySpecification {
 
         then:
 
+        role.scope == Role.DEFAULT_SCOPE
         entityPolicies.size() == 2
         entityAttributePolicies.size() == 2
         specificPolicies.size() == 2
@@ -122,5 +123,15 @@ class AnnotatedRoleBuilderTest extends SecuritySpecification {
         resourcePolicies.find {it.action == EntityPolicyAction.READ.id}
         resourcePolicies.find {it.action == EntityPolicyAction.UPDATE.id}
         resourcePolicies.find {it.action == EntityPolicyAction.DELETE.id}
+    }
+
+    def "role with REST scope"() {
+        when:
+
+        Role role = annotatedRoleBuilder.createRole(TestRestScopeRole.class.getCanonicalName())
+
+        then:
+
+        role.scope == 'rest'
     }
 }

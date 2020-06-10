@@ -69,6 +69,7 @@ public class AnnotatedRoleBuilderImpl implements AnnotatedRoleBuilder {
         Role role = new Role();
         role.setName(roleAnnotation.name());
         role.setCode(roleAnnotation.code());
+        role.setScope(roleAnnotation.scope());
         role.setResourcePolicies(resourcePolicies);
         role.setRowLevelPolicies(rowLevelPolicies);
         return role;

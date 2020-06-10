@@ -48,7 +48,7 @@ public class DatabaseRoleProvider implements RoleProvider {
                 .query("select r from sec_Role r")
                 .fetchPlan(fetchPlanBuilder -> {
                     fetchPlanBuilder
-                            .addAll("name", "code")
+                            .addAll("name", "code", "scope")
                             .add("rowLevelPolicies", FetchPlan.BASE)
                             .add("resourcePolicies", FetchPlan.BASE);
                 })
@@ -66,7 +66,7 @@ public class DatabaseRoleProvider implements RoleProvider {
                 .parameter("code", code)
                 .fetchPlan(fetchPlanBuilder -> {
                     fetchPlanBuilder
-                            .addAll("name", "code")
+                            .addAll("name", "code", "scope")
                             .add("rowLevelPolicies", FetchPlan.BASE)
                             .add("resourcePolicies", FetchPlan.BASE);
                 })
@@ -79,6 +79,7 @@ public class DatabaseRoleProvider implements RoleProvider {
         Role role = new Role();
         role.setName(roleEntity.getName());
         role.setCode(roleEntity.getCode());
+        role.setScope(roleEntity.getScope());
 
         List<ResourcePolicyEntity> resourcePolicyEntities = roleEntity.getResourcePolicies();
         if (resourcePolicyEntities != null) {

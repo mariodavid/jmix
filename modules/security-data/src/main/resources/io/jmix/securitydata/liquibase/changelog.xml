@@ -43,6 +43,9 @@
             <column name="CODE" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="SCOPE" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="SEC_RESOURCE_POLICY">
