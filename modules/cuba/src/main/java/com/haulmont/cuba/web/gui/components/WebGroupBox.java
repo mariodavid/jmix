@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.settings.CubaGroupBoxSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaGroupBoxSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacyGroupBoxSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;

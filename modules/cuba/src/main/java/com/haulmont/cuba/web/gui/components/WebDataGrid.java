@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.settings.CubaDataGridSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaDataGridSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import io.jmix.core.Entity;
 import com.haulmont.cuba.settings.converter.LegacyDataGridSettingsConverter;

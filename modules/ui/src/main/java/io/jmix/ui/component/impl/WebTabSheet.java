@@ -26,11 +26,9 @@ import io.jmix.ui.component.ComponentsHelper;
 import io.jmix.ui.component.*;
 import io.jmix.ui.icon.IconResolver;
 import io.jmix.ui.icon.Icons;
-import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import io.jmix.ui.security.UiPermissionDescriptor;
 import io.jmix.ui.security.UiPermissionValue;
-import io.jmix.ui.settings.compatibility.Settings;
-import io.jmix.ui.settings.facet.ScreenSettingsFacet;
+import io.jmix.ui.settings.SettingsHelper;
 import io.jmix.ui.sys.TestIdManager;
 import io.jmix.ui.widget.JmixTabSheet;
 import io.jmix.ui.xml.layout.ComponentLoader;
@@ -44,7 +42,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
-import static io.jmix.ui.component.ComponentsHelper.walkComponents;
 
 public class WebTabSheet extends WebAbstractComponent<JmixTabSheet>
         implements TabSheet, UiPermissionAware, SupportsChildrenSelection {
@@ -647,24 +644,9 @@ public class WebTabSheet extends WebAbstractComponent<JmixTabSheet>
         }
 
         protected void applySettings(Window window) {
-            if (window == null) {
-                return;
+            if (window != null) {
+                SettingsHelper.lazyTabApplySettings(window, WebTabSheet.this, tabContent);
             }
-
-            window.getFacets().forEach(facet -> {
-                if (facet instanceof ScreenSettingsFacet) {
-                    ScreenSettingsFacet settingsFacet = (ScreenSettingsFacet) facet;
-                    Consumer<ScreenSettingsFacet.SettingsContext> applyHandler = settingsFacet.getApplySettingsDelegate();
-                    if (applyHandler != null) {
-                        applyHandler.accept(new ScreenSettingsFacet.SettingsContext(
-                                WebTabSheet.this,
-                                tabContent.getComponents(),
-                                settingsFacet.getSettings()));
-                    } else {
-                        settingsFacet.applySettings(settingsFacet.getSettings());
-                    }
-                }
-            });
         }
     }
 

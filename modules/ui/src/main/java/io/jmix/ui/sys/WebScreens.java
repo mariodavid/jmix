@@ -50,8 +50,7 @@ import io.jmix.ui.screen.*;
 import io.jmix.ui.screen.Screen.*;
 import io.jmix.ui.screen.compatibility.CubaLegacyFrame;
 import io.jmix.ui.screen.compatibility.CubaLegacySettings;
-import io.jmix.ui.settings.compatibility.Settings;
-import io.jmix.ui.settings.compatibility.SettingsImpl;
+import io.jmix.ui.screen.compatibility.CubaScreensDelegate;
 import io.jmix.ui.theme.ThemeConstants;
 import io.jmix.ui.util.OperationResult;
 import io.jmix.ui.util.UnknownOperationResult;
@@ -113,6 +112,8 @@ public class WebScreens implements Screens {
     protected ScreenViewsLoader screenViewsLoader;
     @Autowired
     protected MeterRegistry meterRegistry;
+    @Autowired(required = false)
+    protected CubaScreensDelegate cubaScreensDelegate;
 
     // todo implement
     /*@Autowired
@@ -366,7 +367,7 @@ public class WebScreens implements Screens {
 
         Timer.Sample beforeShowSample = Timer.start(meterRegistry);
 
-        applyDataLoadingSettings(screen);
+        beforeShowWindow(screen);
 
         fireEvent(screen, BeforeShowEvent.class, new BeforeShowEvent(screen));
 
@@ -511,34 +512,16 @@ public class WebScreens implements Screens {
         }
     }
 
-    protected void applyDataLoadingSettings(Screen screen) {
-        if (screen instanceof CubaLegacySettings) {
-            ((CubaLegacySettings) screen).applyDataLoadingSettings(getSettingsImpl(screen.getId()));
+    protected void beforeShowWindow(Screen screen) {
+        if (cubaScreensDelegate != null) {
+            cubaScreensDelegate.beforeShowWindow(screen);
         }
     }
 
     protected void afterShowWindow(Screen screen) {
-        WindowContext windowContext = screen.getWindow().getContext();
-
-        if (screen instanceof CubaLegacySettings) {
-            ((CubaLegacySettings) screen).applySettings(getSettingsImpl(screen.getId()));
+        if (cubaScreensDelegate != null) {
+            cubaScreensDelegate.afterShowWindow(screen);
         }
-
-        /*
-        TODO: legacy-ui
-        if (screen instanceof LegacyFrame) {
-            if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(windowContext)) {
-                DsContext dsContext = ((LegacyFrame) screen).getDsContext();
-                if (dsContext != null) {
-                    ((DsContextImplementation) dsContext).resumeSuspended();
-                }
-            }
-        }*/
-
-    }
-
-    protected Settings getSettingsImpl(String id) {
-        return new SettingsImpl(id);
     }
 
     @Override

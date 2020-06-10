@@ -35,7 +35,6 @@ public interface CubaLegacySettings {
      */
     Settings getSettings();
 
-
     /**
      * This method is called by the framework on reset to defaults action
      */

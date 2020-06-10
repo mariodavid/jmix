@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-@NonNullApi
-package io.jmix.ui.settings.compatibility;
+package com.haulmont.cuba.settings.binder;
 
-import org.springframework.lang.NonNullApi;
+import com.haulmont.cuba.web.gui.components.WebTable;
+import io.jmix.ui.component.Component;
+import io.jmix.ui.settings.component.binder.TableSettingsBinder;
+
+@org.springframework.stereotype.Component(CubaTableSettingsBinder.NAME)
+public class CubaTableSettingsBinder extends TableSettingsBinder {
+
+    public static final String NAME = "jmix_CubaTableSettingsBinder";
+
+    @Override
+    public Class<? extends Component> getComponentClass() {
+        return WebTable.class;
+    }
+}

@@ -20,10 +20,10 @@ package io.jmix.ui.settings;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.ui.UiProperties;
 import io.jmix.ui.component.AppWorkArea;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 /**
  * Utility bean for work with user settings on web client tier.
@@ -46,14 +46,14 @@ public class UserSettingsTools {
         }
     }
 
-    @Inject
+    @Autowired(required = false)
     protected UserSettingService userSettingService;
 
-    @Inject
+    @Autowired
     protected UiProperties uiProperties;
 
     public AppWorkArea.Mode loadAppWindowMode() {
-        String s = userSettingService.loadSetting("appWindowMode");
+        String s = userSettingService != null ? userSettingService.loadSetting("appWindowMode") : null;
         if (s != null) {
             if (AppWorkArea.Mode.SINGLE.name().equals(s)) {
                 return AppWorkArea.Mode.SINGLE;
@@ -67,11 +67,12 @@ public class UserSettingsTools {
     public void saveAppWindowMode(AppWorkArea.Mode mode) {
         Preconditions.checkNotNullArgument(mode);
 
-        userSettingService.saveSetting("appWindowMode", mode.name());
+        if (userSettingService != null)
+            userSettingService.saveSetting("appWindowMode", mode.name());
     }
 
     public String loadTheme() {
-        String s = userSettingService.loadSetting("theme");
+        String s = userSettingService != null ? userSettingService.loadSetting("theme") : null;
         if (s != null) {
             return s;
         }
@@ -79,12 +80,13 @@ public class UserSettingsTools {
     }
 
     public void saveAppWindowTheme(String theme) {
-        userSettingService.saveSetting("theme", theme);
+        if (userSettingService != null)
+            userSettingService.saveSetting("theme", theme);
     }
 
     @Nullable
     public FoldersState loadFoldersState() {
-        String s = userSettingService.loadSetting("foldersState");
+        String s = userSettingService != null ? userSettingService.loadSetting("foldersState") : null;
         if (s == null)
             return null;
 

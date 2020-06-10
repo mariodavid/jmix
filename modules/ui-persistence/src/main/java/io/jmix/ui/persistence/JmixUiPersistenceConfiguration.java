@@ -24,7 +24,6 @@ import io.jmix.ui.component.Component;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.settings.UserSettingService;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 

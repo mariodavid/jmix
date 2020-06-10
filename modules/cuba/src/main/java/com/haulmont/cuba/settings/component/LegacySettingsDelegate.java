@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.HasSettings;
 import io.jmix.ui.component.Component;
 import com.haulmont.cuba.settings.converter.LegacySettingsConverter;
 import io.jmix.ui.component.Frame;
+import io.jmix.ui.component.HasTablePresentations;
 import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.SettingsWrapperImpl;
@@ -56,12 +57,16 @@ public class LegacySettingsDelegate implements HasSettings, HasDataLoadingSettin
             return;
         }
 
-        if (defaultSettings == null) {
+        if (defaultSettings == null
+                && component instanceof HasTablePresentations) {
             // save default view before apply custom
             defaultSettings = DocumentHelper.createDocument();
             defaultSettings.setRootElement(defaultSettings.addElement("presentation"));
 
             saveSettings(defaultSettings.getRootElement());
+
+            ComponentSettings settings = settingsConverter.convertToComponentSettings(defaultSettings.getRootElement());
+            ((HasTablePresentations) component).setDefaultSettings(new SettingsWrapperImpl(settings));
         }
 
         ComponentSettings settings = settingsConverter.convertToComponentSettings(element);

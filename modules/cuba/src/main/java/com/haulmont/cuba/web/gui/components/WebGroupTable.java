@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.presentation.LegacyPresentationsDelegate;
 import com.haulmont.cuba.gui.presentation.Presentations;
-import com.haulmont.cuba.settings.CubaGroupTableSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaGroupTableSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import io.jmix.core.Entity;
 import io.jmix.ui.component.presentation.TablePresentationsLayout;

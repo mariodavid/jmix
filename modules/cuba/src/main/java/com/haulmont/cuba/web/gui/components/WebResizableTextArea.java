@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.settings.CubaResizableTextAreaSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaResizableTextAreaSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacyResizableTextAreaSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;

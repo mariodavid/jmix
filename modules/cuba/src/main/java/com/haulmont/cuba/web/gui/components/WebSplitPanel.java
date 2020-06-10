@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.SplitPanel;
-import com.haulmont.cuba.settings.CubaSplitPanelSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaSplitPanelSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacySplitPanelSettingsConverter;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;

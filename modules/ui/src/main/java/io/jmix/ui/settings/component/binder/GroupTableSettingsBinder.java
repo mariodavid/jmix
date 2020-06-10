@@ -135,7 +135,6 @@ public class GroupTableSettingsBinder extends AbstractTableSettingsBinder {
                 }
                 groupTableSettings.setGroupProperties(new ArrayList<>(groupProperties));
             } else {
-                // todo does not work with legacy screens
                 return false;
             }
         }

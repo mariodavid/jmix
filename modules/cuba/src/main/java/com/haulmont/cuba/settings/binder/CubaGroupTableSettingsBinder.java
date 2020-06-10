@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.settings;
+package com.haulmont.cuba.settings.binder;
 
-import com.haulmont.cuba.web.gui.components.WebGroupBox;
+
+import com.haulmont.cuba.web.gui.components.WebGroupTable;
 import io.jmix.ui.component.Component;
-import io.jmix.ui.settings.component.binder.GroupBoxSettingsBinder;
+import io.jmix.ui.settings.component.binder.GroupTableSettingsBinder;
 
-@org.springframework.stereotype.Component(CubaGroupBoxSettingsBinder.NAME)
-public class CubaGroupBoxSettingsBinder extends GroupBoxSettingsBinder {
+@org.springframework.stereotype.Component(CubaGroupTableSettingsBinder.NAME)
+public class CubaGroupTableSettingsBinder extends GroupTableSettingsBinder {
 
-    public static final String NAME = "jmix_CubaGroupBoxSettingsBinder";
+    public static final String NAME = "jmix_CubaGroupTableSettingsBinder";
 
     @Override
     public Class<? extends Component> getComponentClass() {
-        return WebGroupBox.class;
+        return WebGroupTable.class;
     }
 }

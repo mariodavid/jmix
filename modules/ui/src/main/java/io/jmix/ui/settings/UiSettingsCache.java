@@ -35,12 +35,16 @@ public class UiSettingsCache {
 
     public static final String NAME = "cuba_SettingsClient";
 
-    @Autowired
+    @Autowired(required = false)
     protected UserSettingService userSettingService;
 
     @Nullable
     public String getSetting(String name) {
         Preconditions.checkNotNullArgument(name);
+
+        if (userSettingService == null) {
+            return null;
+        }
 
         Map<String, Optional<String>> settings = getCache();
         Optional<String> cached = settings.get(name);
@@ -57,15 +61,19 @@ public class UiSettingsCache {
     public void setSetting(String name, @Nullable String value) {
         Preconditions.checkNotNullArgument(name);
 
-        getCache().put(name, Optional.ofNullable(value));
-        userSettingService.saveSetting(name, value);
+        if (userSettingService != null) {
+            getCache().put(name, Optional.ofNullable(value));
+            userSettingService.saveSetting(name, value);
+        }
     }
 
     public void deleteSettings(String name) {
         Preconditions.checkNotNullArgument(name);
 
-        getCache().put(name, Optional.empty());
-        userSettingService.deleteSettings(name);
+        if (userSettingService != null) {
+            getCache().put(name, Optional.empty());
+            userSettingService.deleteSettings(name);
+        }
     }
 
     /**

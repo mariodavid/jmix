@@ -16,8 +16,15 @@
 
 package io.jmix.ui.settings;
 
+import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.common.util.ReflectionHelper;
+import io.jmix.ui.component.Component;
+import io.jmix.ui.component.ComponentContainer;
+import io.jmix.ui.component.Window;
 import io.jmix.ui.settings.component.ComponentSettings;
+import io.jmix.ui.settings.facet.ScreenSettingsFacet;
+
+import java.util.function.Consumer;
 
 public final class SettingsHelper {
 
@@ -30,5 +37,31 @@ public final class SettingsHelper {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(String.format("Cannot create settings '%s'", settingsClass), e);
         }
+    }
+
+    public static void lazyTabApplySettings(Window window, Component source, ComponentContainer tabContent) {
+        Preconditions.checkNotNullArgument(window);
+        Preconditions.checkNotNullArgument(tabContent);
+
+        window.getFacets().forEach(facet -> {
+            if (facet instanceof ScreenSettingsFacet) {
+                ScreenSettingsFacet settingsFacet = (ScreenSettingsFacet) facet;
+                Consumer<ScreenSettingsFacet.SettingsContext> applyHandler = settingsFacet.getApplySettingsDelegate();
+
+                ScreenSettings settings = settingsFacet.getSettings();
+                if (settings == null) {
+                    throw new IllegalStateException("ScreenSettingsFacet is not attached to the frame");
+                }
+
+                if (applyHandler != null) {
+                    applyHandler.accept(new ScreenSettingsFacet.SettingsContext(
+                            source,
+                            tabContent.getComponents(),
+                            settings));
+                } else {
+                    settingsFacet.applySettings(settings);
+                }
+            }
+        });
     }
 }

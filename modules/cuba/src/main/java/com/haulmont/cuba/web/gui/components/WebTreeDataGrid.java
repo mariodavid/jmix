@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.TreeDataGrid;
-import com.haulmont.cuba.settings.CubaTreeDataGridSettingsBinder;
+import com.haulmont.cuba.settings.binder.CubaTreeDataGridSettingsBinder;
 import com.haulmont.cuba.settings.component.LegacySettingsDelegate;
 import com.haulmont.cuba.settings.converter.LegacyTreeDataGridSettingsConverter;
 import io.jmix.core.Entity;

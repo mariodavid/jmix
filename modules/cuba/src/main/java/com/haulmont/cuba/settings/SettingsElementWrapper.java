@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.settings.compatibility;
+package com.haulmont.cuba.settings;
 
 import io.jmix.ui.screen.Screen;
+import io.jmix.ui.settings.compatibility.Settings;
 import org.dom4j.*;
 
 import java.io.IOException;

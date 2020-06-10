@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.settings;
+package com.haulmont.cuba.settings.binder;
 
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
 import io.jmix.ui.component.Component;
