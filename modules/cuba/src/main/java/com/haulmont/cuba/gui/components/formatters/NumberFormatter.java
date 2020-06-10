@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.jmix.ui.component;
 
-import java.util.function.Function;
+package com.haulmont.cuba.gui.components.formatters;
+
+import io.jmix.core.AppBeans;
+import io.jmix.core.Messages;
+import io.jmix.core.security.CurrentAuthentication;
 
 /**
- * Interface defining method for formatting a value into string.
- * <br> Used by various UI components.
+ * @deprecated Use {@link io.jmix.ui.component.formatter.NumberFormatter} instead
  */
 @Deprecated
-public interface Formatter<T> extends Function<T, String> {
-    @Override
-    default String apply(T t) {
-        return format(t);
-    }
+public class NumberFormatter extends io.jmix.ui.component.formatter.NumberFormatter {
 
-    String format(T t);
+    @Override
+    public String apply(Number value) {
+        messages = AppBeans.get(Messages.class);
+        currentAuthentication = AppBeans.get(CurrentAuthentication.class);
+        return super.apply(value);
+    }
 }

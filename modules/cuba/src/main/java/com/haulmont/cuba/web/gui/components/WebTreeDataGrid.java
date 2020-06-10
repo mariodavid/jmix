@@ -148,7 +148,7 @@ public class WebTreeDataGrid<E extends Entity> extends io.jmix.ui.component.impl
             return new FormatterBasedValueProvider<>(column.getFormatter());
         } else if (metaProperty != null) {
             if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
-                return new FormatterBasedValueProvider<>(new CollectionFormatter(metadataTools));
+                return new FormatterBasedValueProvider<>(beanLocator.get(CollectionFormatter.class));
             }
             if (column instanceof DataGrid.Column
                     && ((DataGrid.Column<E>) column).getType() == Boolean.class) {

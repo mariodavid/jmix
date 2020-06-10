@@ -61,6 +61,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.Nonnull;
@@ -896,24 +897,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 throw new GuiDevelopmentException(String.format("Class %s is not found", className), context);
             }
 
-            try {
-                Constructor<?> constructor = aClass.getConstructor(Element.class);
-                try {
-                    //noinspection unchecked
-                    return (Function<?, String>) constructor.newInstance(formatterElement);
-                } catch (Throwable e) {
-                    throw new GuiDevelopmentException(
-                            String.format("Unable to instantiate class %s: %s", className, e.toString()), context);
-                }
-            } catch (NoSuchMethodException e) {
-                try {
-                    //noinspection unchecked
-                    return (Function<?, String>) aClass.getDeclaredConstructor().newInstance();
-                } catch (Exception e1) {
-                    throw new GuiDevelopmentException(
-                            String.format("Unable to instantiate class %s: %s", className, e1.toString()), context);
-                }
-            }
+            //noinspection unchecked
+            return (Function<?, String>) beanLocator.getPrototype(aClass, formatterElement);
         } else {
             return null;
         }

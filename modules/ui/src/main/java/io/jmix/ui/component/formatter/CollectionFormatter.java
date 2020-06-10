@@ -18,18 +18,22 @@ package io.jmix.ui.component.formatter;
 
 import io.jmix.core.MetadataTools;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Component(CollectionFormatter.NAME)
+@Scope("prototype")
 public class CollectionFormatter implements Function<Collection, String> {
 
-    protected MetadataTools metadataTools;
+    public static final String NAME = "jmix_CollectionFormatter";
 
-    public CollectionFormatter(MetadataTools metadataTools) {
-        this.metadataTools = metadataTools;
-    }
+    @Autowired
+    protected MetadataTools metadataTools;
 
     @Override
     public String apply(Collection value) {

@@ -16,7 +16,13 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import io.jmix.ui.GuiDevelopmentException;
 import io.jmix.ui.component.Component;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
+
+import java.lang.reflect.Constructor;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -29,5 +35,43 @@ public abstract class AbstractComponentLoader<T extends Component>
             "'context' must implement io.jmix.ui.xml.layout.ComponentLoader.ComponentContext");
 
         return (ComponentLoaderContext) context;
+    }
+
+    @Override
+    protected Function<?, String> loadFormatter(Element element) {
+        Element formatterElement = element.element("formatter");
+        if (formatterElement != null) {
+            String className = formatterElement.attributeValue("class");
+
+            if (StringUtils.isEmpty(className)) {
+                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context);
+            }
+
+            Class<?> aClass = getHotDeployManager().findClass(className);
+            if (aClass == null) {
+                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context);
+            }
+
+            try {
+                Constructor<?> constructor = aClass.getConstructor(Element.class);
+                try {
+                    //noinspection unchecked
+                    return (Function<?, String>) constructor.newInstance(formatterElement);
+                } catch (Throwable e) {
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e.toString()), context);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    //noinspection unchecked
+                    return (Function<?, String>) aClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e1) {
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e1.toString()), context);
+                }
+            }
+        } else {
+            return null;
+        }
     }
 }

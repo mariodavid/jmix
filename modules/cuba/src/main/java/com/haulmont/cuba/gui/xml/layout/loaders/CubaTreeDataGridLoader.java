@@ -24,11 +24,14 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.data.DatasourceLoaderHelper;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.dynattrui.DynAttrEmbeddingStrategies;
+import io.jmix.ui.GuiDevelopmentException;
 import io.jmix.ui.xml.layout.loader.TreeDataGridLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
+import java.util.function.Function;
 
 @SuppressWarnings("rawtypes")
 public class CubaTreeDataGridLoader extends TreeDataGridLoader {
@@ -81,6 +84,44 @@ public class CubaTreeDataGridLoader extends TreeDataGridLoader {
             return beanLocator.get(Scripting.class).loadClassNN(colGenType);
         }
         return null;
+    }
+
+    @Override
+    protected Function<?, String> loadFormatter(Element element) {
+        Element formatterElement = element.element("formatter");
+        if (formatterElement != null) {
+            String className = formatterElement.attributeValue("class");
+
+            if (StringUtils.isEmpty(className)) {
+                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context);
+            }
+
+            Class<?> aClass = getHotDeployManager().findClass(className);
+            if (aClass == null) {
+                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context);
+            }
+
+            try {
+                Constructor<?> constructor = aClass.getConstructor(Element.class);
+                try {
+                    //noinspection unchecked
+                    return (Function<?, String>) constructor.newInstance(formatterElement);
+                } catch (Throwable e) {
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e.toString()), context);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    //noinspection unchecked
+                    return (Function<?, String>) aClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e1) {
+                    throw new GuiDevelopmentException(
+                            String.format("Unable to instantiate class %s: %s", className, e1.toString()), context);
+                }
+            }
+        } else {
+            return null;
+        }
     }
 
     protected static class CubaTreeDataGridDataHolder extends DataGridDataHolder {

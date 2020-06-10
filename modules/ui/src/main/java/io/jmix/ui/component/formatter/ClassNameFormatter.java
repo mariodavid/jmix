@@ -15,14 +15,21 @@
  */
 package io.jmix.ui.component.formatter;
 
-import io.jmix.core.AppBeans;
 import io.jmix.core.Messages;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
+@Component(ClassNameFormatter.NAME)
+@Scope("prototype")
 public class ClassNameFormatter implements Function<Object, String> {
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
+    public static final String NAME = "jmix_ClassNameFormatter";
+
+    @Autowired
+    protected Messages messages;
 
     @Override
     public String apply(Object value) {

@@ -821,7 +821,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & JmixEnhancedGrid<E
             return new FormatterBasedValueProvider<>(column.getFormatter());
         } else if (metaProperty != null) {
             if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
-                return new FormatterBasedValueProvider<>(new CollectionFormatter(metadataTools));
+                return new FormatterBasedValueProvider<>(beanLocator.get(CollectionFormatter.class));
             }
             if (metaProperty.getJavaType() == Boolean.class) {
                 return new YesNoIconPresentationValueProvider();
