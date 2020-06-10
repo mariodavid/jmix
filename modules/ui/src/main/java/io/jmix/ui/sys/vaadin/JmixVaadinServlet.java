@@ -21,6 +21,7 @@ import com.vaadin.spring.internal.UIScopeImpl;
 import com.vaadin.spring.internal.VaadinSessionScope;
 import com.vaadin.spring.server.SpringVaadinServlet;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +64,27 @@ public class JmixVaadinServlet extends SpringVaadinServlet {
             UIScopeImpl.cleanupSession(session);
             VaadinSessionScope.cleanupSession(session);
         });
+    }
+
+    @Override
+    protected String getStaticFilePath(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null) {
+            return null;
+        }
+
+        if (pathInfo.startsWith(JmixWebJarsHandler.WEBJARS_PATH_PREFIX)) {
+            // handled in JmixWebJarsHandler
+            return null;
+        }
+
+        String servletPrefixedPath = request.getServletPath() + pathInfo;
+
+        if (servletPrefixedPath.startsWith(JmixWebJarsHandler.WEBJARS_PATH_PREFIX)) {
+            // handled in JmixWebJarsHandler
+            return null;
+        }
+
+        return super.getStaticFilePath(request);
     }
 }

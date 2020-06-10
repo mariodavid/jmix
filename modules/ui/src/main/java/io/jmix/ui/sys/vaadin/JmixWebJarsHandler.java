@@ -41,6 +41,7 @@ import static org.apache.commons.io.IOUtils.copy;
 public class JmixWebJarsHandler implements RequestHandler {
 
     public static final String VAADIN_WEBJARS_PATH_PREFIX = "/" + WebJarResourceResolver.VAADIN_PREFIX;
+    public static final String WEBJARS_PATH_PREFIX = "/webjars/";
 
     private final Logger log = LoggerFactory.getLogger(JmixWebJarsHandler.class);
 
@@ -60,11 +61,11 @@ public class JmixWebJarsHandler implements RequestHandler {
     public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
         String path = request.getPathInfo();
         if (StringUtils.isEmpty(path)
-                || !path.startsWith(VAADIN_WEBJARS_PATH_PREFIX)) {
+                || !path.startsWith(WEBJARS_PATH_PREFIX)) {
             return false;
         }
 
-        log.trace("WebJar resource requested: {}", path.replace(VAADIN_WEBJARS_PATH_PREFIX, ""));
+        log.trace("WebJar resource requested: {}", path.replace(WEBJARS_PATH_PREFIX, ""));
 
         String errorMessage = checkResourcePath(path);
         if (StringUtils.isNotEmpty(errorMessage)) {

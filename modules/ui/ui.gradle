@@ -35,10 +35,8 @@ dependencies {
 
     api 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20191001.1'
 
-    runtimeOnly 'org.webjars:jquery:3.3.1'
-    runtimeOnly 'org.webjars:jquery-ui:1.12.1'
-    runtimeOnly 'org.webjars:ace-builds:1.1.9-1-cuba'
-    runtimeOnly 'org.webjars:diff-match-patch:0.1.cuba.1'
+    api 'org.webjars:ace-builds'
+    api 'org.webjars:diff-match-patch'
 
     testImplementation 'org.springframework:spring-test'
     testImplementation 'org.spockframework:spock-core'
