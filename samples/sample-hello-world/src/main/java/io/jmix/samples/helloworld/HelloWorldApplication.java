@@ -4,8 +4,10 @@ import io.jmix.core.DataManager;
 import io.jmix.core.security.Authenticator;
 import io.jmix.core.security.UserRepository;
 import io.jmix.core.security.impl.CoreUser;
+import io.jmix.core.security.impl.InMemoryUserRepository;
 import io.jmix.samples.helloworld.entity.Greeting;
 import io.jmix.samples.helloworld.role.OrderViewRole;
+import io.jmix.security.model.Role;
 import io.jmix.security.role.assignment.InMemoryRoleAssignmentProvider;
 import io.jmix.security.role.assignment.RoleAssignment;
 import io.jmix.securitydata.entity.RoleAssignmentEntity;
@@ -64,6 +66,7 @@ public class HelloWorldApplication {
         RoleEntity dbRole1 = new RoleEntity();
         dbRole1.setName("DB role 1");
         dbRole1.setCode("dbRole1");
+        dbRole1.setScope(Role.DEFAULT_SCOPE);
 
         RoleAssignmentEntity dbRole1AdminAssignment = new RoleAssignmentEntity();
         dbRole1AdminAssignment.setUserKey("admin");
@@ -74,9 +77,11 @@ public class HelloWorldApplication {
 
     private void initUsers() {
         CoreUser admin = new CoreUser("admin", "{noop}admin", "Admin");
-        userRepository.createUser(admin);
         CoreUser user1 = new CoreUser("user1", "{noop}1", "User 1");
-        userRepository.createUser(user1);
+        if (userRepository instanceof InMemoryUserRepository) {
+            ((InMemoryUserRepository) userRepository).createUser(admin);
+            ((InMemoryUserRepository) userRepository).createUser(user1);
+        }
 
         inMemoryRoleAssignmentProvider.addAssignment(new RoleAssignment(user1.getKey(), OrderViewRole.CODE));
     }
