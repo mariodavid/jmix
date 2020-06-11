@@ -197,4 +197,9 @@ public class SampleUser extends StandardEntity implements BaseUser {
     public String getKey() {
         return id.toString();
     }
+
+    @Override
+    public String getDisplayName() {
+        return name;
+    }
 }

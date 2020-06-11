@@ -91,7 +91,8 @@
                     <rows>
                         <row id="gridRowUp">
                             <label value="msg://user" align="MIDDLE_LEFT"/>
-                            <comboBox id="userField" width="${fieldWidth}"/><!--optionsContainer="usersDc" -->
+<!--                            <comboBox id="userField" width="${fieldWidth}"/>-->
+                            <suggestionField id="userField" width="${fieldWidth}"/>
                             <label value="msg://changeType" align="MIDDLE_LEFT"/>
                             <comboBox id="changeTypeField" width="${fieldWidth}"/>
                             <label value="msg://from" align="MIDDLE_LEFT"/>

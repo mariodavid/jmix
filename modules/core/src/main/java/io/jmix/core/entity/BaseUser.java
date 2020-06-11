@@ -31,4 +31,9 @@ public interface BaseUser extends UserDetails {
      */
     String getKey();
 
+    /**
+     * Returns a string that is used for displaying users in suggestion fields, lookups, etc.
+     */
+    String getDisplayName();
+
 }

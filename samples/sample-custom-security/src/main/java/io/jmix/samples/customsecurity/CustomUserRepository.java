@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CustomUserRepository implements UserRepository {
 
@@ -42,8 +43,10 @@ public class CustomUserRepository implements UserRepository {
     }
 
     @Override
-    public List<? extends BaseUser> getAll() {
-        return users;
+    public List<BaseUser> getByUsernameLike(String username) {
+        return users.stream()
+                .filter(user -> user.getUsername().contains(username))
+                .collect(Collectors.toList());
     }
 
     @Override

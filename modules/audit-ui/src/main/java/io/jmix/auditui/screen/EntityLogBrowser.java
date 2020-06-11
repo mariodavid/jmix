@@ -41,6 +41,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @UiController("entityLog.browse")
 @UiDescriptor("entity-log-browser.xml")
@@ -91,7 +92,7 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
     @Autowired
     protected ComboBox<String> entityNameField;
     @Autowired
-    protected ComboBox<String> userField;
+    protected SuggestionField<String> userField;
     @Autowired
     protected ComboBox<String> filterEntityNameField;
     @Autowired
@@ -124,7 +125,6 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
     protected UserRepository userRepository;
 
     protected TreeMap<String, String> entityMetaClassesMap;
-    protected TreeMap<String, String> usersMap;
 
     protected List<String> systemAttrsList;
 
@@ -146,10 +146,15 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
         changeTypeMap.put(messages.getMessage("restoreField"), "R");
 
         entityMetaClassesMap = getEntityMetaClasses();
-        usersMap = getUsersMap();
         entityNameField.setOptionsMap(entityMetaClassesMap);
         changeTypeField.setOptionsMap(changeTypeMap);
-        userField.setOptionsMap(usersMap);
+
+        userField.setSearchExecutor((searchString, searchParams) -> {
+            List<BaseUser> users = userRepository.getByUsernameLike(searchString);
+            return users.stream()
+                    .map(BaseUser::getUsername)
+                    .collect(Collectors.toList());
+        });
         filterEntityNameField.setOptionsMap(entityMetaClassesMap);
 
         disableControls();
@@ -242,14 +247,6 @@ public class EntityLogBrowser extends StandardLookup<EntityLogItem> {
                 String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + originalName + ")";
                 options.put(caption, originalName);
             }
-        }
-        return options;
-    }
-
-    public TreeMap<String, String> getUsersMap() {
-        TreeMap<String, String> options = new TreeMap<>();
-        for (BaseUser user : userRepository.getAll()) {
-            options.put(user.getUsername(), user.getKey());
         }
         return options;
     }
