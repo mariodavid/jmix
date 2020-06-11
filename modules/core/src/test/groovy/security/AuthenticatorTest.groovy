@@ -19,9 +19,9 @@ package security
 import io.jmix.core.JmixCoreConfiguration
 import io.jmix.core.entity.BaseUser
 import io.jmix.core.security.SystemAuthenticationToken
-import io.jmix.core.security.UserRepository
 import io.jmix.core.security.impl.AuthenticatorImpl
 import io.jmix.core.security.impl.CoreUser
+import io.jmix.core.security.impl.InMemoryUserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
@@ -41,7 +41,7 @@ class AuthenticatorTest extends Specification {
     AuthenticatorImpl authenticator
 
     @Autowired
-    UserRepository userRepository
+    InMemoryUserRepository userRepository
 
     CoreUser admin
 

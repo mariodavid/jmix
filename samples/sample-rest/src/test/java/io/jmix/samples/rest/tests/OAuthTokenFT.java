@@ -17,8 +17,8 @@
 package io.jmix.samples.rest.tests;
 
 import com.jayway.jsonpath.ReadContext;
-import io.jmix.core.security.UserRepository;
 import io.jmix.core.security.impl.CoreUser;
+import io.jmix.core.security.impl.InMemoryUserRepository;
 import io.jmix.samples.rest.SampleRestApplication;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -56,7 +56,7 @@ public class OAuthTokenFT {
     private String baseUrl;
 
     @Autowired
-    protected UserRepository userRepository;
+    protected InMemoryUserRepository userRepository;
 
     protected CoreUser admin;
 

@@ -30,8 +30,4 @@ public interface UserRepository extends UserDetailsService {
     BaseUser getAnonymousUser();
 
     List<BaseUser> getByUsernameLike(String username);
-
-    void createUser(BaseUser user);
-
-    void removeUser(BaseUser user);
 }

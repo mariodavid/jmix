@@ -17,8 +17,8 @@
 package io.jmix.samples.rest
 
 import groovy.sql.Sql
-import io.jmix.core.security.UserRepository
 import io.jmix.core.security.impl.CoreUser
+import io.jmix.core.security.impl.InMemoryUserRepository
 import io.jmix.samples.rest.api.DataSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,7 +35,7 @@ class DataSpec extends Specification {
     private int port
 
     @Autowired
-    UserRepository userRepository
+    InMemoryUserRepository userRepository
 
     public DataSet dirtyData = new DataSet()
     public Sql sql

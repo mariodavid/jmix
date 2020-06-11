@@ -6,8 +6,8 @@
 package io.jmix.samples.rest.tests;
 
 import io.jmix.core.JmixCoreConfiguration;
-import io.jmix.core.security.UserRepository;
 import io.jmix.core.security.impl.CoreUser;
+import io.jmix.core.security.impl.InMemoryUserRepository;
 import io.jmix.data.JmixDataConfiguration;
 import io.jmix.rest.JmixRestConfiguration;
 import io.jmix.samples.rest.JmixRestTestConfiguration;
@@ -50,7 +50,7 @@ public abstract class AbstractRestControllerFT {
     protected JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
     @Autowired
-    protected UserRepository userRepository;
+    protected InMemoryUserRepository userRepository;
 
     protected CoreUser admin;
 

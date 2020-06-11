@@ -50,16 +50,6 @@ public class CustomUserRepository implements UserRepository {
     }
 
     @Override
-    public void createUser(BaseUser user) {
-        users.add(user);
-    }
-
-    @Override
-    public void removeUser(BaseUser user) {
-        users.remove(user);
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username))

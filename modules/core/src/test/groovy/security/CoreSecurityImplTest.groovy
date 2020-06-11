@@ -18,10 +18,10 @@ package security
 
 import io.jmix.core.JmixCoreConfiguration
 import io.jmix.core.security.Security
-import io.jmix.core.security.UserRepository
 import io.jmix.core.security.authentication.CoreAuthentication
 import io.jmix.core.security.impl.CoreSecurityImpl
 import io.jmix.core.security.impl.CoreUser
+import io.jmix.core.security.impl.InMemoryUserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.security.authentication.AuthenticationManager
@@ -52,7 +52,7 @@ class CoreSecurityImplTest extends Specification {
     AuthenticationManager authenticationManager
 
     @Autowired
-    UserRepository userRepository
+    InMemoryUserRepository userRepository
 
     def "Security impl is default"() {
         expect:

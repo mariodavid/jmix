@@ -61,12 +61,10 @@ public class InMemoryUserRepository implements UserRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void createUser(BaseUser user) {
         users.add(user);
     }
 
-    @Override
     public void removeUser(BaseUser user) {
         users.remove(user);
     }

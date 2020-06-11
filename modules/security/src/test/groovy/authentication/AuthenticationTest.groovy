@@ -18,7 +18,6 @@ package authentication
 
 import io.jmix.core.DataManager
 import io.jmix.core.security.SystemAuthenticationToken
-import io.jmix.core.security.UserRepository
 import io.jmix.core.security.impl.CoreUser
 import io.jmix.core.security.impl.InMemoryUserRepository
 import io.jmix.data.PersistenceTools
@@ -41,7 +40,7 @@ class AuthenticationTest extends SecuritySpecification {
     AuthenticationManager authenticationManager
 
     @Autowired
-    UserRepository userRepository
+    InMemoryUserRepository userRepository
 
     CoreUser user1
 
