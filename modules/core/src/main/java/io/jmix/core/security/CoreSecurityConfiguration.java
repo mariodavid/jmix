@@ -77,7 +77,7 @@ public class CoreSecurityConfiguration extends WebSecurityConfigurerAdapter impl
 //        registry.addInterceptor(userSessionCleanupInterceptor);
 //    }
 
-    @Bean(name = "sec_AuthenticationManager")
+    @Bean(name = "core_authenticationManager")
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -89,8 +89,13 @@ public class CoreSecurityConfiguration extends WebSecurityConfigurerAdapter impl
         CoreUser anonymousUser = new CoreUser("anonymous", "{noop}", "Anonymous");
         return new InMemoryUserRepository(systemUser, anonymousUser);
     }
+//    @Bean(name = "core_userDetailsService")
+//    @Override
+//    public UserDetailsService userDetailsServiceBean() throws Exception {
+//        return super.userDetailsServiceBean();
+//    }
 
-    @Bean(name = "sec_PasswordEncoder")
+    @Bean(name = "core_PasswordEncoder")
     public PasswordEncoder getPasswordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }

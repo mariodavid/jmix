@@ -16,7 +16,9 @@
 
 package security
 
-import io.jmix.core.JmixCoreConfiguration
+import test_support.addon1.TestAddon1Configuration
+import test_support.AppContextTestExecutionListener
+import io.jmix.core.CoreConfiguration
 import io.jmix.core.security.Security
 import io.jmix.core.security.authentication.CoreAuthentication
 import io.jmix.core.security.impl.CoreSecurityImpl
@@ -33,10 +35,10 @@ import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Ignore
 import spock.lang.Specification
-import test_support.AppContextTestExecutionListener
-import test_support.addon1.TestAddon1Configuration
 
-@ContextConfiguration(classes = [JmixCoreConfiguration, TestAddon1Configuration])
+import org.springframework.beans.factory.annotation.Autowired
+
+@ContextConfiguration(classes = [CoreConfiguration, TestAddon1Configuration])
 @TestPropertySource(properties = ["jmix.securityImplementation = core"])
 @TestExecutionListeners(value = AppContextTestExecutionListener,
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
@@ -61,7 +63,6 @@ class CoreSecurityImplTest extends Specification {
     }
 
     def "authentication as admin"() {
-
         when:
 
         def admin = new CoreUser('admin', '{noop}admin123', 'Admin')

@@ -4,8 +4,10 @@ apply plugin: 'java-library'
 group = 'io.jmix.starter.standard-nowidgets'
 
 dependencies {
+    api project(':starters:starter-core')
     api project(':starters:starter-data')
     api project(':starters:starter-ui')
+    api project(':starters:starter-ui-data')
     api project(':starters:starter-security')
     api project(':starters:starter-security-ui')
     api project(':starters:starter-security-data')

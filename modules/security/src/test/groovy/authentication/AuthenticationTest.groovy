@@ -27,6 +27,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import test_support.SecuritySpecification
+import org.springframework.beans.factory.annotation.Autowired
 
 class AuthenticationTest extends SecuritySpecification {
 
