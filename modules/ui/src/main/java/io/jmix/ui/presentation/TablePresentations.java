@@ -16,7 +16,6 @@
 package io.jmix.ui.presentation;
 
 import io.jmix.ui.component.HasTablePresentations;
-import io.jmix.ui.presentation.model.EmptyTablePresentation;
 import io.jmix.ui.presentation.model.TablePresentation;
 
 import javax.annotation.Nullable;
@@ -137,7 +136,5 @@ public interface TablePresentations {
     /**
      * @return presentation instance or stub if "ui-persistence" add-on is not added to the project
      */
-    default TablePresentation create() {
-        return new EmptyTablePresentation();
-    }
+    TablePresentation create();
 }

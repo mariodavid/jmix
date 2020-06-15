@@ -22,22 +22,26 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 
+/**
+ * @deprecated Use {@link TablePresentations} instead.
+ */
+@Deprecated
 public interface Presentations extends TablePresentations {
 
     String NAME = "jmix_CubaPresentations";
 
     /**
      * Returns user settings for the selected presentation or <code>null</code>
-     * if the presentation doesn't exist or if the presentation doesn't contain any settings
+     * if the presentation doesn't exist or if the presentation doesn't contain any settings.
      *
-     * @deprecated Use {@link #getSettingsString(TablePresentation) instead.}
+     * @deprecated Use {@link #getSettingsString(TablePresentation)} instead.
      */
     @Nullable
     @Deprecated
     Element getSettings(TablePresentation p);
 
     /**
-     * Sets user settings for the selected presentation
+     * Sets user settings for the selected presentation.
      *
      * @deprecated Use {@link #setSettings(TablePresentation, String)} instead.
      */

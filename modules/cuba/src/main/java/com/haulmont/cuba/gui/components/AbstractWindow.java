@@ -797,11 +797,6 @@ public class AbstractWindow extends Screen
     }
 
     @Override
-    public void deleteSettings() {
-        settings.delete();
-    }
-
-    @Override
     public Settings getSettings() {
         return settings;
     }
