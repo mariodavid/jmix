@@ -25,7 +25,6 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.security.ConstraintOperationType;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.core.security.Security;
-import io.jmix.data.PersistenceAttributeSecurity;
 import io.jmix.data.PersistenceSecurity;
 import io.jmix.data.RowLevelSecurityException;
 import io.jmix.data.StoreAwareLocator;
@@ -35,9 +34,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -57,9 +56,6 @@ public class StandardPersistenceSecurity implements PersistenceSecurity {
 
     @Autowired
     protected ReferenceToEntitySupport referenceToEntitySupport;
-
-    @Autowired
-    protected PersistenceAttributeSecurity persistenceAttributeSecurity;
 
     @Autowired
     protected EntityStates entityStates;

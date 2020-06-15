@@ -21,17 +21,20 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.jmix.core.*;
 import io.jmix.core.common.util.StringHelper;
+import io.jmix.core.constraint.AccessConstraint;
+import io.jmix.core.constraint.AccessManager;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.querycondition.Condition;
 import io.jmix.core.querycondition.ConditionJpqlGenerator;
 import io.jmix.data.PersistenceSecurity;
+import io.jmix.data.impl.context.JpqlQueryContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.*;
@@ -55,6 +58,7 @@ public class JpqlQueryBuilder {
     protected Map<String, Object> queryParameters;
     protected Condition condition;
     protected Sort sort;
+    protected List<AccessConstraint<?>> constraints;
 
     protected String entityName;
     protected List<String> valueProperties;
@@ -85,6 +89,9 @@ public class JpqlQueryBuilder {
 
     @Autowired
     protected MetadataTools metadataTools;
+
+    @Autowired
+    protected AccessManager accessManager;
 
     public JpqlQueryBuilder setId(Object id) {
         this.id = id;
@@ -138,6 +145,11 @@ public class JpqlQueryBuilder {
         return this;
     }
 
+    public JpqlQueryBuilder setConstraints(List<AccessConstraint<?>> constraints) {
+        this.constraints = constraints;
+        return this;
+    }
+
     public String getResultQueryString() {
         if (resultQuery == null) {
             buildResultQuery();
@@ -157,9 +169,9 @@ public class JpqlQueryBuilder {
 
         //we have to replace parameter names in macros because for {@link com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler}
         //we need to replace a parameter with number of days with its value before macros is expanded to JPQL expression
-        replaceParamsInMacros((JmixQuery) query);
+        replaceParamsInMacros((JmixQuery<?>) query);
 
-        applyConstraints((JmixQuery) query);
+        applyConstraints((JmixQuery<?>) query);
 
         Set<String> paramNames = queryTransformerFactory.parser(getResultQueryString()).getParamNames();
 
@@ -251,7 +263,7 @@ public class JpqlQueryBuilder {
         }
     }
 
-    protected void replaceParamsInMacros(JmixQuery query) {
+    protected void replaceParamsInMacros(JmixQuery<?> query) {
         Collection<QueryMacroHandler> handlers = AppBeans.getAll(QueryMacroHandler.class).values();
         String modifiedQuery = query.getQueryString();
         for (QueryMacroHandler handler : handlers) {
@@ -260,18 +272,25 @@ public class JpqlQueryBuilder {
         query.setQueryString(modifiedQuery);
     }
 
-    protected void applyConstraints(JmixQuery query) {
-        boolean constraintsApplied = security.applyConstraints(query);
-        if (constraintsApplied && singleResult) {
-            QueryParser parser = queryTransformerFactory.parser(query.getQueryString());
-            if (parser.isQueryWithJoins()) {
-                QueryTransformer transformer = queryTransformerFactory.transformer(query.getQueryString());
-                transformer.addDistinct();
-                query.setQueryString(transformer.getResult());
+    protected void applyConstraints(JmixQuery<?> query) {
+        if (constraints != null ) {
+            JpqlQueryContext queryContext = new JpqlQueryContext(query, null);
+
+            accessManager.applyConstraints(queryContext, constraints);
+
+            query = queryContext.getResultQuery();
+
+            if (queryContext.isConstrainsApplied() && singleResult) {
+                QueryParser parser = queryTransformerFactory.parser(query.getQueryString());
+                if (parser.isQueryWithJoins()) {
+                    QueryTransformer transformer = queryTransformerFactory.transformer(query.getQueryString());
+                    transformer.addDistinct();
+                    query.setQueryString(transformer.getResult());
+                }
             }
-        }
-        if (constraintsApplied && log.isDebugEnabled()) {
-            log.debug("Constraints applied: {}", printQuery(query.getQueryString()));
+            if (queryContext.isConstrainsApplied() && log.isDebugEnabled()) {
+                log.debug("Constraints applied: {}", printQuery(query.getQueryString()));
+            }
         }
     }
 
