@@ -18,20 +18,18 @@ package test_support
 
 import io.jmix.core.CoreConfiguration
 import io.jmix.data.DataConfiguration
-import io.jmix.security.JmixSecurityConfiguration
-import io.jmix.securitydata.JmixSecurityDataConfiguration
+import io.jmix.security.SecurityConfiguration
+import io.jmix.securitydata.SecurityDataConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
-import org.springframework.beans.factory.annotation.Autowired
-
-@ContextConfiguration(classes = [CoreConfiguration, DataConfiguration, JmixSecurityConfiguration, JmixSecurityTestConfiguration,
-        JmixSecurityDataConfiguration, JmixSecurityPersistenceTestConfiguration])
+@ContextConfiguration(classes = [CoreConfiguration, DataConfiguration, SecurityConfiguration,
+        SecurityDataConfiguration, SecurityDataTestConfiguration])
 @TestPropertySource(properties = ["jmix.securityImplementation = standard"])
-class SecurityPersistenceSpecification extends Specification {
+class SecurityDataSpecification extends Specification {
 
     @Autowired
     JdbcTemplate jdbcTemplate

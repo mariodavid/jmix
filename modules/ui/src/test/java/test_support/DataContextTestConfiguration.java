@@ -39,7 +39,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource("classpath:/test_support/test-data-app.properties")
-@JmixModule(dependsOn = {CoreConfiguration.class, JmixCoreSecurityConfiguration.class})
+@JmixModule(dependsOn = {CoreConfiguration.class, CoreSecurityConfiguration.class})
 public class DataContextTestConfiguration {
 
     @Bean

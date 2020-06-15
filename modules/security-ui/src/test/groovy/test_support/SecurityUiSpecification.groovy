@@ -16,16 +16,16 @@
 
 package test_support
 
-import io.jmix.core.JmixCoreConfiguration
-import io.jmix.data.JmixDataConfiguration
-import io.jmix.security.JmixSecurityConfiguration
-import io.jmix.securityui.JmixSecurityUiConfiguration
+import io.jmix.core.CoreConfiguration
+import io.jmix.data.DataConfiguration
+import io.jmix.security.SecurityConfiguration
+import io.jmix.securityui.SecurityUiConfiguration
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
-@ContextConfiguration(classes = [JmixCoreConfiguration, JmixDataConfiguration, JmixSecurityConfiguration,
-        JmixSecurityUiConfiguration, JmixSecurityUiTestConfiguration])
+@ContextConfiguration(classes = [CoreConfiguration, DataConfiguration, SecurityConfiguration,
+        SecurityUiConfiguration, SecurityUiTestConfiguration])
 @TestPropertySource(properties = ["jmix.securityImplementation = standard"])
 class SecurityUiSpecification extends Specification {
 }

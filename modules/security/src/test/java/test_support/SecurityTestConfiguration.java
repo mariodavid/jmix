@@ -23,7 +23,7 @@ import io.jmix.data.impl.JmixEntityManagerFactoryBean;
 import io.jmix.data.impl.JmixTransactionManager;
 import io.jmix.data.impl.PersistenceConfigProcessor;
 import io.jmix.data.impl.liquibase.LiquibaseChangeLogProcessor;
-import io.jmix.security.JmixSecurityConfiguration;
+import io.jmix.security.SecurityConfiguration;
 import liquibase.integration.spring.SpringLiquibase;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
@@ -39,8 +39,8 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource("classpath:/test_support/test-app.properties")
-@JmixModule(dependsOn = {JmixSecurityConfiguration.class, DataConfiguration.class})
-public class JmixSecurityTestConfiguration {
+@JmixModule(dependsOn = {SecurityConfiguration.class, DataConfiguration.class})
+public class SecurityTestConfiguration {
 
     @Bean
     DataSource dataSource() {

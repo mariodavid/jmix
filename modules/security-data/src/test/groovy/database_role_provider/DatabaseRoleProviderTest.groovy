@@ -28,9 +28,9 @@ import io.jmix.securitydata.entity.RoleEntity
 import io.jmix.securitydata.entity.RowLevelPolicyEntity
 import io.jmix.securitydata.role.provider.DatabaseRoleProvider
 import org.springframework.beans.factory.annotation.Autowired
-import test_support.SecurityPersistenceSpecification
+import test_support.SecurityDataSpecification
 
-class DatabaseRoleProviderTest extends SecurityPersistenceSpecification {
+class DatabaseRoleProviderTest extends SecurityDataSpecification {
 
     @Autowired
     DatabaseRoleProvider databaseRoleProvider

@@ -6,14 +6,14 @@
 package io.jmix.samples.rest.tests;
 
 import io.jmix.core.CoreConfiguration;
-import io.jmix.data.DataConfiguration;
-import io.jmix.rest.RestConfiguration;
 import io.jmix.core.security.impl.CoreUser;
 import io.jmix.core.security.impl.InMemoryUserRepository;
+import io.jmix.data.DataConfiguration;
+import io.jmix.rest.RestConfiguration;
 import io.jmix.samples.rest.JmixRestTestConfiguration;
 import io.jmix.samples.rest.SampleRestApplication;
 import io.jmix.samples.rest.api.DataSet;
-import io.jmix.security.JmixSecurityConfiguration;
+import io.jmix.security.SecurityConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +35,7 @@ import static io.jmix.samples.rest.tools.RestSpecsUtils.getAuthToken;
 @ContextConfiguration(classes = {
         CoreConfiguration.class,
         DataConfiguration.class,
-        JmixSecurityConfiguration.class,
+        SecurityConfiguration.class,
         RestConfiguration.class,
         JmixRestTestConfiguration.class})
 @SpringBootTest(classes = SampleRestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

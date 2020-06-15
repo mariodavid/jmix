@@ -22,9 +22,9 @@ import io.jmix.core.SaveContext
 import io.jmix.securitydata.entity.RoleAssignmentEntity
 import io.jmix.securitydata.role.assignment.DatabaseRoleAssignmentProvider
 import org.springframework.beans.factory.annotation.Autowired
-import test_support.SecurityPersistenceSpecification
+import test_support.SecurityDataSpecification
 
-class DatabaseRoleAssignmentProviderTest extends SecurityPersistenceSpecification {
+class DatabaseRoleAssignmentProviderTest extends SecurityDataSpecification {
 
     @Autowired
     DatabaseRoleAssignmentProvider databaseRoleAssignmentProvider
