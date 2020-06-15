@@ -17,8 +17,8 @@ package io.jmix.ui.component.presentation;
 
 import com.vaadin.ui.*;
 import io.jmix.core.AppBeans;
+import io.jmix.core.EntityStates;
 import io.jmix.core.Messages;
-import io.jmix.core.common.util.Dom4j;
 import io.jmix.core.entity.BaseUser;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.security.CurrentAuthentication;
@@ -31,27 +31,30 @@ import io.jmix.ui.component.HasTablePresentations;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.presentation.model.TablePresentation;
 import io.jmix.ui.screen.FrameOwner;
-import io.jmix.ui.screen.Screen;
-import io.jmix.ui.screen.compatibility.CubaLegacySettings;
-import io.jmix.ui.settings.ScreenSettings;
 import io.jmix.ui.settings.SettingsHelper;
+import io.jmix.ui.settings.UserSettingsTools;
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.SettingsWrapperImpl;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
-import io.jmix.ui.sys.PersistenceHelper;
 import io.jmix.ui.theme.ThemeConstants;
 import io.jmix.ui.widget.JmixButton;
 import io.jmix.ui.widget.JmixWindow;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
 import java.util.UUID;
 
-public class PresentationEditor extends JmixWindow {
+@org.springframework.stereotype.Component(PresentationEditor.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class PresentationEditor extends JmixWindow implements InitializingBean {
+
+    public static final String NAME = "jmix_PresentationEditor";
 
     private static final Logger log = LoggerFactory.getLogger(PresentationEditor.class);
 
@@ -70,9 +73,16 @@ public class PresentationEditor extends JmixWindow {
     protected boolean isNew;
     protected boolean allowGlobalPresentations;
 
+    @Autowired
     protected Messages messages;
+    @Autowired
     protected CurrentAuthentication currentAuthentication;
+    @Autowired
     protected Security security;
+    @Autowired
+    protected EntityStates entityStates;
+    @Autowired(required = false)
+    protected UserSettingsTools userSettingsTools;
 
     public PresentationEditor(FrameOwner frameOwner, TablePresentation presentation, HasTablePresentations component,
                               ComponentSettingsBinder settingsBinder) {
@@ -80,14 +90,17 @@ public class PresentationEditor extends JmixWindow {
         this.component = component;
         this.frameOwner = frameOwner;
         this.settingsBinder = settingsBinder;
+    }
 
-        messages = AppBeans.get(Messages.NAME);
-        currentAuthentication = AppBeans.get(CurrentAuthentication.NAME);
-        security = AppBeans.get(Security.NAME);
-
-        isNew = PersistenceHelper.isNew(presentation);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        isNew = entityStates.isNew(presentation);
         allowGlobalPresentations = security.isSpecificPermitted("cuba.gui.presentations.global");
 
+        initWindow();
+    }
+
+    protected void initWindow() {
         initLayout();
 
         setWidthUndefined();
@@ -218,11 +231,14 @@ public class PresentationEditor extends JmixWindow {
     }
 
     protected String getStringSettings() {
+        if (userSettingsTools == null) {
+            throw new IllegalStateException("Cannot commit presentation because ui-persistence add-on is not added");
+        }
+
         ComponentSettings componentSettings = SettingsHelper.createSettings(settingsBinder.getSettingsClass());
         settingsBinder.saveSettings((Component) component, new SettingsWrapperImpl(componentSettings));
 
-        ScreenSettings screenSettings = AppBeans.getPrototype(ScreenSettings.NAME, ((Screen) frameOwner).getId());
-        return screenSettings.toSettingsString(componentSettings);
+        return userSettingsTools.toSettingsString(componentSettings);
     }
 
     protected String getPresentationCaption() {

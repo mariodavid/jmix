@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import io.jmix.ui.Screens;
 import io.jmix.ui.component.WindowContext;
 import io.jmix.ui.screen.Screen;
 import io.jmix.ui.screen.compatibility.CubaLegacySettings;
@@ -52,6 +53,28 @@ public class CubaScreensDelegateImpl implements CubaScreensDelegate {
     public void beforeShowWindow(Screen screen) {
         if (screen instanceof CubaLegacySettings) {
             ((CubaLegacySettings) screen).applyDataLoadingSettings(getSettingsImpl(screen.getId()));
+        }
+    }
+
+    @Override
+    public void saveScreenSettings(Screens screens) {
+        Screens.OpenedScreens openedScreens = screens.getOpenedScreens();
+
+        Screen rootScreen = openedScreens.getRootScreen();
+        if (rootScreen instanceof CubaLegacySettings) {
+            ((CubaLegacySettings) rootScreen).saveSettings();
+        }
+
+        for (Screen screen : openedScreens.getWorkAreaScreens()) {
+            if (screen instanceof CubaLegacySettings) {
+                ((CubaLegacySettings) screen).saveSettings();
+            }
+        }
+
+        for (Screen screen : openedScreens.getDialogScreens()) {
+            if (screen instanceof CubaLegacySettings) {
+                ((CubaLegacySettings) screen).saveSettings();
+            }
         }
     }
 

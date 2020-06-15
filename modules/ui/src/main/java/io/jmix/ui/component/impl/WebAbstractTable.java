@@ -66,8 +66,8 @@ import io.jmix.ui.screen.FrameOwner;
 import io.jmix.ui.screen.InstallTargetHandler;
 import io.jmix.ui.screen.ScreenContext;
 import io.jmix.ui.screen.UiControllerUtils;
-import io.jmix.ui.settings.ScreenSettings;
 import io.jmix.ui.settings.SettingsHelper;
+import io.jmix.ui.settings.UserSettingsTools;
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.SettingsWrapper;
 import io.jmix.ui.settings.component.SettingsWrapperImpl;
@@ -142,6 +142,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
     protected DatatypeRegistry datatypeRegistry;
     protected DataComponents dataComponents;
     protected FetchPlanRepository viewRepository;
+    protected UserSettingsTools userSettingsTools;
 
     protected Locale locale;
 
@@ -264,6 +265,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
     @Autowired
     public void setViewRepository(FetchPlanRepository viewRepository) {
         this.viewRepository = viewRepository;
+    }
+
+    @Autowired(required = false)
+    public void setUserSettingsTools(UserSettingsTools userSettingsTools) {
+        this.userSettingsTools = userSettingsTools;
     }
 
     @Override
@@ -2552,13 +2558,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
     }
 
     protected void updatePresentationSettings(TablePresentations p) {
+        if (userSettingsTools != null) {
             ComponentSettings settings = getSettingsFromPresentation(p.getCurrent());
             getSettingsBinder().saveSettings(this, new SettingsWrapperImpl(settings));
 
-            ScreenSettings screenSettings = beanLocator.getPrototype(ScreenSettings.NAME, getFrame().getId());
-            String rawSettings = screenSettings.toSettingsString(settings);
-
+            String rawSettings = userSettingsTools.toSettingsString(settings);
             p.setSettings(p.getCurrent(), rawSettings);
+        }
     }
 
     protected ComponentSettingsBinder getSettingsBinder() {
@@ -2668,13 +2674,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
 
     protected ComponentSettings getSettingsFromPresentation(TablePresentation p) {
         Class<? extends ComponentSettings> settingsClass = getSettingsBinder().getSettingsClass();
-        ComponentSettings settings = SettingsHelper.createSettings(settingsClass);
-        settings.setId(getId());
+        ComponentSettings settings = SettingsHelper.createSettings(settingsClass, getId());
 
         String settingsString = presentations.getSettingsString(p);
-        if (settingsString != null) {
-            ScreenSettings screenSettings = beanLocator.getPrototype(ScreenSettings.NAME, getFrame().getId());
-            ComponentSettings convertedSettings = screenSettings.toComponentSettings(settingsString, settingsClass);
+        if (settingsString != null && userSettingsTools != null) {
+            ComponentSettings convertedSettings = userSettingsTools.toComponentSettings(settingsString, settingsClass);
             if (convertedSettings != null) {
                 settings = convertedSettings;
             }
@@ -2683,7 +2687,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & JmixEn
     }
 
     protected TablePresentationsLayout createTablePresentationsLayout() {
-        return new TablePresentationsLayout(this, getSettingsBinder());
+        return new TablePresentationsLayout(this, getSettingsBinder(), beanLocator);
     }
 
     protected TablePresentations createTablePresentations() {

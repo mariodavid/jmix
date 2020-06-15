@@ -18,28 +18,46 @@ package com.haulmont.cuba.gui.presentation;
 
 import com.haulmont.cuba.gui.components.HasSettings;
 import com.haulmont.cuba.gui.components.presentation.CubaPresentationActionsBuilder;
-import io.jmix.ui.component.Table;
+import io.jmix.core.BeanLocator;
 import io.jmix.ui.component.presentation.TablePresentationsLayout;
 import io.jmix.ui.presentation.model.TablePresentation;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component(LegacyPresentationsDelegate.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class LegacyPresentationsDelegate {
+
+    public static final String NAME = "jmix_LegacyPresentationsDelegate";
 
     protected Presentations presentations;
     protected HasSettings component;
 
     protected ComponentSettingsBinder settingsBinder;
 
-    public LegacyPresentationsDelegate(HasSettings component, Presentations presentations, ComponentSettingsBinder settingsBinder) {
+    protected BeanLocator beanLocator;
+
+    public LegacyPresentationsDelegate(HasSettings component,
+                                       Presentations presentations,
+                                       ComponentSettingsBinder settingsBinder) {
         this.presentations = presentations;
         this.component = component;
         this.settingsBinder = settingsBinder;
     }
 
+    @Autowired
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
+
     public TablePresentationsLayout createTablePresentationsLayout(TablePresentationsLayout layout) {
-        layout.setPresentationActionsBuilder(new CubaPresentationActionsBuilder((Table) component, settingsBinder));
+        layout.setPresentationActionsBuilder(
+                beanLocator.getPrototype(CubaPresentationActionsBuilder.NAME, component, settingsBinder));
         layout.build();
         return layout;
     }

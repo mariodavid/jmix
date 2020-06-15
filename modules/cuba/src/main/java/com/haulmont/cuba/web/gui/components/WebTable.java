@@ -73,14 +73,16 @@ public class WebTable<E extends Entity> extends io.jmix.ui.component.impl.WebTab
     }
 
     protected LegacySettingsDelegate createSettingsDelegate() {
-        return new LegacySettingsDelegate(this, new LegacyTableSettingsConverter(), getSettingsBinder());
+        return beanLocator.getPrototype(LegacySettingsDelegate.NAME,
+                this, new LegacyTableSettingsConverter(), getSettingsBinder());
     }
 
     @Override
     protected TablePresentations createTablePresentations() {
         Presentations presentations = beanLocator.getPrototype(Presentations.NAME, this);
 
-        presentationsDelegate = new LegacyPresentationsDelegate(this, presentations, getSettingsBinder());
+        presentationsDelegate = beanLocator.getPrototype(LegacyPresentationsDelegate.NAME,
+                this, presentations, getSettingsBinder());
 
         return presentations;
     }

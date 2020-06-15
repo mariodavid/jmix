@@ -23,7 +23,6 @@ import io.jmix.ui.component.HasTablePresentations;
 import io.jmix.ui.presentation.TablePresentations;
 import io.jmix.ui.settings.component.ComponentSettings.HasSettingsPresentation;
 import io.jmix.ui.settings.component.SettingsWrapperImpl;
-import io.jmix.ui.settings.ScreenSettings;
 import io.jmix.ui.settings.component.ComponentSettings;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import io.jmix.ui.settings.component.binder.DataLoadingSettingsBinder;

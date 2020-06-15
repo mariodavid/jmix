@@ -26,10 +26,20 @@ import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import io.jmix.ui.settings.component.binder.ComponentSettingsBinder;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component(CubaPresentationEditor.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class CubaPresentationEditor extends PresentationEditor {
 
-    public CubaPresentationEditor(FrameOwner frameOwner, TablePresentation presentation, HasTablePresentations component, ComponentSettingsBinder settingsBinder) {
+    public static final String NAME = "jmix_CubaPresentationEditor";
+
+    public CubaPresentationEditor(FrameOwner frameOwner,
+                                  TablePresentation presentation,
+                                  HasTablePresentations component,
+                                  ComponentSettingsBinder settingsBinder) {
         super(frameOwner, presentation, component, settingsBinder);
     }
 

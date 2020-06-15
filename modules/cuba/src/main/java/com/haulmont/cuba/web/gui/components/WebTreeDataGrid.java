@@ -67,6 +67,7 @@ public class WebTreeDataGrid<E extends Entity> extends io.jmix.ui.component.impl
     }
 
     protected LegacySettingsDelegate createSettingsDelegate() {
-        return new LegacySettingsDelegate(this, new LegacyTreeDataGridSettingsConverter(), getSettingsBinder());
+        return beanLocator.getPrototype(LegacySettingsDelegate.NAME,
+                this, new LegacyTreeDataGridSettingsConverter(), getSettingsBinder());
     }
 }

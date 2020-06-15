@@ -74,14 +74,16 @@ public class WebGroupTable<E extends Entity> extends io.jmix.ui.component.impl.W
     }
 
     protected LegacySettingsDelegate createSettingsDelegate() {
-        return new LegacySettingsDelegate(this, new LegacyGroupTableSettingsConverter(), getSettingsBinder());
+        return beanLocator.getPrototype(LegacySettingsDelegate.NAME,
+                this, new LegacyGroupTableSettingsConverter(), getSettingsBinder());
     }
 
     @Override
     protected TablePresentations createTablePresentations() {
         Presentations presentations = beanLocator.getPrototype(Presentations.NAME, this);
 
-        presentationsDelegate = new LegacyPresentationsDelegate(this, presentations, getSettingsBinder());
+        presentationsDelegate = beanLocator.getPrototype(LegacyPresentationsDelegate.NAME,
+                this, presentations, getSettingsBinder());
 
         return presentations;
     }

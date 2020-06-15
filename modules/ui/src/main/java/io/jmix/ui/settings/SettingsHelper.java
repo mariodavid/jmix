@@ -16,15 +16,10 @@
 
 package io.jmix.ui.settings;
 
-import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.common.util.ReflectionHelper;
-import io.jmix.ui.component.Component;
-import io.jmix.ui.component.ComponentContainer;
-import io.jmix.ui.component.Window;
 import io.jmix.ui.settings.component.ComponentSettings;
-import io.jmix.ui.settings.facet.ScreenSettingsFacet;
 
-import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 public final class SettingsHelper {
 
@@ -32,36 +27,18 @@ public final class SettingsHelper {
     }
 
     public static <T extends ComponentSettings> T createSettings(Class<T> settingsClass) {
+        return createSettings(settingsClass, null);
+    }
+
+    public static <T extends ComponentSettings> T createSettings(Class<T> settingsClass, @Nullable String id) {
         try {
-            return ReflectionHelper.newInstance(settingsClass);
+            T settings = ReflectionHelper.newInstance(settingsClass);
+            if (id != null) {
+                settings.setId(id);
+            }
+            return settings;
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(String.format("Cannot create settings '%s'", settingsClass), e);
         }
-    }
-
-    public static void lazyTabApplySettings(Window window, Component source, ComponentContainer tabContent) {
-        Preconditions.checkNotNullArgument(window);
-        Preconditions.checkNotNullArgument(tabContent);
-
-        window.getFacets().forEach(facet -> {
-            if (facet instanceof ScreenSettingsFacet) {
-                ScreenSettingsFacet settingsFacet = (ScreenSettingsFacet) facet;
-                Consumer<ScreenSettingsFacet.SettingsContext> applyHandler = settingsFacet.getApplySettingsDelegate();
-
-                ScreenSettings settings = settingsFacet.getSettings();
-                if (settings == null) {
-                    throw new IllegalStateException("ScreenSettingsFacet is not attached to the frame");
-                }
-
-                if (applyHandler != null) {
-                    applyHandler.accept(new ScreenSettingsFacet.SettingsContext(
-                            source,
-                            tabContent.getComponents(),
-                            settings));
-                } else {
-                    settingsFacet.applySettings(settings);
-                }
-            }
-        });
     }
 }

@@ -49,7 +49,6 @@ import io.jmix.ui.navigation.UrlTools;
 import io.jmix.ui.screen.*;
 import io.jmix.ui.screen.Screen.*;
 import io.jmix.ui.screen.compatibility.CubaLegacyFrame;
-import io.jmix.ui.screen.compatibility.CubaLegacySettings;
 import io.jmix.ui.screen.compatibility.CubaScreensDelegate;
 import io.jmix.ui.theme.ThemeConstants;
 import io.jmix.ui.util.OperationResult;
@@ -1062,20 +1061,9 @@ public class WebScreens implements Screens {
     }
 
     public void saveScreenSettings() {
-        Screen rootScreen = getOpenedScreens().getRootScreen();
-
-        if (rootScreen instanceof CubaLegacySettings)
-            ((CubaLegacySettings) rootScreen).saveSettings();
-
-        getOpenedWorkAreaScreensStream().forEach(screen -> {
-            if (screen instanceof CubaLegacySettings)
-                ((CubaLegacySettings) screen).saveSettings();
-        });
-
-        getDialogScreensStream().forEach((screen -> {
-            if (screen instanceof CubaLegacySettings)
-                ((CubaLegacySettings) screen).saveSettings();
-        }));
+        if (cubaScreensDelegate != null) {
+            cubaScreensDelegate.saveScreenSettings(this);
+        }
     }
 
     // used only for legacy screens

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.settings;
+package io.jmix.ui.persistence;
 
 import com.vaadin.server.VaadinSession;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.ui.executor.IllegalConcurrentAccessException;
+import io.jmix.ui.settings.UserSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,18 +34,14 @@ import java.util.Optional;
 @Component(UiSettingsCache.NAME)
 public class UiSettingsCache {
 
-    public static final String NAME = "cuba_SettingsClient";
+    public static final String NAME = "jmix_SettingsClient";
 
-    @Autowired(required = false)
+    @Autowired
     protected UserSettingService userSettingService;
 
     @Nullable
     public String getSetting(String name) {
         Preconditions.checkNotNullArgument(name);
-
-        if (userSettingService == null) {
-            return null;
-        }
 
         Map<String, Optional<String>> settings = getCache();
         Optional<String> cached = settings.get(name);
@@ -61,19 +58,15 @@ public class UiSettingsCache {
     public void setSetting(String name, @Nullable String value) {
         Preconditions.checkNotNullArgument(name);
 
-        if (userSettingService != null) {
-            getCache().put(name, Optional.ofNullable(value));
-            userSettingService.saveSetting(name, value);
-        }
+        getCache().put(name, Optional.ofNullable(value));
+        userSettingService.saveSetting(name, value);
     }
 
     public void deleteSettings(String name) {
         Preconditions.checkNotNullArgument(name);
 
-        if (userSettingService != null) {
-            getCache().put(name, Optional.empty());
-            userSettingService.deleteSettings(name);
-        }
+        getCache().put(name, Optional.empty());
+        userSettingService.deleteSettings(name);
     }
 
     /**

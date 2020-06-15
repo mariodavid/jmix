@@ -35,7 +35,6 @@ import io.jmix.ui.logging.AppLog;
 import io.jmix.ui.screen.OpenMode;
 import io.jmix.ui.screen.Screen;
 import io.jmix.ui.screen.UiControllerUtils;
-import io.jmix.ui.settings.UiSettingsCache;
 import io.jmix.ui.sys.*;
 import io.jmix.ui.theme.ThemeConstants;
 import io.jmix.ui.theme.ThemeConstantsRepository;
@@ -92,8 +91,6 @@ public abstract class App {
     protected ThemeConstantsRepository themeConstantsRepository;
     @Autowired
     protected MessageTools messageTools;
-    @Autowired
-    protected UiSettingsCache settingsCache;
 
     @Autowired
     protected Events events;
@@ -511,10 +508,6 @@ public abstract class App {
 //        ui.getPage().open(ControllerUtils.getLocationWithoutParams(), "_self");
 //    }
 
-    protected void clearSettingsCache() {
-        settingsCache.clear();
-    }
-
     /**
      * Try to perform logout. If there are unsaved changes in opened windows then logout will not be performed and
      * unsaved changes dialog will appear.
@@ -582,7 +575,7 @@ public abstract class App {
     protected void performStandardLogout(AppUI ui) {
 //        todo implement
 //        ((WebScreens) ui.getScreens()).saveScreenHistory();
-//
+        // support legacy screens
         ((WebScreens) ui.getScreens()).saveScreenSettings();
 
         forceLogout();

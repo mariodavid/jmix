@@ -16,8 +16,6 @@
 
 package io.jmix.ui.persistence.settings;
 
-import io.jmix.ui.settings.ScreenSettings;
-
 public abstract class AbstractScreenSettings implements ScreenSettings {
 
     protected String screenId;

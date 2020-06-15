@@ -41,4 +41,12 @@ public interface CubaScreensDelegate {
      * @param screen screen to show
      */
     void beforeShowWindow(Screen screen);
+
+    /**
+     * Saves settings only for legacy screens.
+     *
+     * @param screens screens
+     * @see CubaLegacySettings
+     */
+    void saveScreenSettings(Screens screens);
 }

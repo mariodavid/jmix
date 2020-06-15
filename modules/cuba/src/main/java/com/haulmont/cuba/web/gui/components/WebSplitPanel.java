@@ -55,7 +55,8 @@ public class WebSplitPanel extends io.jmix.ui.component.impl.WebSplitPanel imple
     }
 
     protected LegacySettingsDelegate createSettingsDelegate() {
-        return new LegacySettingsDelegate(this, new LegacySplitPanelSettingsConverter(), getSettingsBinder());
+        return beanLocator.getPrototype(LegacySettingsDelegate.NAME,
+                this, new LegacySplitPanelSettingsConverter(), getSettingsBinder());
     }
 
     protected ComponentSettingsBinder getSettingsBinder() {

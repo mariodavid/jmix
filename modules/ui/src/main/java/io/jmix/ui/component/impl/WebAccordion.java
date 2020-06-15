@@ -29,12 +29,14 @@ import io.jmix.ui.icon.Icons;
 import io.jmix.ui.security.UiPermissionDescriptor;
 import io.jmix.ui.security.UiPermissionValue;
 import io.jmix.ui.settings.SettingsHelper;
+import io.jmix.ui.settings.UserSettingsTools;
 import io.jmix.ui.sys.TestIdManager;
 import io.jmix.ui.widget.JmixAccordion;
 import io.jmix.ui.xml.layout.ComponentLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -45,6 +47,9 @@ import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
 public class WebAccordion extends WebAbstractComponent<JmixAccordion>
         implements Accordion, UiPermissionAware, SupportsChildrenSelection {
+
+    @Autowired(required = false)
+    protected UserSettingsTools userSettingsTools;
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -591,8 +596,8 @@ public class WebAccordion extends WebAbstractComponent<JmixAccordion>
         }
 
         protected void applySettings(Window window) {
-            if (window != null) {
-                SettingsHelper.lazyTabApplySettings(window, WebAccordion.this, tabContent);
+            if (window != null && userSettingsTools != null) {
+                userSettingsTools.applyLazyTabSettings(window, WebAccordion.this, tabContent);
             }
         }
     }

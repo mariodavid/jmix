@@ -30,9 +30,15 @@ import io.jmix.ui.settings.component.binder.DataLoadingSettingsBinder;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
+@org.springframework.stereotype.Component(LegacySettingsDelegate.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class LegacySettingsDelegate implements HasSettings, HasDataLoadingSettings {
+
+    public static final String NAME = "jmix_LegacySettingsDelegate";
 
     protected Component component;
 

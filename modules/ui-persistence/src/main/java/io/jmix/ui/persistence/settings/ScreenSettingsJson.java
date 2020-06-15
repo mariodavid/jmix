@@ -18,8 +18,7 @@ package io.jmix.ui.persistence.settings;
 
 import com.google.gson.*;
 import io.jmix.core.common.util.Preconditions;
-import io.jmix.ui.settings.ScreenSettings;
-import io.jmix.ui.settings.UiSettingsCache;
+import io.jmix.ui.persistence.UiSettingsCache;
 import io.jmix.ui.settings.component.ComponentSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

@@ -24,7 +24,7 @@ import io.jmix.ui.JmixUiConfiguration
 import io.jmix.ui.UiComponents
 import io.jmix.ui.persistence.settings.ScreenSettingsJson
 import io.jmix.ui.persistence.settings.ScreenSettingsManager
-import io.jmix.ui.settings.ScreenSettings
+import io.jmix.ui.persistence.settings.ScreenSettings
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import test_support.JmixUiPersistenceTestConfiguration
